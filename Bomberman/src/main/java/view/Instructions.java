@@ -12,20 +12,24 @@ public class Instructions extends JPanel {
     private boolean isExpanded;  // Track the state of the accordion
 
     public Instructions() {
-        // Set the layout for the main panel
+        // Ensure this panel is transparent
+        setOpaque(false);
         setLayout(new BorderLayout());
 
-        // Initialize the card layout and panel
+        // Initialize the card layout and panel, make it transparent
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
+        cardPanel.setOpaque(false); // Make the card panel transparent
 
         // Content for the accordion section
         JLabel contentLabel = new JLabel("Content of Section 1");
         JPanel contentPanel = new JPanel(new BorderLayout());
+        contentPanel.setOpaque(false); // Make the content panel transparent
         contentPanel.add(contentLabel, BorderLayout.CENTER);
 
-        // Empty panel representing the collapsed state
+        // Empty panel representing the collapsed state, make it transparent
         JPanel emptyPanel = new JPanel();
+        emptyPanel.setOpaque(false);
 
         // Add both panels to the card panel
         cardPanel.add(contentPanel, "Content");
@@ -36,6 +40,7 @@ public class Instructions extends JPanel {
         toggleButton = new JButton(instructionsImg);
         toggleButton.setBorder(BorderFactory.createEmptyBorder());
         toggleButton.setContentAreaFilled(false);
+        toggleButton.setOpaque(false); // Make the toggle button transparent
 
         // Toggle button switches between content and empty panel
         toggleButton.addActionListener(e -> {
