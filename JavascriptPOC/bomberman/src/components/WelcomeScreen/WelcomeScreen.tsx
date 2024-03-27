@@ -4,18 +4,25 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { StyledBackground, StyledAccordion, CenteredButton } from './WelcomeScreen.styles';
 import bombermanLogo from '../../assets/bomberman_logo.png';
 import instructionsImage from '../../assets/instructions.png';
-
+import { useNavigate } from 'react-router-dom';
+ 
 type WelcomeScreenProps = {
   onStart: () => void;
 };
-
+ 
 export const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
-
+ 
   const handleToggleAccordion = () => {
     setExpanded(!expanded);
   };
-
+ 
+  const handleStart = () => {
+    onStart();
+    navigate('/config'); // Navigate to ConfigScreen
+  };
+ 
   return (
     <StyledBackground>
       <img src={bombermanLogo} alt="Bomberman" style={{ width: '50%', marginTop: '40px' }} />
@@ -34,7 +41,8 @@ export const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
           </Typography>
         </AccordionDetails>
       </StyledAccordion>
-      <CenteredButton onClick={onStart} />
+      <CenteredButton onClick={handleStart} />
     </StyledBackground>
   );
 };
+ 
