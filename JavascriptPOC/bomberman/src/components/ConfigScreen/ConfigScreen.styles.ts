@@ -51,7 +51,7 @@ export const PlayerControlsRow = styled.div<PlayerControlsRowProps>`
   align-items: center;
   justify-content: start;
   margin-bottom: ${(props) => (props.numOfPlayers === '2' ? '80px' : '20px')};
-  margin-top: ${(props) => (props.numOfPlayers === '2' ? '40px' : '20px')}; // Adjust top margin based on player count
+  margin-top: ${(props) => (props.numOfPlayers === '2' ? '40px' : '20px')};
 `;
 
 export const ControlsLabel = styled(Typography)`
