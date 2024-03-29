@@ -1,7 +1,7 @@
 import React from "react";
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { WelcomeScreen } from "./components/WelcomeScreen/WelcomeScreen";
-import { ConfigScreen } from "./components/WelcomeScreen/ConfigScreen";
+import { ConfigScreen } from "./components/ConfigScreen/ConfigScreen";
 import './App.css';
  
 function App() {
