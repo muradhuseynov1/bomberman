@@ -1,4 +1,3 @@
-"""
 # Bomberman Game
 
 Welcome to our Bomberman game project! This game is a modern interpretation of the classic Bomberman experience, allowing players to navigate through various maps, place bombs, and dodge explosions in a strategic manner. Whether you're playing alone or with friends, this game promises a fun and engaging experience.
