@@ -33,9 +33,9 @@ export const StyledDialogTitle = styled(DialogTitle)({
 });
 
 export const StyledDialogContent = styled(DialogContent)({
-  color: '#333',
-  fontSize: '16px',
-  fontFamily: '"Lucida Console", Monaco, monospace',
+  padding: '20px',
+  maxHeight: '80vh',
+  overflowY: 'auto', 
 });
 
 export const DialogActions = styled(MuiDialogActions)({
