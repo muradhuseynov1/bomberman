@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { Box, Accordion, Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import backgroundImage from '../../assets/mainWindowBackground.jpg';
 import startButtonImage from '../../assets/startButton.png';
 
@@ -13,31 +13,11 @@ export const StyledBackground = styled(Box)({
   alignItems: 'center',
 });
 
-export const StyledAccordion = styled(Accordion)({
-  boxShadow: 'none',
-  width: '40%',
-  backgroundColor: 'transparent',
-  '&:before': {
-    display: 'none',
-  },
-  '&.Mui-expanded': {
-    margin: 0,
-  },
-  '& .MuiAccordionSummary-root': {
-    minHeight: 0,
-    '&.Mui-expanded': {
-      minHeight: 0,
-    },
-  },
-  '& .MuiAccordionSummary-content': {
-    margin: 0,
-    '&.Mui-expanded': {
-      margin: 0,
-    },
-  },
-  '& .MuiAccordionDetails-root': {
-    padding: 0,
-  },
+export const InstructionsImage = styled('img')({
+  width: '40%', 
+  cursor: 'pointer',
+  marginTop: '20px', 
+  marginBottom: '20px', 
 });
 
 export const CenteredButton = styled(Button)({
