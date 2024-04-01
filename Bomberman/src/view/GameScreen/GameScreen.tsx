@@ -61,7 +61,6 @@ export const GameScreen: React.FC<GameScreenProps> = ({}) => {
             <StyledGameButton onClick={handleQuit}>Quit</StyledGameButton>
             {/* Add more game control buttons as needed */}
           </StyledButtonContainer>
-          <Divider style={{ margin: '20px 0' }} />
         </DialogContent>
       </StyledGameDialog>
     </StyledBackground>
