@@ -31,6 +31,8 @@ const GameScreen: React.FC<GameScreenProps> = ({
   return (
     <StyledBackground>
       <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} />
+      <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} />
+      <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} />
       <StyledGameDialog open={true}>
         <CustomDialogContent>
           <MapContainer>

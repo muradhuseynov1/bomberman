@@ -13,7 +13,7 @@ export const CustomDialogContent = styled(DialogContent)({
 
 export const StyledGameDialog = styled(Dialog)({
   '& .MuiDialog-container .MuiPaper-root': {
-    width: '80%',
+    width: '75%',
     height: '80%',
     maxWidth: 'none',
     maxHeight: 'none',
@@ -22,7 +22,7 @@ export const StyledGameDialog = styled(Dialog)({
 
 export const MapContainer = styled.div({
   flexGrow: 1,
-  width: '100%',
+  width: '90%',
   height: '100%',
   border: '2px solid #ccc',
   overflow: 'auto',
