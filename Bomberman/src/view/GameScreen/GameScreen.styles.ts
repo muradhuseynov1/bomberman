@@ -1,94 +1,52 @@
 import styled from '@emotion/styled';
-import { Button, DialogContent } from '@mui/material';
-import { Dialog } from '@mui/material';
+import { Button, Dialog, DialogContent } from '@mui/material';
 
-export const PlayerStatusContainer = styled.div`
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  padding: 16px;
-  border-radius: 10px;
-  background-color: white;
-`;
+export const CustomDialogContent = styled(DialogContent)({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: '100%',
+  maxWidth: 'none',
+  height: 'auto',
+});
 
-export const PlayerStatusContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
+export const StyledGameDialog = styled(Dialog)({
+  '& .MuiDialog-container .MuiPaper-root': {
+    width: '80%',
+    height: '80%',
+    maxWidth: 'none',
+    maxHeight: 'none',
+  },
+});
 
-export const PlayerName = styled('h2')`
-  margin-bottom: 0.5rem;
-`;
+export const MapContainer = styled.div({
+  flexGrow: 1,
+  width: '100%',
+  height: '100%',
+  border: '2px solid #ccc',
+  overflow: 'auto',
+});
 
-export const PowerUpsList = styled('ul')`
-  list-style-type: none;
-  padding-left: 0;
-`;
+export const Grid = styled.div({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(10, 1fr)',
+  gap: '2px',
+});
 
-export const PowerUpItem = styled('li')`
-  display: inline-block;
-  margin-right: 0.5rem;
-`;
+export const GridCell = styled.div({
+  width: '100%',
+  height: '40px',
+  backgroundColor: '#eee',
+  border: '1px solid #ccc',
+});
 
-export const ObstaclesCount = styled('p')`
-  margin-top: 1rem;
-`;
+export const StyledButtonContainer = styled.div({
+  display: 'flex',
+  justifyContent: 'center',
+  marginTop: '20px',
+});
 
-export const CustomDialogContent = styled(DialogContent)`
-  && {
-    width: 100%;
-    max-width: none;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-`;
-
-export const StyledGameDialog = styled(Dialog)`
-  && {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: auto;
-    width: 800px;
-    height: 600px;
-    padding: 20px;
-    background-color: #fff;
-  }
-`;
-
-export const MapContainer = styled.div`
-  width: 80%;
-  height: 60vh;
-  border: 2px solid #ccc;
-  margin-bottom: 20px;
-  overflow: auto;
-`;
-
-export const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  gap: 2px;
-`;
-
-export const GridCell = styled.div`
-  width: 100%;
-  height: 40px;
-  background-color: #eee;
-  border: 1px solid #ccc;
-`;
-
-export const StyledButtonContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-`;
-
-export const StyledGameButton = styled(Button)`
-  && {
-    margin-right: 10px;
-  }
-`;
+export const StyledGameButton = styled(Button)({
+  marginRight: '10px',
+});

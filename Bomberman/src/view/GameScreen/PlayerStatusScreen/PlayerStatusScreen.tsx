@@ -1,5 +1,7 @@
-// PlayerStatusScreen/PlayerStatusScreen.tsx
 import React from "react";
+import { PlayerStatusContainer, PlayerName, PowerUpsList, PowerUpItem, ObstaclesCount } from "./PlayerStatusScreen.style";
+import { Typography } from "@mui/material";
+import theme from "../../../theme/PlayerStatusTheme";
 
 export type Power = 'Detonator' | 'RollerSkate' | 'Invincibility' | 'Ghost' | 'Obstacle';
 
@@ -11,36 +13,34 @@ interface PlayerStatusProps {
 }
 
 const PlayerStatus: React.FC<PlayerStatusProps> = ({ playerName, numBombs, powers, numObstacles }) => {
-  
   const getPowerIcon = (power: Power): React.ReactNode => {
-      switch (power) {
-        case 'Detonator':
-          return <span>🧨</span>;
-        case 'RollerSkate':
-          return <span>👟</span>;
-        case 'Invincibility':
-          return <span>💪</span>;
-        case 'Ghost':
-          return <span>👻</span>;
-        case 'Obstacle':
-          return <span>🚧</span>;
-        default:
-          return null;
-      }
-    };
+    switch (power) {
+      case 'Detonator':
+        return <span>🧨</span>;
+      case 'RollerSkate':
+        return <span>👟</span>;
+      case 'Invincibility':
+        return <span>💪</span>;
+      case 'Ghost':
+        return <span>👻</span>;
+      case 'Obstacle':
+        return <span>🚧</span>;
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="player-status">
-      <h2>{playerName}</h2>
-      <p>Bombs: {numBombs}</p>
-      <p>Power-Ups:</p>
-      <ul>
+    <PlayerStatusContainer theme={theme}>
+      <PlayerName variant="h6">{playerName}</PlayerName>
+      <Typography variant="body1">Bombs: {numBombs}</Typography>
+      <PowerUpsList>
         {powers.map((power, index) => (
-          <li key={index}>{getPowerIcon(power)}</li>
+          <PowerUpItem key={index}>{getPowerIcon(power)}</PowerUpItem>
         ))}
-      </ul>
-      <p>Obstacles: {numObstacles}</p>
-    </div>
+      </PowerUpsList>
+      <ObstaclesCount variant="body1">Obstacles: {numObstacles}</ObstaclesCount>
+    </PlayerStatusContainer>
   );
 };
 

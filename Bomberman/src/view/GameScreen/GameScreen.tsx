@@ -1,4 +1,3 @@
-// GameScreen.tsx
 import React from 'react';
 import {
   MapContainer,
@@ -8,13 +7,10 @@ import {
   GridCell,
   StyledGameDialog,
   CustomDialogContent,
-  PlayerStatusContainer,
-  PlayerStatusContent
 } from './GameScreen.styles';
 import { StyledBackground } from '../WelcomeScreen/WelcomeScreen.styles';
 import PlayerStatus from './PlayerStatusScreen/PlayerStatusScreen';
-
-export type Power = 'Detonator' | 'RollerSkate' | 'Invincibility' | 'Ghost' | 'Obstacle';
+import { Power } from './PlayerStatusScreen/PlayerStatusScreen';
 
 interface GameScreenProps {
   playerName: string;
@@ -24,6 +20,7 @@ interface GameScreenProps {
   numObstacles: number;
 }
 
+// Assume Power type and PlayerStatusProps are defined in PlayerStatusScreen.tsx
 const GameScreen: React.FC<GameScreenProps> = ({
   playerName,
   onQuit,
@@ -33,11 +30,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
 }) => {
   return (
     <StyledBackground>
-      <PlayerStatusContainer>
-        <PlayerStatusContent>
-          <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} />
-        </PlayerStatusContent>
-      </PlayerStatusContainer>
+      <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} />
       <StyledGameDialog open={true}>
         <CustomDialogContent>
           <MapContainer>
