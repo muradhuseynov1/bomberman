@@ -1,12 +1,58 @@
 import styled from '@emotion/styled';
-import { Button } from '@mui/material';
+import { Button, DialogContent } from '@mui/material';
 import { Dialog } from '@mui/material';
+
+export const PlayerStatusContainer = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 16px;
+  border-radius: 10px;
+  background-color: white;
+`;
+
+export const PlayerStatusContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+export const PlayerName = styled('h2')`
+  margin-bottom: 0.5rem;
+`;
+
+export const PowerUpsList = styled('ul')`
+  list-style-type: none;
+  padding-left: 0;
+`;
+
+export const PowerUpItem = styled('li')`
+  display: inline-block;
+  margin-right: 0.5rem;
+`;
+
+export const ObstaclesCount = styled('p')`
+  margin-top: 1rem;
+`;
+
+export const CustomDialogContent = styled(DialogContent)`
+  && {
+    width: 100%;
+    max-width: none;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+`;
+
 export const StyledGameDialog = styled(Dialog)`
   && {
     display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    margin: auto; /* Center vertically and horizontally */
+    justify-content: center;
+    align-items: center;
+    margin: auto;
     width: 800px;
     height: 600px;
     padding: 20px;
@@ -24,13 +70,13 @@ export const MapContainer = styled.div`
 
 export const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(10, 1fr); /* Adjust the number of columns as needed */
-  gap: 2px; /* Adjust gap between grid cells as needed */
+  grid-template-columns: repeat(10, 1fr);
+  gap: 2px;
 `;
 
 export const GridCell = styled.div`
   width: 100%;
-  height: 40px; /* Adjust height of grid cells as needed */
+  height: 40px;
   background-color: #eee;
   border: 1px solid #ccc;
 `;

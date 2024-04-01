@@ -1,49 +1,56 @@
 // GameScreen.tsx
 import React from 'react';
 import {
-  DialogContent,
-} from '@mui/material';
-import {
   MapContainer,
   StyledButtonContainer,
   StyledGameButton,
   Grid,
   GridCell,
-  StyledGameDialog
+  StyledGameDialog,
+  CustomDialogContent,
+  PlayerStatusContainer,
+  PlayerStatusContent
 } from './GameScreen.styles';
-
 import { StyledBackground } from '../WelcomeScreen/WelcomeScreen.styles';
 import PlayerStatus from './PlayerStatusScreen/PlayerStatusScreen';
 
+export type Power = 'Detonator' | 'RollerSkate' | 'Invincibility' | 'Ghost' | 'Obstacle';
+
 interface GameScreenProps {
-  // Define any props needed for the GameScreen component
+  playerName: string;
+  onQuit: () => void;
+  numBombs: number;
+  powers: Power[];
+  numObstacles: number;
 }
 
-const GameScreen: React.FC<GameScreenProps> = ({}) => {
-  // Define any necessary state or logic for the GameScreen component
-
-  const handleQuit = () => {
-    // Handle quitting the game
-  };
-
+const GameScreen: React.FC<GameScreenProps> = ({
+  playerName,
+  onQuit,
+  numBombs = 4,
+  powers = [],
+  numObstacles = 4,
+}) => {
   return (
     <StyledBackground>
+      <PlayerStatusContainer>
+        <PlayerStatusContent>
+          <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} />
+        </PlayerStatusContent>
+      </PlayerStatusContainer>
       <StyledGameDialog open={true}>
-        <DialogContent>
-          <PlayerStatus playerName="" numBombs={4} powers={[]} numObstacles={4} />
+        <CustomDialogContent>
           <MapContainer>
             <Grid>
               {Array.from({ length: 150 }, (_, index) => (
                 <GridCell key={index} />
               ))}
             </Grid>
-            {/* Render the game map here */}
           </MapContainer>
           <StyledButtonContainer>
-            <StyledGameButton onClick={handleQuit}>Quit</StyledGameButton>
-            {/* Add more game control buttons as needed */}
+            <StyledGameButton onClick={onQuit}>Quit</StyledGameButton>
           </StyledButtonContainer>
-        </DialogContent>
+        </CustomDialogContent>
       </StyledGameDialog>
     </StyledBackground>
   );
