@@ -26,6 +26,9 @@ const GameScreen: React.FC<GameScreenProps> = ({}) => {
     // Handle quitting the game
   };
 
+  const updatePlayerStatus = (player_name: string) => {
+
+  }
   return (
     <StyledBackground>
       <StyledGameDialog open={true}>

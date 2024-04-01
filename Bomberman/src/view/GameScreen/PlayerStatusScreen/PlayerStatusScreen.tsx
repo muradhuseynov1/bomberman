@@ -1,6 +1,5 @@
 // PlayerStatusScreen/PlayerStatusScreen.tsx
-import React from "react";
-
+import React, { useState } from "react";
 export type Power = 'Detonator' | 'RollerSkate' | 'Invincibility' | 'Ghost' | 'Obstacle';
 
 interface PlayerStatusProps {
