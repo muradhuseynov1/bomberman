@@ -108,7 +108,6 @@ export const ConfigScreen = () => {
       return false;
     }
     console.log('All inputs are valid!');
-    navigate('../game-window')
     return true
   };
 
