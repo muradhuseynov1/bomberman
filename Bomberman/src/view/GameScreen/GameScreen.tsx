@@ -2,27 +2,24 @@
 import React from 'react';
 import {
   DialogContent,
-  Typography,
-  Divider
 } from '@mui/material';
 import {
-  StyledGameDialog,
   MapContainer,
-  PlayerStatusPanel,
-  PlayerStatus,
   StyledButtonContainer,
   StyledGameButton,
   Grid,
-  GridCell
+  GridCell,
+  StyledGameDialog
 } from './GameScreen.styles';
 
 import { StyledBackground } from '../WelcomeScreen/WelcomeScreen.styles';
+import PlayerStatus from './PlayerStatusScreen/PlayerStatusScreen';
 
 interface GameScreenProps {
   // Define any props needed for the GameScreen component
 }
 
-export const GameScreen: React.FC<GameScreenProps> = ({}) => {
+const GameScreen: React.FC<GameScreenProps> = ({}) => {
   // Define any necessary state or logic for the GameScreen component
 
   const handleQuit = () => {
@@ -31,21 +28,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({}) => {
 
   return (
     <StyledBackground>
-      <StyledGameDialog>
+      <StyledGameDialog open={true}>
         <DialogContent>
-          <PlayerStatusPanel>
-            {/* Render player status panel here */}
-            <Typography variant="h6" style={{ textAlign: 'center', marginBottom: '10px' }}>
-              Player Status
-            </Typography>
-            <PlayerStatus>
-              Player 1: Alive
-            </PlayerStatus>
-            <PlayerStatus>
-              Player 2: Alive
-            </PlayerStatus>
-            {/* Add more player status components as needed */}
-          </PlayerStatusPanel>
+          <PlayerStatus playerName="" numBombs={4} powers={[]} numObstacles={4} />
           <MapContainer>
             <Grid>
               {Array.from({ length: 150 }, (_, index) => (
@@ -53,9 +38,6 @@ export const GameScreen: React.FC<GameScreenProps> = ({}) => {
               ))}
             </Grid>
             {/* Render the game map here */}
-            <Typography variant="h6" style={{ textAlign: 'center', marginTop: '20px' }}>
-              Game Map
-            </Typography>
           </MapContainer>
           <StyledButtonContainer>
             <StyledGameButton onClick={handleQuit}>Quit</StyledGameButton>
@@ -66,3 +48,5 @@ export const GameScreen: React.FC<GameScreenProps> = ({}) => {
     </StyledBackground>
   );
 };
+
+export default GameScreen;

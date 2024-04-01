@@ -1,7 +1,7 @@
+// PlayerStatusScreen/PlayerStatusScreen.tsx
 import React from "react";
-// Define type for power-ups
-export type Power = 'Detonator' | 'RollerSkate' | 'Invincibility' | 'Ghost' | 'Obstacle';
 
+export type Power = 'Detonator' | 'RollerSkate' | 'Invincibility' | 'Ghost' | 'Obstacle';
 
 interface PlayerStatusProps {
   playerName: string;
@@ -10,8 +10,7 @@ interface PlayerStatusProps {
   numObstacles: number;
 }
 
-// PlayerStatus component
-export const PlayerStatus: React.FC<PlayerStatusProps> = ({ playerName, numBombs, powers, numObstacles }) => {
+const PlayerStatus: React.FC<PlayerStatusProps> = ({ playerName, numBombs, powers, numObstacles }) => {
   
   const getPowerIcon = (power: Power): React.ReactNode => {
       switch (power) {
@@ -45,4 +44,4 @@ export const PlayerStatus: React.FC<PlayerStatusProps> = ({ playerName, numBombs
   );
 };
 
-
+export default PlayerStatus;

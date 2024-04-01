@@ -101,14 +101,15 @@ export const ConfigScreen = () => {
   };
 
 
-  const validateInputs = () => {
+  const validateInputs = (): boolean => {
     const allKeys = Object.values(playerKeyBindings).flat();
     if (new Set(allKeys).size !== allKeys.length) {
       alert('Each control key must be unique.');
-      return;
+      return false;
     }
     console.log('All inputs are valid!');
     navigate('../game-window')
+    return true
   };
 
   const renderKeyConfig = (player: number) => (
