@@ -1,6 +1,12 @@
 import styled from '@emotion/styled';
 import { Button, Dialog, DialogContent } from '@mui/material';
 
+interface CharacterContainerProps {
+  rowStart: number;
+  columnStart: number;
+}
+
+
 export const CustomDialogContent = styled(DialogContent)({
   display: 'flex',
   flexDirection: 'column',
@@ -41,16 +47,29 @@ export const Grid = styled.div({
 
 
 export const GridCell = styled.div({
+  position: 'relative',
   backgroundColor: '#eee',
   border: '1px solid #ccc',
-  boxSizing: 'border-box', // Ensures padding and borders are included in the width/height
-  ':before': { // Use a pseudo-element to maintain the aspect ratio
+  boxSizing: 'border-box',
+  ':before': {
     content: '""',
     display: 'block',
-    paddingTop: '100%', // This creates a square aspect ratio (height equals width)
+    paddingTop: '100%',
   },
 });
+
 
 export const StyledGameButton = styled(Button)({
   marginRight: '10px',
 });
+
+export const CharacterContainer = styled.div<CharacterContainerProps>(({ rowStart, columnStart }) => ({
+  gridRowStart: rowStart,
+  gridColumnStart: columnStart,
+  width: '100%', // Fill the cell
+  height: '100%', // Fill the cell
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+}));
+
