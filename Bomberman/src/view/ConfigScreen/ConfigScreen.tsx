@@ -67,6 +67,12 @@ export const ConfigScreen = () => {
     setPlayerKeyBindings({ ...DEFAULT_KEY_BINDINGS });
   };
 
+  const handlePlay = () => {
+    if (validateInputs()) { 
+      navigate('/game');
+    }
+  };  
+
   const isKeyUnique = (key: string, currentPlayer: number, keyIndex: number) => {
       for (let player in playerKeyBindings) {
         if (parseInt(player) === currentPlayer) {
@@ -102,7 +108,7 @@ export const ConfigScreen = () => {
       return false;
     }
     console.log('All inputs are valid!');
-    return true;
+    return true
   };
 
   const renderKeyConfig = (player: number) => (
@@ -216,7 +222,7 @@ export const ConfigScreen = () => {
               </div>
               <CenteredButtonContainer>
                 <Button variant="contained" size="large" onClick={handleBack}>Back</Button>
-                <Button variant="contained" size="large" onClick={validateInputs} style={{ marginLeft: '10px' }}>Play</Button>
+                <Button variant="contained" size="large" onClick={handlePlay} style={{ marginLeft: '10px' }}>Play</Button>
               </CenteredButtonContainer>
             </StepContent>
           )}
