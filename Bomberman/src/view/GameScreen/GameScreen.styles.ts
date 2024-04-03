@@ -58,7 +58,6 @@ export const GridCell = styled.div({
   },
 });
 
-
 export const StyledGameButton = styled(Button)({
   marginRight: '10px',
 });
