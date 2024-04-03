@@ -10,9 +10,10 @@ interface PlayerStatusProps {
   numBombs: number;
   powers: Power[];
   numObstacles: number;
+  index: number;
 }
 
-const PlayerStatus: React.FC<PlayerStatusProps> = ({ playerName, numBombs, powers, numObstacles }) => {
+const PlayerStatus: React.FC<PlayerStatusProps> = ({ playerName, numBombs, powers, numObstacles, index }) => {
   const getPowerIcon = (power: Power): React.ReactNode => {
     switch (power) {
       case 'Detonator':
@@ -31,7 +32,7 @@ const PlayerStatus: React.FC<PlayerStatusProps> = ({ playerName, numBombs, power
   };
 
   return (
-    <PlayerStatusContainer theme={theme}>
+    <PlayerStatusContainer theme={theme} index={index}>
       <PlayerName variant="h6">{playerName}</PlayerName>
       <Typography variant="body1">Bombs: {numBombs}</Typography>
       <PowerUpsList>

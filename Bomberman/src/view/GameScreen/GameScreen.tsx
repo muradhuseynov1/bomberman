@@ -1,16 +1,14 @@
 import React from 'react';
 import {
   MapContainer,
-  StyledButtonContainer,
-  StyledGameButton,
   Grid,
   GridCell,
   StyledGameDialog,
-  CustomDialogContent,
 } from './GameScreen.styles';
 import { StyledBackground } from '../WelcomeScreen/WelcomeScreen.styles';
 import PlayerStatus from './PlayerStatusScreen/PlayerStatusScreen';
 import { Power } from './PlayerStatusScreen/PlayerStatusScreen';
+import { Paper } from '@mui/material';
 
 interface GameScreenProps {
   playerName: string;
@@ -30,20 +28,20 @@ const GameScreen: React.FC<GameScreenProps> = ({
 }) => {
   return (
     <StyledBackground>
-      <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} />
+      <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={1} />
+      <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={2} />
       <StyledGameDialog open={true}>
-        <CustomDialogContent>
-          <MapContainer>
-            <Grid>
-              {Array.from({ length: 150 }, (_, index) => (
-                <GridCell key={index} />
-              ))}
-            </Grid>
-          </MapContainer>
-          <StyledButtonContainer>
-            <StyledGameButton onClick={onQuit}>Quit</StyledGameButton>
-          </StyledButtonContainer>
-        </CustomDialogContent>
+        {/* <CustomDialogContent> */}
+          <Paper>
+            <MapContainer>
+              <Grid>
+                {Array.from({ length: 150 }, (_, index) => (
+                  <GridCell key={index} />
+                ))}
+              </Grid>
+            </MapContainer>
+          </Paper>
+        {/* </CustomDialogContent> */}
       </StyledGameDialog>
     </StyledBackground>
   );
