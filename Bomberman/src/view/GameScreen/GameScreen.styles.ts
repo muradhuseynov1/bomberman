@@ -21,7 +21,7 @@ export const StyledGameDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
     width: '100%',  // Use 100% for full width but ensure it doesn't exceed the viewport width
     height: 'auto',  // Let the height be automatic to adjust based on content
-    maxWidth: '800px',  // Increased max width for larger screens
+    maxWidth: '1400px',  // Increased max width for larger screens
     maxHeight: '95vh',  // Increased max height to make use of more viewport height
     overflow: 'auto',  // Allow scrolling inside the dialog if content overflows
   },
@@ -36,7 +36,7 @@ export const MapContainer = styled.div({
   overflow: 'hidden',  // Hide the overflow
 });
 
-export const Grid = styled.div({
+export const MyGrid = styled.div({
   display: 'grid',
   gridTemplateColumns: 'repeat(15, 1fr)',
   gridAutoRows: '1fr',

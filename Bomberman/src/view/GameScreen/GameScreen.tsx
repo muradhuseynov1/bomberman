@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   MapContainer,
-  Grid,
+  MyGrid,
   GridCell,
   StyledGameDialog,
   CharacterContainer, // You'll need to define this for positioning characters
@@ -10,7 +11,9 @@ import { StyledBackground } from '../WelcomeScreen/WelcomeScreen.styles';
 import PlayerStatus from './PlayerStatusScreen/PlayerStatusScreen';
 import { Power } from './PlayerStatusScreen/PlayerStatusScreen';
 import { Paper } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { Player } from '../../model/player';
+
 
 import bombermanPlayer from '../../assets/player-image.png';
 
@@ -32,8 +35,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
   console.log(`Initial States - playerName: ${playerName}, numBombs: ${numBombs}, numObstacles: ${numObstacles}`); // Add this line
   // Initialize the player with a starting position
   const [player, setPlayer] = useState(new Player('player1', playerName, 1, 1));
-  const players = [player, player, player] // this is a temporary list of players. The contents of players should be replaced with actaul players from the config panel.
-  const num_of_player_is_three = players.length === 3
+  const { numOfPlayers } = useParams();
   // Handle player movement (this is just a placeholder - you'll need to implement real movement logic)
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -110,22 +112,32 @@ const renderCellsAndPlayer = () => {
 
 
 
-  return (
-    <StyledBackground>
-      <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={1} />
-      <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={2} />
-      <StyledGameDialog open={true}>
-        <Paper>
-          <MapContainer>
-            <Grid>
-             {renderCellsAndPlayer()}
-            </Grid>
-          </MapContainer>
-        </Paper>
-      </StyledGameDialog>
-      {num_of_player_is_three && <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={3} />}
-    </StyledBackground>
-  );
+return (
+  <StyledBackground>
+    <StyledGameDialog open={true}>
+      <Grid container spacing={2}>
+        <Grid item xs={2}>
+          <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={1} />
+          <br/>
+          <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={1} />
+        </Grid>
+        <Grid item xs={8}>
+          <Paper>
+            <MapContainer>
+              <MyGrid>
+                {renderCellsAndPlayer()}
+              </MyGrid>
+            </MapContainer>
+          </Paper>
+        </Grid>
+        <Grid item xs={2}>
+          {numOfPlayers == '3' && <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={3} />}
+        </Grid>
+      </Grid>
+    </StyledGameDialog>
+  </StyledBackground>
+);
+
 };
 
 export default GameScreen;

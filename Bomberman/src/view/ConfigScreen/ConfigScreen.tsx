@@ -69,7 +69,7 @@ export const ConfigScreen = () => {
 
   const handlePlay = () => {
     if (validateInputs()) { 
-      navigate('/game');
+      navigate(`/game/${numOfPlayers}`);
     }
   };  
 
