@@ -31,7 +31,8 @@ const GameScreen: React.FC<GameScreenProps> = ({
 }) => {
   // Initialize the player with a starting position
   const [player, setPlayer] = useState(new Player('player1', playerName, 1, 1));
-  const num_of_player_is_three = true
+  const players = [player, player, player] // this is a temporary list of players. The contents of players should be replaced with actaul players from the config panel.
+  const num_of_player_is_three = players.length === 3
   // Handle player movement (this is just a placeholder - you'll need to implement real movement logic)
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

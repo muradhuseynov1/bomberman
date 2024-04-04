@@ -10,11 +10,9 @@ export const PlayerStatusContainer = styled(Paper)(({ theme, index }: { theme: T
   backgroundColor: theme.palette.background.paper,
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[3],
-  marginLeft: index === 3 ? '1430px' : '350px',
+  marginLeft: index === 3 ? '1430px': '350px',
   marginTop: index === 3 ? '-200px' : '200px',
 }));
-
-
 
 export const PlayerName = styled(Typography)({
   fontWeight: 'bold',
