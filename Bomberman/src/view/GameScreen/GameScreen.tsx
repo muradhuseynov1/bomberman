@@ -18,6 +18,7 @@ import bombermanPlayer from '../../assets/player-image.png';
 import wall from '../../assets/wall.jpeg';
 import brick from '../../assets/brick.jpeg';
 import monster from '../../assets/monster.png';
+import bomb from '../../assets/bomb.png';
 
 type GameScreenProps = {
   playerName: string;
@@ -39,11 +40,14 @@ export const GameScreen = ({
   const [player, setPlayer] = useState(new Player('player1', playerName, 2, 2));
   const [playerTwo, setPlayerTwo] = useState(new Player('player2', 'Player 2', 14, 9));
   const [bricks] = useState(() => generateBricks(10, 15));
+  const [bombs, setBombs] = useState(new Map());
   const [monsters, setMonsters] = useState([
     new Player('monster1', 'Monster 1', 5, 5),
     new Player('monster2', 'Monster 2', 10, 7),
   ]);
   const [keyBindings, setKeyBindings] = useState<KeyBindings>({});
+  const [playerOneBombActive, setPlayerOneBombActive] = useState(false);
+  const [playerTwoBombActive, setPlayerTwoBombActive] = useState(false);
 
   useEffect(() => {
     const storedBindings = localStorage.getItem('playerKeyBindings');
@@ -54,12 +58,42 @@ export const GameScreen = ({
     }
   }, []);
 
+  const dropBomb = useCallback((x: number, y: number, playerNumber: number) => {
+    const bombId = `${x}-${y}`;
+    if (!bombs.has(bombId) && ((playerNumber === 1 && !playerOneBombActive) || (playerNumber === 2 && !playerTwoBombActive))) {
+      const newBombs = new Map(bombs);
+      newBombs.set(bombId, 3);
+      setBombs(newBombs);
+
+      if (playerNumber === 1) {
+        setPlayerOneBombActive(true);
+      } else if (playerNumber === 2) {
+        setPlayerTwoBombActive(true);
+      }
+
+      const interval = setInterval(() => {
+        newBombs.set(bombId, newBombs.get(bombId) - 1);
+        if (newBombs.get(bombId) <= 0) {
+          newBombs.delete(bombId);
+          clearInterval(interval);
+
+          if (playerNumber === 1) {
+            setPlayerOneBombActive(false);
+          } else if (playerNumber === 2) {
+            setPlayerTwoBombActive(false);
+          }
+        }
+        setBombs(new Map(newBombs));
+      }, 1000);
+    }
+  }, [bombs, playerOneBombActive, playerTwoBombActive]);
+
   // TODO: monster should not be a Player object, but a Monster object.
   // TODO: Later change the Player object to a Monster object.
   const moveMonster = useCallback((monster: Player) => {
     let newX = monster.getX();
     let newY = monster.getY();
-    let possibleDirections = [1, 2, 3, 4]; // 1: up, 2: right, 3: down, 4: left
+    let possibleDirections = [1, 2, 3, 4];
   
     possibleDirections = possibleDirections.filter(direction => {
       switch (direction) {
@@ -93,7 +127,6 @@ export const GameScreen = ({
   
     return new Player(monster.getId(), monster.getName(), newX, newY);
   }, [bricks]);
-  
 
   const checkPlayerCollision = useCallback((currentPlayer: Player, currentPlayerTwo: Player, currentMonsters: Player[]) => {
     currentMonsters.forEach(monster => {
@@ -131,33 +164,40 @@ export const GameScreen = ({
       if (playerOneBindings.includes(event.key)) {
         switch (event.key) {
           case playerOneBindings[0]: // Up
-            newY1 = (newY1 > 2 && !bricks.has(`${newY1 - 1}-${newX1}`) && !(newY1 - 1 === newY2 && newX1 === newX2)) ? newY1 - 1 : newY1;
+            newY1 = (newY1 > 2 && !bricks.has(`${newY1 - 1}-${newX1}`) && !(newY1 - 1 === newY2 && newX1 === newX2)) && !bombs.has(`${newY1 - 1}-${newX1}`) ? newY1 - 1 : newY1;
             break;
           case playerOneBindings[1]: // Left
-            newX1 = (newX1 > 2 && !bricks.has(`${newY1}-${newX1 - 1}`) && !(newY1 === newY2 && newX1 - 1 === newX2)) ? newX1 - 1 : newX1;
+            newX1 = (newX1 > 2 && !bricks.has(`${newY1}-${newX1 - 1}`) && !(newY1 === newY2 && newX1 - 1 === newX2)) && !bombs.has(`${newY1}-${newX1 - 1}`) ? newX1 - 1 : newX1;
             break;
-          case playerOneBindings[2]: // Down
-            newY1 = (newY1 < 9 && !bricks.has(`${newY1 + 1}-${newX1}`) && !(newY1 + 1 === newY2 && newX1 === newX2)) ? newY1 + 1 : newY1;
+          case playerOneBindings[2]: // Downw
+            newY1 = (newY1 < 9 && !bricks.has(`${newY1 + 1}-${newX1}`) && !(newY1 + 1 === newY2 && newX1 === newX2)) && !bombs.has(`${newY1 + 1}-${newX1}`) ? newY1 + 1 : newY1;
             break;
           case playerOneBindings[3]: // Right
-            newX1 = (newX1 < 14 && !bricks.has(`${newY1}-${newX1 + 1}`) && !(newY1 === newY2 && newX1 + 1 === newX2)) ? newX1 + 1 : newX1;
+            newX1 = (newX1 < 14 && !bricks.has(`${newY1}-${newX1 + 1}`) && !(newY1 === newY2 && newX1 + 1 === newX2)) && !bombs.has(`${newY1}-${newX1 + 1}`) ? newX1 + 1 : newX1;
+            break;
+          case playerOneBindings[4]: // Drop bomb
+            dropBomb(newY1, newX1, 1);
             break;
         }
       }
 
       if (playerTwoBindings.includes(event.key)) {
         switch (event.key) {
-          case playerTwoBindings[0]:
-            newY2 = (newY2 > 2 && !bricks.has(`${newY2 - 1}-${newX2}`) && !(newY2 - 1 === newY1 && newX2 === newX1)) ? newY2 - 1 : newY2;
+          case playerTwoBindings[0]: // Up
+            newY2 = (newY2 > 2 && !bricks.has(`${newY2 - 1}-${newX2}`) && !(newY2 - 1 === newY1 && newX2 === newX1)) && !bombs.has(`${newY2 - 1}-${newX2}`) ? newY2 - 1 : newY2;
             break;
-          case playerTwoBindings[1]:
-            newX2 = (newX2 > 2 && !bricks.has(`${newY2}-${newX2 - 1}`) && !(newY2 === newY1 && newX2 - 1 === newX1)) ? newX2 - 1 : newX2;
+          case playerTwoBindings[1]: // Left
+            newX2 = (newX2 > 2 && !bricks.has(`${newY2}-${newX2 - 1}`) && !(newY2 === newY1 && newX2 - 1 === newX1)) && !bombs.has(`${newY2}-${newX2 - 1}`) ? newX2 - 1 : newX2;
             break;
-          case playerTwoBindings[2]:
-            newY2 = (newY2 < 9 && !bricks.has(`${newY2 + 1}-${newX2}`) && !(newY2 + 1 === newY1 && newX2 === newX1)) ? newY2 + 1 : newY2;
+          case playerTwoBindings[2]: // Down
+            newY2 = (newY2 < 9 && !bricks.has(`${newY2 + 1}-${newX2}`) && !(newY2 + 1 === newY1 && newX2 === newX1)) && !bombs.has(`${newY2 + 1}-${newX2}`) ? newY2 + 1 : newY2;
             break;
-          case playerTwoBindings[3]:
-            newX2 = (newX2 < 14 && !bricks.has(`${newY2}-${newX2 + 1}`) && !(newY2 === newY1 && newX2 + 1 === newX1)) ? newX2 + 1 : newX2;
+          case playerTwoBindings[3]: // Right
+            newX2 = (newX2 < 14 && !bricks.has(`${newY2}-${newX2 + 1}`) && !(newY2 === newY1 && newX2 + 1 === newX1)) && !bombs.has(`${newY2}-${newX2 + 1}`) ? newX2 + 1 : newX2;
+            break;
+          case playerTwoBindings[4]: // Drop bomb
+            dropBomb(newY2, newX2, 2);
+            console.log('newX2', newX2, 'newY2', newY2);
             break;
         }
       }
@@ -170,7 +210,7 @@ export const GameScreen = ({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [player, playerTwo, keyBindings, bricks]);
+  }, [player, playerTwo, keyBindings, bricks, dropBomb, bombs]);
 
   const renderCellsAndPlayer = () => {
     return Array.from({ length: 150 }, (_, index) => {
@@ -181,6 +221,7 @@ export const GameScreen = ({
       const isMonsterCell = monsters.some(monster => monster.getX() === column && monster.getY() === row);
       const isWallCell = row === 1 || row === 10 || column === 1 || column === 15;
       const isBrickCell = bricks.has(`${row}-${column}`);
+      const isBombCell = bombs.has(`${row}-${column}`);
   
       return (
         <GridCell key={index} isWall={isWallCell}>
@@ -204,7 +245,10 @@ export const GameScreen = ({
           <CharacterContainer>
             <img src={monster} alt="Monster" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
           </CharacterContainer>
-        )}
+           )}
+          {isBombCell && (
+              <img src={bomb} alt="Bomb" style={{ width: '100%', height: '100%' }} />
+            )}
         </GridCell>
       );
     });

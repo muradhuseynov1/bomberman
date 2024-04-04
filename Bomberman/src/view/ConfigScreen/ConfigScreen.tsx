@@ -33,7 +33,7 @@ interface KeyBindings {
 
 const DEFAULT_KEY_BINDINGS: KeyBindings = {
   1: ['w', 'a', 's', 'd', '2', '3'],
-  2: ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight', '.', '/'],
+  2: ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'o', 'p'],
   3: ['u', 'h', 'j', 'k', '7', '8']
 };
 
@@ -60,7 +60,6 @@ export const ConfigScreen = () => {
     setNumOfPlayers('2');
     navigate('/');
   };
-  
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -72,7 +71,7 @@ export const ConfigScreen = () => {
       localStorage.setItem('playerKeyBindings', JSON.stringify(playerKeyBindings));
       navigate('/game');
     }
-  };  
+  };
 
   const isKeyUnique = (key: string, currentPlayer: number, keyIndex: number) => {
       for (let player in playerKeyBindings) {
@@ -89,7 +88,6 @@ export const ConfigScreen = () => {
     return true;
   };
 
-
   const handleKeyDown = (player: number, keyIndex: number, event: React.KeyboardEvent<HTMLInputElement>): void => {
     event.preventDefault();
     const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
@@ -100,7 +98,6 @@ export const ConfigScreen = () => {
       [player]: prevBindings[player].map((k, idx) => idx === keyIndex ? key : k),
     }));
   };
-
 
   const validateInputs = (): boolean => {
     const allKeys = Object.values(playerKeyBindings).flat();
@@ -141,12 +138,12 @@ export const ConfigScreen = () => {
       </KeyGroup>
       <ExtraKeys>
         <KeyConfigInput
-          value={arrowKeySymbols[playerKeyBindings[player][4]] || playerKeyBindings[player][4]}
+          value={arrowKeySymbols[playerKeyBindings[player][4]] || playerKeyBindings[player][4].toUpperCase()}
           onKeyDown={(e) => handleKeyDown(player, 4, e)}
           readOnly
         />
         <KeyConfigInput
-          value={arrowKeySymbols[playerKeyBindings[player][5]] || playerKeyBindings[player][5]}
+          value={arrowKeySymbols[playerKeyBindings[player][5]] || playerKeyBindings[player][5].toUpperCase()}
           onKeyDown={(e) => handleKeyDown(player, 5, e)}
           readOnly
         />
