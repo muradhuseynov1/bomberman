@@ -1,11 +1,11 @@
 import React from "react";
-import { PlayerStatusContainer, PlayerName, PowerUpsList, PowerUpItem, ObstaclesCount } from "./PlayerStatusScreen.style";
+import { PlayerStatusContainer, PlayerName, PowerUpsList, PowerUpItem, ObstaclesCount } from "./PlayerStatusScreen.styles";
 import { Typography } from "@mui/material";
 import theme from "../../../theme/PlayerStatusTheme";
 
 export type Power = 'Detonator' | 'RollerSkate' | 'Invincibility' | 'Ghost' | 'Obstacle';
 
-interface PlayerStatusProps {
+type PlayerStatusProps = {
   playerName: string;
   numBombs: number;
   powers: Power[];
@@ -13,7 +13,7 @@ interface PlayerStatusProps {
   index: number;
 }
 
-const PlayerStatus: React.FC<PlayerStatusProps> = ({ playerName, numBombs, powers, numObstacles, index }) => {
+export const PlayerStatus = ({ playerName, numBombs, powers, numObstacles, index }: PlayerStatusProps) => {
   const getPowerIcon = (power: Power): React.ReactNode => {
     switch (power) {
       case 'Detonator':
@@ -44,5 +44,3 @@ const PlayerStatus: React.FC<PlayerStatusProps> = ({ playerName, numBombs, power
     </PlayerStatusContainer>
   );
 };
-
-export default PlayerStatus;

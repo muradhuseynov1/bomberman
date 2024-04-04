@@ -1,4 +1,4 @@
-import { Character } from "./charcter";
+import { Character } from "./character";
 
 class Player extends Character {
   private numBombs: number;
