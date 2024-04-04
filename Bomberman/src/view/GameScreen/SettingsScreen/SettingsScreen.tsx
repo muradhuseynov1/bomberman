@@ -7,9 +7,10 @@ interface SettingsScreenProps {
   open: boolean;
   onClose: () => void;
   onRestart: () => void; 
+  onModifyControls?: () => void;
 }
 
-const SettingsScreen: React.FC<SettingsScreenProps> = ({ open, onClose, onRestart }) => {
+const SettingsScreen: React.FC<SettingsScreenProps> = ({ open, onClose, onRestart, onModifyControls }) => {
   const navigate = useNavigate();
   const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -36,7 +37,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ open, onClose, onRestar
           <Button variant="contained" color="secondary" onClick={onRestart}>
             Restart
           </Button>
-          <Button variant="contained" onClick={() => console.log('Modify Controls clicked')}>
+          <Button variant="contained" onClick={onModifyControls}>
             Modify Controls
           </Button>
         </ButtonContainer>

@@ -10,7 +10,7 @@ import {
 import { StyledBackground } from '../WelcomeScreen/WelcomeScreen.styles';
 import { PlayerStatus } from './PlayerStatusScreen/PlayerStatusScreen';
 import { Power } from './PlayerStatusScreen/PlayerStatusScreen';
-import { Paper, IconButton } from '@mui/material';
+import { Paper, IconButton, DialogTitle, DialogContent, Button, DialogActions } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { Player } from '../../model/player';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -24,6 +24,7 @@ import brick from '../../assets/brick.jpeg';
 import monster from '../../assets/monster.png';
 import bomb from '../../assets/bomb.png';
 import { useParams } from 'react-router-dom';
+import { ControlsLabel, ExtraKeys, KeyConfigInput, KeyGroup, KeyRow, PlayerControlsRow, StyledDialog } from '../ConfigScreen/ConfigScreen.styles';
 
 type GameScreenProps = {
   playerName: string;
@@ -35,6 +36,13 @@ type GameScreenProps = {
 interface KeyBindings {
   [playerNumber: string]: string[];
 }
+
+const arrowKeySymbols: { [key: string]: string } = {
+  ArrowUp: '↑',
+  ArrowDown: '↓',
+  ArrowLeft: '←',
+  ArrowRight: '→',
+};
 
 export const GameScreen = ({
   playerName,
@@ -260,10 +268,97 @@ export const GameScreen = ({
     console.log("Game restarted");
   };  
   
-  const handleModifyControls = () => {
-    console.log("Open modify controls screen"); 
+  const handleOpenModifyControls = () => {
+    setIsModifyingControls(true);
+    setIsPaused(true); 
   };
 
+  const renderModifyControlsUI = () => {
+    if (!isModifyingControls) return null;
+  
+    return (
+      <StyledDialog
+        open={isModifyingControls}
+        onClose={() => setIsModifyingControls(false)}
+        aria-labelledby="modify-controls-title"
+        style={{ zIndex: 2100 }} // Ensure this dialog is on top of everything else
+      >
+        <DialogTitle id="modify-controls-title">Modify Controls</DialogTitle>
+        <DialogContent dividers>
+          {Object.keys(keyBindings).map((player) => (
+            <PlayerControlsRow key={`player-${player}-controls`} numOfPlayers={String(numOfPlayers)}>
+              <ControlsLabel>{`Player ${player} Controls:`}</ControlsLabel>
+              <KeyGroup>
+                {/* Custom layout for "W" above "S" and others horizontally */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <KeyConfigInput
+                    value={arrowKeySymbols[keyBindings[player][0]] || keyBindings[player][0].toUpperCase()}
+                    readOnly
+                  />
+                  <div style={{ display: 'flex' }}>
+                    <KeyConfigInput
+                      value={arrowKeySymbols[keyBindings[player][1]] || keyBindings[player][1].toUpperCase()}
+                      readOnly
+                    />
+                    <KeyConfigInput
+                      value={arrowKeySymbols[keyBindings[player][2]] || keyBindings[player][2].toUpperCase()}
+                      readOnly
+                    />
+                    <KeyConfigInput
+                      value={arrowKeySymbols[keyBindings[player][3]] || keyBindings[player][3].toUpperCase()}
+                      readOnly
+                    />
+                  </div>
+                </div>
+                <ExtraKeys>
+                  <KeyConfigInput
+                    value={arrowKeySymbols[keyBindings[player][4]] || keyBindings[player][4].toUpperCase()}
+                    readOnly
+                  />
+                  <KeyConfigInput
+                    value={arrowKeySymbols[keyBindings[player][5]] || keyBindings[player][5].toUpperCase()}
+                    readOnly
+                  />
+                </ExtraKeys>
+              </KeyGroup>
+            </PlayerControlsRow>
+          ))}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={saveAndCloseModifyControls} color="primary">
+            Save
+          </Button>
+        </DialogActions>
+      </StyledDialog>
+    );
+  };
+
+  const handleModifyKeyDown = (
+    player: string, 
+    keyIndex: number, 
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    event.preventDefault();
+    const newKey = event.key;
+  
+    if (!isKeyValid(newKey)) {
+      return; 
+    }
+  
+    setKeyBindings(prevBindings => ({
+      ...prevBindings,
+      [player]: prevBindings[player].map((k, idx) => idx === keyIndex ? newKey : k),
+    }));
+  };
+  
+  const isKeyValid = (key: string): boolean => {
+    return key.length === 1 || key.startsWith('Arrow');
+  };  
+
+  const saveAndCloseModifyControls = () => {
+    setIsModifyingControls(false);
+    setIsPaused(false); 
+  };  
 
   const renderCellsAndPlayer = () => {
     return Array.from({ length: 150 }, (_, index) => {
@@ -342,7 +437,9 @@ export const GameScreen = ({
         open={isSettingsOpen}
         onClose={handleCloseSettings}
         onRestart={handleRestartGame}
+        onModifyControls={handleOpenModifyControls}
       />
+      {renderModifyControlsUI()}
     </StyledBackground>
   );
 };
