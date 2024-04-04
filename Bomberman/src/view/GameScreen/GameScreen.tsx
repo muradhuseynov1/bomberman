@@ -31,7 +31,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
 }) => {
   // Initialize the player with a starting position
   const [player, setPlayer] = useState(new Player('player1', playerName, 1, 1));
-
+  const num_of_player_is_three = true
   // Handle player movement (this is just a placeholder - you'll need to implement real movement logic)
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -93,6 +93,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
           </MapContainer>
         </Paper>
       </StyledGameDialog>
+      {num_of_player_is_three && <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={3} />}
     </StyledBackground>
   );
 };
