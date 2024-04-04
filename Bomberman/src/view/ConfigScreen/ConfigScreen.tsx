@@ -69,7 +69,7 @@ export const ConfigScreen = () => {
   const handlePlay = () => {
     if (validateInputs()) { 
       localStorage.setItem('playerKeyBindings', JSON.stringify(playerKeyBindings));
-      navigate('/game');
+      navigate(`/game/${numOfPlayers}`);
     }
   };
 

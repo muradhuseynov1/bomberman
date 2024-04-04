@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   MapContainer,
-  Grid,
+  MyGrid,
   GridCell,
   StyledGameDialog,
   CharacterContainer,
@@ -10,6 +10,7 @@ import { StyledBackground } from '../WelcomeScreen/WelcomeScreen.styles';
 import { PlayerStatus } from './PlayerStatusScreen/PlayerStatusScreen';
 import { Power } from './PlayerStatusScreen/PlayerStatusScreen';
 import { Paper } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { Player } from '../../model/player';
 
 import { generateBricks } from '../../helpers/generateBricks';
@@ -19,6 +20,7 @@ import wall from '../../assets/wall.jpeg';
 import brick from '../../assets/brick.jpeg';
 import monster from '../../assets/monster.png';
 import bomb from '../../assets/bomb.png';
+import { useParams } from 'react-router-dom';
 
 type GameScreenProps = {
   playerName: string;
@@ -49,12 +51,12 @@ export const GameScreen = ({
   const [playerOneBombActive, setPlayerOneBombActive] = useState(false);
   const [playerTwoBombActive, setPlayerTwoBombActive] = useState(false);
 
+  const { numOfPlayers } = useParams();
   useEffect(() => {
     const storedBindings = localStorage.getItem('playerKeyBindings');
     if (storedBindings) {
       const parsedBindings = JSON.parse(storedBindings);
       setKeyBindings(parsedBindings);
-      console.log('Key Bindings Loaded:', parsedBindings);
     }
   }, []);
 
@@ -256,16 +258,31 @@ export const GameScreen = ({
 
   return (
     <StyledBackground>
-      <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={1} />
-      <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={2} />
       <StyledGameDialog open={true}>
-        <Paper>
-          <MapContainer>
-            <Grid>
-             {renderCellsAndPlayer()}
-            </Grid>
-          </MapContainer>
-        </Paper>
+      <Grid container spacing={2}>
+        <Grid item xs={2} sx={{mt: 5}}>
+          <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={1} />
+          {numOfPlayers === '3' && (
+            <>
+              <br/>
+              <PlayerStatus playerName={'Player Two'} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={2} />
+            </>
+          )}
+        </Grid>
+        <Grid item xs={8}>
+          <Paper>
+            <MapContainer>
+              <MyGrid>
+                {renderCellsAndPlayer()}
+              </MyGrid>
+            </MapContainer>
+          </Paper>
+        </Grid>
+        <Grid item xs={2} sx={{mt: numOfPlayers === '3' ? 15 : 5}}>
+          {numOfPlayers === '2' && <PlayerStatus playerName={'Player Two'} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={2} />}
+          {numOfPlayers === '3' && <PlayerStatus playerName={'Player Three'} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={3} />}
+        </Grid>
+      </Grid>
       </StyledGameDialog>
     </StyledBackground>
   );

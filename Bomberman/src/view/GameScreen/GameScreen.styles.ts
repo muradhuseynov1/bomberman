@@ -13,15 +13,18 @@ export const CustomDialogContent = styled(DialogContent)({
   width: '100%',
   maxWidth: 'none',
   height: 'auto',
+  backgroundColor: '#d3d3d3'
 });
 
 export const StyledGameDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
     width: '100%',
-    height: 'auto',
-    maxWidth: '800px',
-    maxHeight: '95vh',
+    height: '80%',
+    maxWidth: '1000px',
+    maxHeight: '130vh',
     overflow: 'auto',
+    backgroundColor: '#d3d3d3',
+    justifyContent: 'center',
   },
 }));
 
@@ -34,7 +37,7 @@ export const MapContainer = styled.div({
   overflow: 'hidden'
 });
 
-export const Grid = styled.div({
+export const MyGrid = styled.div({
   display: 'grid',
   gridTemplateColumns: 'repeat(15, 1fr)',
   gridAutoRows: '1fr',
@@ -46,7 +49,6 @@ export const Grid = styled.div({
 export const GridCell = styled.div<GridCellProps>(({ isWall }) => ({
   position: 'relative',
   backgroundColor: isWall ? 'transparent' : '#eee',
-  border: '1px solid #ccc',
   aspectRatio: '1',
   overflow: 'hidden',
 }));

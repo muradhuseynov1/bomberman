@@ -1,5 +1,5 @@
 import React from "react";
-import { PlayerStatusContainer, PlayerName, PowerUpsList, PowerUpItem, ObstaclesCount } from "./PlayerStatusScreen.style";
+import { PlayerStatusContainer, PlayerName, PowerUpsList, PowerUpItem, ObstaclesCount } from "./PlayerStatusScreen.styles";
 import { Typography } from "@mui/material";
 import theme from "../../../theme/PlayerStatusTheme";
 

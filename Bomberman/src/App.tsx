@@ -15,7 +15,7 @@ export function App() {
         <Route path="/" element={<WelcomeScreen onStart={() => console.log('Game started!')} />} />
         <Route path="/config" element={<ConfigScreen />} />
         <Route path="/instructions" element={<InstructionsScreen />} />
-        <Route path="/game" element={
+        <Route path="/game/:numOfPlayers" element={
           <GameScreen
             playerName="Player One"
             numBombs={4}
