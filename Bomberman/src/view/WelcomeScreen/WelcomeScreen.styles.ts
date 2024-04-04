@@ -11,6 +11,7 @@ export const StyledBackground = styled(Box)({
   flexDirection: 'column',
   justifyContent: 'space-between',
   alignItems: 'center',
+  position:'relative',
 });
 
 export const InstructionsImage = styled('img')({
