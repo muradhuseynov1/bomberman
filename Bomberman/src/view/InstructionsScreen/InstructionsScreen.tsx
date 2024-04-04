@@ -18,7 +18,7 @@ export const InstructionsScreen = () => {
           Welcome to Bomberman!
         </StyledDialogTitle>
         <StyledDialogContent dividers> 
-          <Typography variant="body1">Welcome to <strong>Bomberman</strong>! Dive into an explosive adventure with our Custom Bomberman game, where strategy, speed, and sharp reflexes lead to victory. Play against your friends or the computer in this dynamic, tile-based arena filled with dangers and delights. Here's how to play:</Typography> <br /> 
+          <Typography variant="body1">Welcome to <strong>Bomberman</strong>! Dive into an explosive adventure with our custom Bomberman game, where strategy, speed, and sharp reflexes lead to victory. Play against your friend(s) in this dynamic, tile-based arena filled with dangers and delights. Here's how to play:</Typography> <br /> 
           <Typography variant="h4">Objective</Typography> <br /> 
           <Typography variant="body1">The aim is simple: be the last Bomberman standing. Navigate the 2D field, plant bombs to eliminate obstacles and opponents, and dodge monsters to survive.</Typography> <br /> 
           <Typography variant="h4">Game Setup</Typography> <br /> 

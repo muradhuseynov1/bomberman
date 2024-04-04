@@ -29,6 +29,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
   powers = [],
   numObstacles = 4,
 }) => {
+  console.log(`Initial States - playerName: ${playerName}, numBombs: ${numBombs}, numObstacles: ${numObstacles}`); // Add this line
   // Initialize the player with a starting position
   const [player, setPlayer] = useState(new Player('player1', playerName, 1, 1));
   const players = [player, player, player] // this is a temporary list of players. The contents of players should be replaced with actaul players from the config panel.
@@ -57,6 +58,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
       }
 
       setPlayer(new Player(player.getId(), player.getName(), newX, newY));
+      console.log(`New Player Position: ${newX}, ${newY}`);
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -66,16 +68,46 @@ const GameScreen: React.FC<GameScreenProps> = ({
   }, [player]);
 
   // Function to render the player on the grid
-  const renderPlayer = () => {
+
+
+  // Example conceptual change
+const renderCells = () => {
+  return Array.from({ length: 150 }, (_, index) => {
+    const row = Math.floor(index / 15) + 1; // Calculate row based on index
+    const column = (index % 15) + 1; // Calculate column based on index
+
     return (
-      <CharacterContainer
-        rowStart={player.getY()}
-        columnStart={player.getX()}
-      >
-        <img src={bombermanPlayer} alt="Player" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
-      </CharacterContainer>
+      <GridCell key={index}>
+        {player.getX() === column && player.getY() === row && (
+          <CharacterContainer>
+            <img src={bombermanPlayer} alt="Player" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+          </CharacterContainer>
+        )}
+      </GridCell>
     );
-  };
+  });
+};
+
+// Instead of rendering cells and the player separately, integrate into one unified rendering logic
+const renderCellsAndPlayer = () => {
+  return Array.from({ length: 150 }, (_, index) => {
+    const row = Math.floor(index / 15) + 1; // Calculate row based on index
+    const column = (index % 15) + 1; // Calculate column based on index
+
+    const isPlayerCell = player.getX() === column && player.getY() === row;
+
+    return (
+      <GridCell key={index}>
+        {isPlayerCell && (
+          <CharacterContainer>
+            <img src={bombermanPlayer} alt="Player" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+          </CharacterContainer>
+        )}
+      </GridCell>
+    );
+  });
+};
+
 
 
   return (
@@ -86,10 +118,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
         <Paper>
           <MapContainer>
             <Grid>
-              {Array.from({ length: 150 }, (_, index) => (
-                <GridCell key={index} />
-              ))}
-              {renderPlayer()}
+             {renderCellsAndPlayer()}
             </Grid>
           </MapContainer>
         </Paper>

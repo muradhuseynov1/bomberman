@@ -38,37 +38,33 @@ export const MapContainer = styled.div({
 
 export const Grid = styled.div({
   display: 'grid',
-  gridTemplateColumns: 'repeat(15, 1fr)',  // 15 columns
-  gridAutoRows: 'auto',  // Let row height be automatic
+  gridTemplateColumns: 'repeat(15, 1fr)',
+  gridAutoRows: '1fr',
   width: '100%',
-  minHeight: '300px',  // Minimum height to ensure grid visibility
-  overflow: 'auto',  // Allow scrolling within the grid if necessary
+  minHeight: '300px',
+  overflow: 'hidden',
 });
 
 
 export const GridCell = styled.div({
-  position: 'relative',
+  position: 'relative', // Allows it to be a reference point for absolute positioning
   backgroundColor: '#eee',
   border: '1px solid #ccc',
-  boxSizing: 'border-box',
-  ':before': {
-    content: '""',
-    display: 'block',
-    paddingTop: '100%',
-  },
+  aspectRatio: '1', // Ensure square cells
 });
 
 export const StyledGameButton = styled(Button)({
   marginRight: '10px',
 });
 
-export const CharacterContainer = styled.div<CharacterContainerProps>(({ rowStart, columnStart }) => ({
-  gridRowStart: rowStart,
-  gridColumnStart: columnStart,
+export const CharacterContainer = styled.div({
+  position: 'absolute', // Positioned absolutely within its parent GridCell
+  top: 0,
+  left: 0,
   width: '100%', // Fill the cell
   height: '100%', // Fill the cell
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-}));
+});
 
