@@ -5,13 +5,16 @@ import {
   GridCell,
   StyledGameDialog,
   CharacterContainer,
+  StyledSettingsButton,
 } from './GameScreen.styles';
 import { StyledBackground } from '../WelcomeScreen/WelcomeScreen.styles';
 import { PlayerStatus } from './PlayerStatusScreen/PlayerStatusScreen';
 import { Power } from './PlayerStatusScreen/PlayerStatusScreen';
-import { Paper } from '@mui/material';
+import { Paper, IconButton } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { Player } from '../../model/player';
+import SettingsIcon from '@mui/icons-material/Settings';
+import SettingsScreen from './SettingsScreen/SettingsScreen';
 
 import { generateBricks } from '../../helpers/generateBricks';
 
@@ -50,6 +53,10 @@ export const GameScreen = ({
   const [keyBindings, setKeyBindings] = useState<KeyBindings>({});
   const [playerOneBombActive, setPlayerOneBombActive] = useState(false);
   const [playerTwoBombActive, setPlayerTwoBombActive] = useState(false);
+
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isModifyingControls, setIsModifyingControls] = useState(false);
 
   const { numOfPlayers } = useParams();
   useEffect(() => {
@@ -142,18 +149,22 @@ export const GameScreen = ({
   }, []);
 
   useEffect(() => {
+    if (isPaused) return;
+
     const interval = setInterval(() => {
       setMonsters(currentMonsters => currentMonsters.map(monster => moveMonster(monster) || monster));
     }, 1000);
   
     return () => clearInterval(interval);
-  }, [moveMonster]);
+  }, [moveMonster, isPaused]);
 
   useEffect(() => {
     checkPlayerCollision(player, playerTwo, monsters);
   }, [player, playerTwo, monsters, checkPlayerCollision]);
 
   useEffect(() => {
+    if (isPaused) return;
+
     const handleKeyDown = (event: KeyboardEvent) => {
       let newX1 = player.getX();
       let newY1 = player.getY();
@@ -212,7 +223,47 @@ export const GameScreen = ({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [player, playerTwo, keyBindings, bricks, dropBomb, bombs]);
+  }, [player, playerTwo, keyBindings, bricks, dropBomb, bombs, isPaused]);
+
+  const handleOpenSettings = () => {
+    setIsSettingsOpen(true);
+    setIsPaused(true);
+  };
+  
+  const handleCloseSettings = () => {
+    setIsSettingsOpen(false);
+    setIsPaused(false);
+  };  
+
+  const handleRestartGame = () => {
+    // Reset player positions
+    setPlayer(new Player('player1', playerName, 2, 2));
+    setPlayerTwo(new Player('player2', 'Player 2', 14, 9));
+  
+    // Reset bomb states
+    setBombs(new Map());
+  
+    // Reset monster positions
+    setMonsters([
+      new Player('monster1', 'Monster 1', 5, 5),
+      new Player('monster2', 'Monster 2', 10, 7),
+    ]);
+  
+    // TODO: Reset the map (destroyed items)
+  
+    // Close the settings dialog if open
+    setIsSettingsOpen(false);
+  
+    // Unpause the game if it was paused
+    setIsPaused(false);
+  
+    console.log("Game restarted");
+  };  
+  
+  const handleModifyControls = () => {
+    console.log("Open modify controls screen"); 
+  };
+
 
   const renderCellsAndPlayer = () => {
     return Array.from({ length: 150 }, (_, index) => {
@@ -258,6 +309,9 @@ export const GameScreen = ({
 
   return (
     <StyledBackground>
+      <StyledSettingsButton onClick={handleOpenSettings}>
+        <SettingsIcon />
+      </StyledSettingsButton>
       <StyledGameDialog open={true}>
       <Grid container spacing={2}>
         <Grid item xs={2} sx={{mt: 5}}>
@@ -284,6 +338,11 @@ export const GameScreen = ({
         </Grid>
       </Grid>
       </StyledGameDialog>
+      <SettingsScreen
+        open={isSettingsOpen}
+        onClose={handleCloseSettings}
+        onRestart={handleRestartGame}
+      />
     </StyledBackground>
   );
 };
