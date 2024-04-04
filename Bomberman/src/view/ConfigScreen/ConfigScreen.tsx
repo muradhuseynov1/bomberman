@@ -32,9 +32,9 @@ interface KeyBindings {
 }
 
 const DEFAULT_KEY_BINDINGS: KeyBindings = {
-  1: ['W', 'A', 'S', 'D', '2', '3'],
+  1: ['w', 'a', 's', 'd', '2', '3'],
   2: ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight', '.', '/'],
-  3: ['U', 'H', 'J', 'K', '7', '8']
+  3: ['u', 'h', 'j', 'k', '7', '8']
 };
 
 const arrowKeySymbols: { [key: string]: string } = {
@@ -69,6 +69,7 @@ export const ConfigScreen = () => {
 
   const handlePlay = () => {
     if (validateInputs()) { 
+      localStorage.setItem('playerKeyBindings', JSON.stringify(playerKeyBindings));
       navigate('/game');
     }
   };  
@@ -91,7 +92,7 @@ export const ConfigScreen = () => {
 
   const handleKeyDown = (player: number, keyIndex: number, event: React.KeyboardEvent<HTMLInputElement>): void => {
     event.preventDefault();
-    const key = event.key.length === 1 ? event.key.toUpperCase() : event.key;
+    const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
     if (key === 'Backspace' || key === 'Delete' || (key.length > 1 && !key.includes('Arrow'))) return;
     if (!isKeyUnique(key, player, keyIndex)) return;
     setPlayerKeyBindings(prevBindings => ({
@@ -107,7 +108,6 @@ export const ConfigScreen = () => {
       alert('Each control key must be unique.');
       return false;
     }
-    console.log('All inputs are valid!');
     return true
   };
 
@@ -117,23 +117,23 @@ export const ConfigScreen = () => {
       <ControlsLabel>Player {player} Controls:</ControlsLabel>
       <KeyGroup>
         <KeyConfigInput
-          value={arrowKeySymbols[playerKeyBindings[player][0]] || playerKeyBindings[player][0]}
+          value={arrowKeySymbols[playerKeyBindings[player][0]] || playerKeyBindings[player][0].toUpperCase()}
           onKeyDown={(e) => handleKeyDown(player, 0, e)}
           readOnly
         />
         <KeyRow>
           <KeyConfigInput
-            value={arrowKeySymbols[playerKeyBindings[player][1]] || playerKeyBindings[player][1]}
+            value={arrowKeySymbols[playerKeyBindings[player][1]] || playerKeyBindings[player][1].toUpperCase()}
             onKeyDown={(e) => handleKeyDown(player, 1, e)}
             readOnly
           />
           <KeyConfigInput
-            value={arrowKeySymbols[playerKeyBindings[player][2]] || playerKeyBindings[player][2]}
+            value={arrowKeySymbols[playerKeyBindings[player][2]] || playerKeyBindings[player][2].toUpperCase()}
             onKeyDown={(e) => handleKeyDown(player, 2, e)}
             readOnly
           />
           <KeyConfigInput
-            value={arrowKeySymbols[playerKeyBindings[player][3]] || playerKeyBindings[player][3]}
+            value={arrowKeySymbols[playerKeyBindings[player][3]] || playerKeyBindings[player][3].toUpperCase()}
             onKeyDown={(e) => handleKeyDown(player, 3, e)}
             readOnly
           />
