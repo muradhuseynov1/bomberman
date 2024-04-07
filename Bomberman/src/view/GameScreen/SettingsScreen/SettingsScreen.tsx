@@ -2,13 +2,7 @@ import React, { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, Button, DialogActions } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { ButtonContainer } from './SettingsScreen.styles';
-
-interface SettingsScreenProps {
-  open: boolean;
-  onClose: () => void;
-  onRestart: () => void; 
-  onModifyControls?: () => void;
-}
+import { SettingsScreenProps } from '../../../constants/props';
 
 const SettingsScreen: React.FC<SettingsScreenProps> = ({ open, onClose, onRestart, onModifyControls }) => {
   const navigate = useNavigate();

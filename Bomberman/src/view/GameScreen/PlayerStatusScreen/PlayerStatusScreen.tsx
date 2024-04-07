@@ -2,16 +2,7 @@ import React from "react";
 import { PlayerStatusContainer, PlayerName, PowerUpsList, PowerUpItem, ObstaclesCount } from "./PlayerStatusScreen.styles";
 import { Typography } from "@mui/material";
 import theme from "../../../theme/PlayerStatusTheme";
-
-export type Power = 'Detonator' | 'RollerSkate' | 'Invincibility' | 'Ghost' | 'Obstacle';
-
-type PlayerStatusProps = {
-  playerName: string;
-  numBombs: number;
-  powers: Power[];
-  numObstacles: number;
-  index: number;
-}
+import { PlayerStatusProps, Power } from "../../../constants/props";
 
 export const PlayerStatus = ({ playerName, numBombs, powers, numObstacles, index }: PlayerStatusProps) => {
   const getPowerIcon = (power: Power): React.ReactNode => {

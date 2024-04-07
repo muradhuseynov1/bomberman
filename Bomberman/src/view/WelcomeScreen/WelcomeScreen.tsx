@@ -3,10 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { StyledBackground, CenteredButton, InstructionsImage } from './WelcomeScreen.styles';
 import bombermanLogo from '../../assets/bomberman_logo.png';
 import instructionsImage from '../../assets/instructions.png';
- 
-type WelcomeScreenProps = {
-  onStart: () => void;
-};
+import { WelcomeScreenProps } from '../../constants/props';
  
 export const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
   const navigate = useNavigate();
