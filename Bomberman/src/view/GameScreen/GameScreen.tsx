@@ -9,15 +9,12 @@ import {
 } from './GameScreen.styles';
 import { StyledBackground } from '../WelcomeScreen/WelcomeScreen.styles';
 import { PlayerStatus } from './PlayerStatusScreen/PlayerStatusScreen';
-import { Power } from './PlayerStatusScreen/PlayerStatusScreen';
-import { Paper, IconButton, DialogTitle, DialogContent, Button, DialogActions } from '@mui/material';
+import { Paper, DialogTitle, DialogContent, Button, DialogActions } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { Player } from '../../model/player';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SettingsScreen from './SettingsScreen/SettingsScreen';
-
 import { generateBricks } from '../../helpers/generateBricks';
-
 import bombermanPlayer from '../../assets/player-image.png';
 import wall from '../../assets/wall.jpeg';
 import brick from '../../assets/brick.jpeg';
@@ -25,24 +22,7 @@ import monster from '../../assets/monster.png';
 import bomb from '../../assets/bomb.png';
 import { useParams } from 'react-router-dom';
 import { ControlsLabel, ExtraKeys, KeyConfigInput, KeyGroup, KeyRow, PlayerControlsRow, StyledDialog } from '../ConfigScreen/ConfigScreen.styles';
-
-type GameScreenProps = {
-  playerName: string;
-  numBombs: number;
-  powers: Power[];
-  numObstacles: number;
-}
-
-interface KeyBindings {
-  [playerNumber: string]: string[];
-}
-
-const arrowKeySymbols: { [key: string]: string } = {
-  ArrowUp: '↑',
-  ArrowDown: '↓',
-  ArrowLeft: '←',
-  ArrowRight: '→',
-};
+import { GameScreenProps, KeyBindings, arrowKeySymbols } from '../../constants/props';
 
 export const GameScreen = ({
   playerName,
