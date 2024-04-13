@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { Dialog, Typography } from '@mui/material';
+import { Dialog, Typography, ToggleButton } from '@mui/material';
 
 type PlayerControlsRowProps = {
   numOfPlayers: string;
@@ -83,4 +83,29 @@ export const ExtraKeys = styled.div`
   flex-direction: row;
   justify-content: center;
   margin-left: 25px;
+`;
+
+export const MapToggleButton = styled(ToggleButton)`
+  width: 150px;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  & img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 8px;
+  }
+
+  &.Mui-selected, &.Mui-selected:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+    transform: scale(1.1);
+  }
 `;
