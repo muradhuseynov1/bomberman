@@ -31,22 +31,7 @@ import Map1 from '../../assets/Map1.png';
 import Map2 from '../../assets/Map2.png';
 import Map3 from '../../assets/Map3.png';
 
-interface KeyBindings {
-  [key: number]: string[];
-}
-
-const DEFAULT_KEY_BINDINGS: KeyBindings = {
-  1: ['w', 'a', 's', 'd', '2', '3'],
-  2: ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'o', 'p'],
-  3: ['u', 'h', 'j', 'k', 't', 'y']
-};
-
-const arrowKeySymbols: { [key: string]: string } = {
-  ArrowUp: '↑',
-  ArrowDown: '↓',
-  ArrowLeft: '←',
-  ArrowRight: '→'
-};
+import { KeyBindings, arrowKeySymbols, DEFAULT_KEY_BINDINGS } from '../../constants/props';
 
 export const ConfigScreen = () => {
   const [activeStep, setActiveStep] = useState(0);

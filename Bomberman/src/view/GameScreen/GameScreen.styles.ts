@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { Button, Dialog, DialogContent } from '@mui/material';
+import { Button, Dialog, DialogContent, IconButton } from '@mui/material';
 
 type GridCellProps = {
   isWall: boolean;
@@ -66,4 +66,12 @@ export const CharacterContainer = styled.div({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
+});
+
+export const StyledSettingsButton = styled(IconButton)({
+  position: 'absolute',
+  top: '20px',
+  right: '20px',
+  zIndex: 2000, 
+  color:'red',
 });
