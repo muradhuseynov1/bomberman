@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import {
   StyledDialog,
-  MapPlaceholder,
+  MapToggleButton,
   StepContent,
   Row,
   CenteredButtonContainer,
@@ -26,6 +26,11 @@ import {
 } from './ConfigScreen.styles';
 import { StyledBackground } from '../WelcomeScreen/WelcomeScreen.styles';
 import { useNavigate } from 'react-router-dom';
+
+import Map1 from '../../assets/Map1.png';
+import Map2 from '../../assets/Map2.png';
+import Map3 from '../../assets/Map3.png';
+
 import { KeyBindings, arrowKeySymbols, DEFAULT_KEY_BINDINGS } from '../../constants/props';
 
 export const ConfigScreen = () => {
@@ -34,6 +39,11 @@ export const ConfigScreen = () => {
   const [numOfPlayers, setNumOfPlayers] = useState('2');
   const [playerKeyBindings, setPlayerKeyBindings] = useState<KeyBindings>(DEFAULT_KEY_BINDINGS);
   const navigate = useNavigate();
+  const [selectedMap, setSelectedMap] = useState('map1');
+
+  const handleMapSelect = (map: string) => {
+    setSelectedMap(map);
+  };
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -157,9 +167,33 @@ export const ConfigScreen = () => {
             <StepContent>
               <Typography variant="h6" sx={{ml: 3}}>Choose a map:</Typography>
               <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '20px' }}>
-                <MapPlaceholder>Map1</MapPlaceholder>
-                <MapPlaceholder>Map2</MapPlaceholder>
-                <MapPlaceholder>Map3</MapPlaceholder>
+                <MapToggleButton
+                  selected={selectedMap === 'map1'}
+                  onClick={() => handleMapSelect('map1')}
+                  value="map1"
+                  aria-label="map1"
+                >
+                  <img src={Map1} alt="Map 1" />
+                  <Typography>Map 1</Typography>
+                </MapToggleButton>
+                <MapToggleButton
+                  selected={selectedMap === 'map2'}
+                  onClick={() => handleMapSelect('map2')}
+                  value="map2"
+                  aria-label="map2"
+                >
+                  <img src={Map2} alt="Map 2" />
+                  <Typography>Map 2</Typography>
+                </MapToggleButton>
+                <MapToggleButton
+                  selected={selectedMap === 'map3'}
+                  onClick={() => handleMapSelect('map3')}
+                  value="map3"
+                  aria-label="map3"
+                >
+                  <img src={Map3} alt="Map 3" />
+                  <Typography>Map 3</Typography>
+                </MapToggleButton>
               </div>
               <Divider style={{ margin: '20px 0' }} />
               <Row>
