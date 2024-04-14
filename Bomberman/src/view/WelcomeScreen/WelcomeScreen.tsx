@@ -3,13 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { StyledBackground, CenteredButton, InstructionsImage } from './WelcomeScreen.styles';
 import bombermanLogo from '../../assets/bomberman_logo.png';
 import instructionsImage from '../../assets/instructions.png';
-import { WelcomeScreenProps } from '../../constants/props';
  
-export const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
+export const WelcomeScreen = () => {
   const navigate = useNavigate();
  
   const handleStart = () => {
-    onStart();
     navigate('/config'); 
   };
 

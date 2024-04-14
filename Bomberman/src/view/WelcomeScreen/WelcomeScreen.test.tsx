@@ -14,7 +14,6 @@ jest.mock('react-router-dom', () => {
 });
 
 describe('WelcomeScreen', () => {
-  const mockOnStart = jest.fn();
   let mockNavigate: jest.Mock<NavigateFunction>;
 
   beforeEach(() => {
@@ -25,7 +24,7 @@ describe('WelcomeScreen', () => {
   const setup = () => {
     render(
       <BrowserRouter>
-        <WelcomeScreen onStart={mockOnStart} />
+        <WelcomeScreen />
       </BrowserRouter>
     );
   };
@@ -47,7 +46,6 @@ describe('WelcomeScreen', () => {
     setup();
     const startButton = screen.getByRole('button');
     fireEvent.click(startButton);
-    expect(mockOnStart).toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledWith('/config');
   });
 

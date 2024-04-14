@@ -14,7 +14,7 @@ export function App() {
     <GameSettingsProvider>
       <ThemeProvider theme={theme}>
         <Routes>
-          <Route path="/" element={<WelcomeScreen onStart={() => console.log('Game started!')} />} />
+          <Route path="/" element={<WelcomeScreen />} />
           <Route path="/config" element={<ConfigScreen />} />
           <Route path="/instructions" element={<InstructionsScreen />} />
           <Route path="/game/:numOfPlayers" element={

@@ -1,7 +1,3 @@
-export type WelcomeScreenProps = {
-    onStart: () => void;
-};
-
 export interface SettingsScreenProps {
     open: boolean;
     onClose: () => void;
