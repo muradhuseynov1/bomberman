@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from 'react';
 import {
   DialogTitle,
   DialogContent,
@@ -9,7 +10,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Button,
-  Divider
+  Divider,
 } from '@mui/material';
 import {
   StyledDialog,
@@ -27,11 +28,17 @@ import {
 import { StyledBackground } from '../WelcomeScreen/WelcomeScreen.styles';
 import { useNavigate } from 'react-router-dom';
 
+import Info from '@mui/icons-material/Info';
+
 import Map1 from '../../assets/Map1.png';
 import Map2 from '../../assets/Map2.png';
 import Map3 from '../../assets/Map3.png';
 
 import { KeyBindings, arrowKeySymbols, DEFAULT_KEY_BINDINGS } from '../../constants/props';
+
+type KeyErrors = {
+  [key: string]: boolean;
+};
 
 export const ConfigScreen = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -40,6 +47,7 @@ export const ConfigScreen = () => {
   const [playerKeyBindings, setPlayerKeyBindings] = useState<KeyBindings>(DEFAULT_KEY_BINDINGS);
   const navigate = useNavigate();
   const [selectedMap, setSelectedMap] = useState('map1');
+  const [keyErrors, setKeyErrors] = useState<KeyErrors>({});
 
   const handleMapSelect = (map: string) => {
     setSelectedMap(map);
@@ -58,89 +66,86 @@ export const ConfigScreen = () => {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
     setPlayerKeyBindings({ ...DEFAULT_KEY_BINDINGS });
+    setRounds('1');
+    setNumOfPlayers('2');
+    setKeyErrors({});
   };
 
   const handlePlay = () => {
-    if (validateInputs()) { 
-      localStorage.setItem('playerKeyBindings', JSON.stringify(playerKeyBindings));
-      navigate(`/game/${numOfPlayers}`);
-    }
-  };
-
-  const isKeyUnique = (key: string, currentPlayer: number, keyIndex: number) => {
-      for (let player in playerKeyBindings) {
-        if (parseInt(player) === currentPlayer) {
-          if (playerKeyBindings[player].some((k, idx) => k === key && idx !== keyIndex)) {
-              return false;
-          }
-        } else {
-          if (playerKeyBindings[player].includes(key)) {
-              return false;
-          }
-        }
-      }
-    return true;
+    localStorage.setItem('playerKeyBindings', JSON.stringify(playerKeyBindings));
+    navigate(`/game/${numOfPlayers}`);
   };
 
   const handleKeyDown = (player: number, keyIndex: number, event: React.KeyboardEvent<HTMLInputElement>): void => {
     event.preventDefault();
     const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
     if (key === 'Backspace' || key === 'Delete' || (key.length > 1 && !key.includes('Arrow'))) return;
-    if (!isKeyUnique(key, player, keyIndex)) return;
+  
     setPlayerKeyBindings(prevBindings => ({
       ...prevBindings,
       [player]: prevBindings[player].map((k, idx) => idx === keyIndex ? key : k),
     }));
   };
+  
 
-  const validateInputs = (): boolean => {
-    const allKeys = Object.values(playerKeyBindings).flat();
-    if (new Set(allKeys).size !== allKeys.length) {
-      alert('Each control key must be unique.');
-      return false;
-    }
-    return true
+  const validateInputs = () => {
+    let newErrors: KeyErrors = {};
+    let keyMap = new Map<string, string>();
+
+    Object.values(playerKeyBindings).slice(0, parseInt(numOfPlayers)).forEach((keys, playerIndex) => {
+      keys.forEach((key, keyIndex) => {
+        let keyId = `player${playerIndex + 1}-${keyIndex}`;
+        if (keyMap.has(key)) {
+          newErrors[keyId] = true;
+          newErrors[keyMap.get(key)!] = true;
+        } else {
+          keyMap.set(key, keyId);
+        }
+      });
+    });
+
+    setKeyErrors(newErrors);
   };
+
+  useEffect(() => {
+    validateInputs();
+  }, [numOfPlayers, playerKeyBindings]);
+
 
   const renderKeyConfig = (player: number) => (
     <>
     <PlayerControlsRow numOfPlayers={numOfPlayers}>
       <ControlsLabel>Player {player} Controls:</ControlsLabel>
-      <KeyGroup>
-        <KeyConfigInput
-          value={arrowKeySymbols[playerKeyBindings[player][0]] || playerKeyBindings[player][0].toUpperCase()}
-          onKeyDown={(e) => handleKeyDown(player, 0, e)}
-          readOnly
-        />
-        <KeyRow>
+        <KeyGroup>
           <KeyConfigInput
-            value={arrowKeySymbols[playerKeyBindings[player][1]] || playerKeyBindings[player][1].toUpperCase()}
-            onKeyDown={(e) => handleKeyDown(player, 1, e)}
+            key={`player-${player}-key-0`}
+            value={arrowKeySymbols[playerKeyBindings[player][0]] || playerKeyBindings[player][0].toUpperCase()}
+            onKeyDown={(e) => handleKeyDown(player, 0, e)}
             readOnly
+            style={{ borderColor: keyErrors[`player${player}-0`] ? 'red' : 'black' }}
           />
-          <KeyConfigInput
-            value={arrowKeySymbols[playerKeyBindings[player][2]] || playerKeyBindings[player][2].toUpperCase()}
-            onKeyDown={(e) => handleKeyDown(player, 2, e)}
-            readOnly
-          />
-          <KeyConfigInput
-            value={arrowKeySymbols[playerKeyBindings[player][3]] || playerKeyBindings[player][3].toUpperCase()}
-            onKeyDown={(e) => handleKeyDown(player, 3, e)}
-            readOnly
-          />
-        </KeyRow>
-      </KeyGroup>
+          <KeyRow>
+            {playerKeyBindings[player].slice(1, 4).map((key, index) => (
+              <KeyConfigInput
+                key={`player-${player}-key-${index + 1}`}
+                value={arrowKeySymbols[key] || key.toUpperCase()}
+                onKeyDown={(e) => handleKeyDown(player, index + 1, e)}
+                readOnly
+                style={{ borderColor: keyErrors[`player${player}-${index + 1}`] ? 'red' : 'black' }}
+              />
+            ))}
+          </KeyRow>
+        </KeyGroup>
       <ExtraKeys>
-        <KeyConfigInput
-          value={arrowKeySymbols[playerKeyBindings[player][4]] || playerKeyBindings[player][4].toUpperCase()}
-          onKeyDown={(e) => handleKeyDown(player, 4, e)}
-          readOnly
-        />
-        <KeyConfigInput
-          value={arrowKeySymbols[playerKeyBindings[player][5]] || playerKeyBindings[player][5].toUpperCase()}
-          onKeyDown={(e) => handleKeyDown(player, 5, e)}
-          readOnly
-        />
+        {playerKeyBindings[player].slice(4, 6).map((key, index) => (
+          <KeyConfigInput
+            key={`player-${player}-key-${index + 4}`}
+            value={arrowKeySymbols[key] || key.toUpperCase()}
+            onKeyDown={(e) => handleKeyDown(player, index + 4, e)}
+            readOnly
+            style={{ borderColor: keyErrors[`player${player}-${index + 4}`] ? 'red' : 'black' }}
+          />
+        ))}
       </ExtraKeys>
     </PlayerControlsRow>
       {player < parseInt(numOfPlayers) && <Divider style={{ margin: `${numOfPlayers === '2' ? '60px' : '20px'} 0` }} />}
@@ -235,9 +240,17 @@ export const ConfigScreen = () => {
               <div>
                 {Array.from({ length: parseInt(numOfPlayers) }, (_, i) => renderKeyConfig(i + 1))}
               </div>
+              {Object.keys(keyErrors).length > 0 && (
+                <Typography variant="body2" color="error" sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+                  <Info sx={{ mr: 1, fontSize: 'inherit' }} />
+                  Please correct the highlighted key conflicts before proceeding.
+                </Typography>
+              )}
               <CenteredButtonContainer>
                 <Button variant="contained" size="large" onClick={handleBack}>Back</Button>
-                <Button variant="contained" size="large" onClick={handlePlay} style={{ marginLeft: '10px' }}>Play</Button>
+                <Button variant="contained" size="large" onClick={handlePlay} disabled={Object.keys(keyErrors).length > 0} style={{ marginLeft: '10px' }}>
+                  Play
+                </Button>
               </CenteredButtonContainer>
             </StepContent>
           )}

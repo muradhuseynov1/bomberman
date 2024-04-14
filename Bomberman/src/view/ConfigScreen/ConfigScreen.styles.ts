@@ -50,7 +50,7 @@ export const PlayerControlsRow = styled.div<PlayerControlsRowProps>`
   display: flex;
   align-items: center;
   justify-content: start;
-  margin-bottom: ${(props) => (props.numOfPlayers === '2' ? '80px' : '20px')};
+  margin-bottom: ${(props) => (props.numOfPlayers === '2' ? '60px' : '20px')};
   margin-top: ${(props) => (props.numOfPlayers === '2' ? '40px' : '20px')};
 `;
 
