@@ -23,6 +23,7 @@ import bomb from '../../assets/bomb.png';
 import { useParams } from 'react-router-dom';
 import { ControlsLabel, ExtraKeys, KeyConfigInput, KeyGroup, PlayerControlsRow, StyledDialog } from '../ConfigScreen/ConfigScreen.styles';
 import { GameScreenProps, KeyBindings, arrowKeySymbols } from '../../constants/props';
+import { Monster } from '../../model/monster';
 
 export const GameScreen = ({
   playerName,
@@ -39,8 +40,8 @@ export const GameScreen = ({
   const [playerThreeBombs, setPlayerThreeBombs] = useState(new Map());
   const [bricks] = useState(() => generateBricks(10, 15));
   const [monsters, setMonsters] = useState([
-    new Player('monster1', 'Monster 1', 5, 5),
-    new Player('monster2', 'Monster 2', 10, 7),
+    new Monster('monster1', 'Monster 1', 5, 5),
+    new Monster('monster2', 'Monster 2', 10, 7),
   ]);
   const [keyBindings, setKeyBindings] = useState<KeyBindings>({});
   const [playerOneBombActive, setPlayerOneBombActive] = useState(false);
@@ -103,7 +104,7 @@ export const GameScreen = ({
 
   // TODO: monster should not be a Player object, but a Monster object.
   // TODO: Later change the Player object to a Monster object.
-  const moveMonster = useCallback((monster: Player) => {
+  const moveMonster = useCallback((monster: Monster) => {
     let newX = monster.getX();
     let newY = monster.getY();
     let possibleDirections = [1, 2, 3, 4];
@@ -141,7 +142,7 @@ export const GameScreen = ({
     return new Player(monster.getId(), monster.getName(), newX, newY);
   }, [bricks]);
 
-  const checkPlayerCollision = useCallback((currentPlayer: Player, currentPlayerTwo: Player, currentMonsters: Player[], currentPlayerThree: Player | null) => {
+  const checkPlayerCollision = useCallback((currentPlayer: Player, currentPlayerTwo: Player, currentMonsters: Monster[], currentPlayerThree: Player | null) => {
     currentMonsters.forEach(monster => {
       if (monster.getX() === currentPlayer.getX() && monster.getY() === currentPlayer.getY()) {
         setPlayer(prev => new Player(prev.getId(), prev.getName(), 2, 2));
