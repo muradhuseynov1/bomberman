@@ -86,7 +86,6 @@ export const ConfigScreen = () => {
       [player]: prevBindings[player].map((k, idx) => idx === keyIndex ? key : k),
     }));
   };
-  
 
   const validateInputs = () => {
     let newErrors: KeyErrors = {};
@@ -103,14 +102,12 @@ export const ConfigScreen = () => {
         }
       });
     });
-
     setKeyErrors(newErrors);
   };
 
   useEffect(() => {
     validateInputs();
   }, [numOfPlayers, playerKeyBindings]);
-
 
   const renderKeyConfig = (player: number) => (
     <>
