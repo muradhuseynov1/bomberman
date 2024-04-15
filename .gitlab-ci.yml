@@ -35,6 +35,10 @@ build-job:       # This job runs in the build stage, which runs first.
   stage: build
   script:
     - npm run build
+  artifacts:
+    paths:
+      - Bomberman/build/
+    expire_in: 1 week
 
 test-job:       # This job runs in the test stage, which runs after build.
   stage: test
@@ -42,6 +46,6 @@ test-job:       # This job runs in the test stage, which runs after build.
     - npm run test
   artifacts:
     paths:
-      - coverage/
+      - Bomberman/coverage/
     expire_in: 1 week 
 
