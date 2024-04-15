@@ -40,4 +40,8 @@ test-job:       # This job runs in the test stage, which runs after build.
   stage: test
   script:
     - npm run test
+  artifacts:
+    paths:
+      - coverage/
+    expire_in: 1 week 
 
