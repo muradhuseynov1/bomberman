@@ -1,8 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { BrowserRouter, useNavigate, NavigateFunction } from 'react-router-dom';
 import { ConfigScreen } from './ConfigScreen';
-import { BrowserRouter } from 'react-router-dom';
-import { useNavigate, NavigateFunction } from 'react-router-dom';
 
 jest.mock('react-router-dom', () => {
   const originalModule = jest.requireActual('react-router-dom');
@@ -47,6 +46,7 @@ describe('ConfigScreen', () => {
     );
     if (step > 0) {
       const nextButton = screen.getByText('Next');
+      // eslint-disable-next-line no-plusplus
       for (let i = 0; i < step; i++) {
         fireEvent.click(nextButton);
       }

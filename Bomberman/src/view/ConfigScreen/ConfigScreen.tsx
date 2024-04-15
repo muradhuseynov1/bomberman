@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/no-array-index-key */
 import React, { useEffect, useState } from 'react';
 import {
   DialogTitle,
@@ -12,6 +12,8 @@ import {
   Button,
   Divider,
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import Info from '@mui/icons-material/Info';
 import {
   StyledDialog,
   MapToggleButton,
@@ -23,12 +25,9 @@ import {
   ControlsLabel,
   KeyGroup,
   KeyRow,
-  ExtraKeys
+  ExtraKeys,
 } from './ConfigScreen.styles';
 import { StyledBackground } from '../WelcomeScreen/WelcomeScreen.styles';
-import { useNavigate } from 'react-router-dom';
-
-import Info from '@mui/icons-material/Info';
 
 import Map1 from '../../assets/Map1.png';
 import Map2 from '../../assets/Map2.png';
@@ -76,32 +75,37 @@ export const ConfigScreen = () => {
     navigate(`/game/${numOfPlayers}`);
   };
 
-  const handleKeyDown = (player: number, keyIndex: number, event: React.KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (
+    player: number,
+    keyIndex: number,
+    event: React.KeyboardEvent<HTMLInputElement>
+  ): void => {
     event.preventDefault();
     const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
     if (key === 'Backspace' || key === 'Delete' || (key.length > 1 && !key.includes('Arrow'))) return;
-  
-    setPlayerKeyBindings(prevBindings => ({
+
+    setPlayerKeyBindings((prevBindings) => ({
       ...prevBindings,
-      [player]: prevBindings[player].map((k, idx) => idx === keyIndex ? key : k),
+      [player]: prevBindings[player].map((k, idx) => (idx === keyIndex ? key : k)),
     }));
   };
 
   const validateInputs = () => {
-    let newErrors: KeyErrors = {};
-    let keyMap = new Map<string, string>();
+    const newErrors: KeyErrors = {};
+    const keyMap = new Map<string, string>();
 
-    Object.values(playerKeyBindings).slice(0, parseInt(numOfPlayers)).forEach((keys, playerIndex) => {
-      keys.forEach((key, keyIndex) => {
-        let keyId = `player${playerIndex + 1}-${keyIndex}`;
-        if (keyMap.has(key)) {
-          newErrors[keyId] = true;
-          newErrors[keyMap.get(key)!] = true;
-        } else {
-          keyMap.set(key, keyId);
-        }
+    Object.values(playerKeyBindings)
+      .slice(0, parseInt(numOfPlayers, 10)).forEach((keys, playerIndex) => {
+        keys.forEach((key, keyIndex) => {
+          const keyId = `player${playerIndex + 1}-${keyIndex}`;
+          if (keyMap.has(key)) {
+            newErrors[keyId] = true;
+            newErrors[keyMap.get(key)!] = true;
+          } else {
+            keyMap.set(key, keyId);
+          }
+        });
       });
-    });
     setKeyErrors(newErrors);
   };
 
@@ -111,12 +115,18 @@ export const ConfigScreen = () => {
 
   const renderKeyConfig = (player: number) => (
     <>
-    <PlayerControlsRow numOfPlayers={numOfPlayers}>
-      <ControlsLabel>Player {player} Controls:</ControlsLabel>
+      <PlayerControlsRow numOfPlayers={numOfPlayers}>
+        <ControlsLabel>
+          Player
+          {player}
+          {' '}
+          Controls:
+        </ControlsLabel>
         <KeyGroup>
           <KeyConfigInput
             key={`player-${player}-key-0`}
-            value={arrowKeySymbols[playerKeyBindings[player][0]] || playerKeyBindings[player][0].toUpperCase()}
+            value={arrowKeySymbols[playerKeyBindings[player][0]]
+            || playerKeyBindings[player][0].toUpperCase()}
             onKeyDown={(e) => handleKeyDown(player, 0, e)}
             readOnly
             style={{ borderColor: keyErrors[`player${player}-0`] ? 'red' : 'black' }}
@@ -133,19 +143,19 @@ export const ConfigScreen = () => {
             ))}
           </KeyRow>
         </KeyGroup>
-      <ExtraKeys>
-        {playerKeyBindings[player].slice(4, 6).map((key, index) => (
-          <KeyConfigInput
-            key={`player-${player}-key-${index + 4}`}
-            value={arrowKeySymbols[key] || key.toUpperCase()}
-            onKeyDown={(e) => handleKeyDown(player, index + 4, e)}
-            readOnly
-            style={{ borderColor: keyErrors[`player${player}-${index + 4}`] ? 'red' : 'black' }}
-          />
-        ))}
-      </ExtraKeys>
-    </PlayerControlsRow>
-      {player < parseInt(numOfPlayers) && <Divider style={{ margin: `${numOfPlayers === '2' ? '60px' : '20px'} 0` }} />}
+        <ExtraKeys>
+          {playerKeyBindings[player].slice(4, 6).map((key, index) => (
+            <KeyConfigInput
+              key={`player-${player}-key-${index + 4}`}
+              value={arrowKeySymbols[key] || key.toUpperCase()}
+              onKeyDown={(e) => handleKeyDown(player, index + 4, e)}
+              readOnly
+              style={{ borderColor: keyErrors[`player${player}-${index + 4}`] ? 'red' : 'black' }}
+            />
+          ))}
+        </ExtraKeys>
+      </PlayerControlsRow>
+      {player < parseInt(numOfPlayers, 10) && <Divider style={{ margin: `${numOfPlayers === '2' ? '60px' : '20px'} 0` }} />}
     </>
   );
 
@@ -153,8 +163,8 @@ export const ConfigScreen = () => {
 
   return (
     <StyledBackground>
-      <StyledDialog open={true} aria-labelledby="config-dialog-title">
-      <DialogTitle id="config-dialog-title">
+      <StyledDialog open aria-labelledby="config-dialog-title">
+        <DialogTitle id="config-dialog-title">
           {activeStep === 0 ? 'Game Configuration' : 'Keyboard Configuration'}
         </DialogTitle>
         <DialogContent>
@@ -167,7 +177,7 @@ export const ConfigScreen = () => {
           </Stepper>
           {activeStep === 0 && (
             <StepContent>
-              <Typography variant="h6" sx={{ml: 3}}>Choose a map:</Typography>
+              <Typography variant="h6" sx={{ ml: 3 }}>Choose a map:</Typography>
               <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '20px' }}>
                 <MapToggleButton
                   selected={selectedMap === 'map1'}
@@ -204,7 +214,7 @@ export const ConfigScreen = () => {
                   size="large"
                   value={rounds}
                   exclusive
-                  onChange={(e, newRounds) => newRounds && setRounds(newRounds)}
+                  onChange={(_e, newRounds) => newRounds && setRounds(newRounds)}
                   aria-label="number of rounds"
                 >
                   <ToggleButton value="1">1</ToggleButton>
@@ -219,7 +229,8 @@ export const ConfigScreen = () => {
                   size="large"
                   value={numOfPlayers}
                   exclusive
-                  onChange={(e, newNumOfPlayers) => newNumOfPlayers && setNumOfPlayers(newNumOfPlayers)}
+                  onChange={(e, newNumOfPlayers) => newNumOfPlayers
+                    && setNumOfPlayers(newNumOfPlayers)}
                   aria-label="number of players"
                 >
                   <ToggleButton value="2">2</ToggleButton>
@@ -235,7 +246,9 @@ export const ConfigScreen = () => {
           {activeStep === 1 && (
             <StepContent>
               <div>
-                {Array.from({ length: parseInt(numOfPlayers) }, (_, i) => renderKeyConfig(i + 1))}
+                {Array.from({
+                  length: parseInt(numOfPlayers, 10),
+                }, (_, i) => renderKeyConfig(i + 1))}
               </div>
               {Object.keys(keyErrors).length > 0 && (
                 <Typography variant="body2" color="error" sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>

@@ -4,7 +4,7 @@ import { Dialog, Typography, ToggleButton } from '@mui/material';
 type PlayerControlsRowProps = {
   numOfPlayers: string;
 };
- 
+
 export const StyledDialog = styled(Dialog)({
   '& .MuiDialog-paper': {
     width: '600px',

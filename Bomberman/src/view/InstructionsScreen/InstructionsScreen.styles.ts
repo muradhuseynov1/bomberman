@@ -1,5 +1,10 @@
 import styled from '@emotion/styled';
-import { Dialog, DialogContent, DialogTitle, DialogActions as MuiDialogActions } from '@mui/material';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogActions as MuiDialogActions
+} from '@mui/material';
 import backgroundImage from '../../assets/mainWindowBackground.jpg';
 import backButtonImage from '../../assets/back_button.png';
 
@@ -35,25 +40,25 @@ export const StyledDialogTitle = styled(DialogTitle)({
 export const StyledDialogContent = styled(DialogContent)({
   padding: '20px',
   maxHeight: '80vh',
-  overflowY: 'auto', 
+  overflowY: 'auto',
 });
 
 export const DialogActions = styled(MuiDialogActions)({
-    justifyContent: 'center',
-    padding: '8px',
-    minHeight: '60px', 
-    display: 'flex',
-    alignItems: 'center',
+  justifyContent: 'center',
+  padding: '8px',
+  minHeight: '60px',
+  display: 'flex',
+  alignItems: 'center',
 });
 
 export const BackButton = styled('button')({
-    background: `url(${backButtonImage}) no-repeat center center`,
-    backgroundSize: 'cover', 
-    width: '140px', 
-    height: '60px', 
-    border: 'none',
-    cursor: 'pointer',
-    '&:hover': {
-      opacity: 0.8,
-    },
+  background: `url(${backButtonImage}) no-repeat center center`,
+  backgroundSize: 'cover',
+  width: '140px',
+  height: '60px',
+  border: 'none',
+  cursor: 'pointer',
+  '&:hover': {
+    opacity: 0.8,
+  },
 });

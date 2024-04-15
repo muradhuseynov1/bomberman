@@ -1,10 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, useNavigate, NavigateFunction } from 'react-router-dom';
 import { InstructionsScreen } from './InstructionsScreen';
-import { useNavigate, NavigateFunction } from 'react-router-dom';
 
-// Mock useNavigate
 jest.mock('react-router-dom', () => {
   const originalModule = jest.requireActual('react-router-dom');
   return {

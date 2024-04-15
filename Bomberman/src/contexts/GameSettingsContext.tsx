@@ -1,4 +1,10 @@
-import React, { createContext, useContext, ReactNode, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  ReactNode,
+  useState,
+  useMemo
+} from 'react';
 
 interface KeyBindings {
   [key: number]: string[];
@@ -13,7 +19,8 @@ const defaultState: GameSettingsContextType = {
   playerKeyBindings: {
     1: ['w', 'a', 's', 'd', '2', '3'],
     2: ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'o', 'p'],
-    3: ['u', 'h', 'j', 'k', '7', '8']  },
+    3: ['u', 'h', 'j', 'k', '7', '8']
+  },
   setPlayerKeyBindings: () => {}
 };
 
@@ -26,9 +33,14 @@ interface Props {
 }
 
 export const GameSettingsProvider: React.FC<Props> = ({ children }) => {
-  const [playerKeyBindings, setPlayerKeyBindings] = useState<KeyBindings>(defaultState.playerKeyBindings);
+  const [playerKeyBindings, setPlayerKeyBindings] = useState<KeyBindings>(
+    defaultState.playerKeyBindings
+  );
 
-  const value = { playerKeyBindings, setPlayerKeyBindings };
+  const value = useMemo(() => ({
+    playerKeyBindings,
+    setPlayerKeyBindings
+  }), [playerKeyBindings, setPlayerKeyBindings]);
 
   return (
     <GameSettingsContext.Provider value={value}>
@@ -36,4 +48,3 @@ export const GameSettingsProvider: React.FC<Props> = ({ children }) => {
     </GameSettingsContext.Provider>
   );
 };
-

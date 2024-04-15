@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { StyledBackground, CenteredButton, InstructionsImage } from './WelcomeScreen.styles';
 import bombermanLogo from '../../assets/bomberman_logo.png';
 import instructionsImage from '../../assets/instructions.png';
- 
+
 export const WelcomeScreen = () => {
   const navigate = useNavigate();
- 
+
   const handleStart = () => {
-    navigate('/config'); 
+    navigate('/config');
   };
 
   const navigateToInstructions = () => {
-    navigate('/instructions'); 
+    navigate('/instructions');
   };
 
   return (
@@ -23,4 +23,3 @@ export const WelcomeScreen = () => {
     </StyledBackground>
   );
 };
- 
