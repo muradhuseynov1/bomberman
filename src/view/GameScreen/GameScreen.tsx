@@ -148,10 +148,10 @@ export const GameScreen = ({
     }
 
     if ((newX === 2 && newY === 2) || (newX === 14 && newY === 9)) {
-      return monster;
+      return monsterPosition;
     }
 
-    return new Player(monster.getId(), monster.getName(), newX, newY);
+    return new Player(monsterPosition.getId(), monsterPosition.getName(), newX, newY);
   }, [bricks]);
 
   const checkPlayerCollision = useCallback((
@@ -161,14 +161,15 @@ export const GameScreen = ({
     currentPlayerThree: Player | null
   ) => {
     currentMonsters.forEach((monsterTemp) => {
-      if (monster.getX() === currentPlayer.getX() && monsterTemp.getY() === currentPlayer.getY()) {
+      if (monsterTemp.getX() === currentPlayer.getX()
+        && monsterTemp.getY() === currentPlayer.getY()) {
         setPlayer((prev) => new Player(prev.getId(), prev.getName(), 2, 2));
       }
-      if (monster.getX() === currentPlayerTwo.getX()
+      if (monsterTemp.getX() === currentPlayerTwo.getX()
         && monsterTemp.getY() === currentPlayerTwo.getY()) {
         setPlayerTwo((prev) => new Player(prev.getId(), prev.getName(), 14, 9));
       }
-      if (currentPlayerThree && monster.getX() === currentPlayerThree.getX()
+      if (currentPlayerThree && monsterTemp.getX() === currentPlayerThree.getX()
         && monsterTemp.getY() === currentPlayerThree.getY()) {
         setPlayerThree((prev) => (prev ? new Player(prev.getId(), prev.getName(), 7, 7) : null));
       }
