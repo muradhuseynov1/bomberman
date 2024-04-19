@@ -1,4 +1,4 @@
-import { Character } from "./character";
+import { Character } from './character';
 
 class Monster extends Character {
   // Monster-specific properties and methods

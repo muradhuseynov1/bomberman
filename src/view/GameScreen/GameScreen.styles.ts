@@ -1,5 +1,7 @@
 import styled from '@emotion/styled';
-import { Button, Dialog, DialogContent, IconButton } from '@mui/material';
+import {
+  Button, Dialog, DialogContent, IconButton
+} from '@mui/material';
 
 type GridCellProps = {
   isWall: boolean;
@@ -16,7 +18,7 @@ export const CustomDialogContent = styled(DialogContent)({
   backgroundColor: '#d3d3d3'
 });
 
-export const StyledGameDialog = styled(Dialog)(({ theme }) => ({
+export const StyledGameDialog = styled(Dialog)({
   '& .MuiDialog-paper': {
     width: '100%',
     height: '80%',
@@ -26,7 +28,7 @@ export const StyledGameDialog = styled(Dialog)(({ theme }) => ({
     backgroundColor: '#d3d3d3',
     justifyContent: 'center',
   },
-}));
+});
 
 export const MapContainer = styled.div({
   display: 'flex',
@@ -72,6 +74,6 @@ export const StyledSettingsButton = styled(IconButton)({
   position: 'absolute',
   top: '20px',
   right: '20px',
-  zIndex: 2000, 
-  color:'red',
+  zIndex: 2000,
+  color: 'red',
 });

@@ -1,4 +1,13 @@
+/* eslint-disable consistent-return */
+/* eslint-disable no-shadow */
+/* eslint-disable no-plusplus */
 import React, { useState, useEffect, useCallback } from 'react';
+import {
+  Paper, DialogTitle, DialogContent, Button, DialogActions
+} from '@mui/material';
+import Grid from '@mui/material/Grid';
+import SettingsIcon from '@mui/icons-material/Settings';
+import { useParams } from 'react-router-dom';
 import {
   MapContainer,
   MyGrid,
@@ -9,10 +18,7 @@ import {
 } from './GameScreen.styles';
 import { StyledBackground } from '../WelcomeScreen/WelcomeScreen.styles';
 import { PlayerStatus } from './PlayerStatusScreen/PlayerStatusScreen';
-import { Paper, DialogTitle, DialogContent, Button, DialogActions } from '@mui/material';
-import Grid from '@mui/material/Grid';
 import { Player } from '../../model/player';
-import SettingsIcon from '@mui/icons-material/Settings';
 import SettingsScreen from './SettingsScreen/SettingsScreen';
 import { generateBricks } from '../../helpers/generateBricks';
 import bombermanPlayer from '../../assets/player-image.png';
@@ -20,8 +26,9 @@ import wall from '../../assets/wall.jpeg';
 import brick from '../../assets/brick.jpeg';
 import monster from '../../assets/monster.png';
 import bomb from '../../assets/bomb.png';
-import { useParams } from 'react-router-dom';
-import { ControlsLabel, ExtraKeys, KeyConfigInput, KeyGroup, PlayerControlsRow, StyledDialog } from '../ConfigScreen/ConfigScreen.styles';
+import {
+  ControlsLabel, ExtraKeys, KeyConfigInput, KeyGroup, PlayerControlsRow, StyledDialog
+} from '../ConfigScreen/ConfigScreen.styles';
 import { GameScreenProps, KeyBindings, arrowKeySymbols } from '../../constants/props';
 import { Monster } from '../../model/monster';
 
@@ -62,9 +69,12 @@ export const GameScreen = ({
 
   const dropBomb = useCallback((x: number, y: number, playerNumber: number) => {
     const bombId = `${x}-${y}`;
-    let currentBombs = playerNumber === 1 ? new Map(playerOneBombs) : new Map(playerTwoBombs);
+    const currentBombs = playerNumber === 1 ? new Map(playerOneBombs) : new Map(playerTwoBombs);
 
-    if (!currentBombs.has(bombId) && ((playerNumber === 1 && !playerOneBombActive) || (playerNumber === 2 && !playerTwoBombActive) || (playerNumber === 3 && !playerThreeBombActive))) {
+    if (!currentBombs.has(bombId)
+      && ((playerNumber === 1 && !playerOneBombActive)
+    || (playerNumber === 2 && !playerTwoBombActive)
+    || (playerNumber === 3 && !playerThreeBombActive))) {
       currentBombs.set(bombId, 3);
       if (playerNumber === 1) {
         setPlayerOneBombs(currentBombs);
@@ -100,16 +110,17 @@ export const GameScreen = ({
         }
       }, 1000);
     }
-  }, [playerOneBombs, playerTwoBombs, playerOneBombActive, playerTwoBombActive, playerThreeBombActive]);
+  }, [playerOneBombs, playerTwoBombs,
+    playerOneBombActive, playerTwoBombActive, playerThreeBombActive]);
 
   // TODO: monster should not be a Player object, but a Monster object.
   // TODO: Later change the Player object to a Monster object.
-  const moveMonster = useCallback((monster: Monster) => {
-    let newX = monster.getX();
-    let newY = monster.getY();
+  const moveMonster = useCallback((monsterPosition: Monster) => {
+    let newX = monsterPosition.getX();
+    let newY = monsterPosition.getY();
     let possibleDirections = [1, 2, 3, 4];
-  
-    possibleDirections = possibleDirections.filter(direction => {
+
+    possibleDirections = possibleDirections.filter((direction) => {
       switch (direction) {
         case 1:
           return newY > 2 && !bricks.has(`${newY - 1}-${newX}`) && !(newX === 1 || newX === 15);
@@ -123,35 +134,43 @@ export const GameScreen = ({
           return false;
       }
     });
-  
+
     if (possibleDirections.length > 0) {
       const direction = possibleDirections[Math.floor(Math.random() * possibleDirections.length)];
-  
+
       switch (direction) {
         case 1: newY--; break;
         case 2: newX++; break;
         case 3: newY++; break;
         case 4: newX--; break;
+        default: break;
       }
     }
-  
+
     if ((newX === 2 && newY === 2) || (newX === 14 && newY === 9)) {
       return monster;
     }
-  
+
     return new Player(monster.getId(), monster.getName(), newX, newY);
   }, [bricks]);
 
-  const checkPlayerCollision = useCallback((currentPlayer: Player, currentPlayerTwo: Player, currentMonsters: Monster[], currentPlayerThree: Player | null) => {
-    currentMonsters.forEach(monster => {
-      if (monster.getX() === currentPlayer.getX() && monster.getY() === currentPlayer.getY()) {
-        setPlayer(prev => new Player(prev.getId(), prev.getName(), 2, 2));
+  const checkPlayerCollision = useCallback((
+    currentPlayer: Player,
+    currentPlayerTwo: Player,
+    currentMonsters: Monster[],
+    currentPlayerThree: Player | null
+  ) => {
+    currentMonsters.forEach((monsterTemp) => {
+      if (monster.getX() === currentPlayer.getX() && monsterTemp.getY() === currentPlayer.getY()) {
+        setPlayer((prev) => new Player(prev.getId(), prev.getName(), 2, 2));
       }
-      if (monster.getX() === currentPlayerTwo.getX() && monster.getY() === currentPlayerTwo.getY()) {
-        setPlayerTwo(prev => new Player(prev.getId(), prev.getName(), 14, 9));
+      if (monster.getX() === currentPlayerTwo.getX()
+        && monsterTemp.getY() === currentPlayerTwo.getY()) {
+        setPlayerTwo((prev) => new Player(prev.getId(), prev.getName(), 14, 9));
       }
-      if (currentPlayerThree && monster.getX() === currentPlayerThree.getX() && monster.getY() === currentPlayerThree.getY()) {
-        setPlayerThree(prev => (prev ? new Player(prev.getId(), prev.getName(), 7, 7) : null));
+      if (currentPlayerThree && monster.getX() === currentPlayerThree.getX()
+        && monsterTemp.getY() === currentPlayerThree.getY()) {
+        setPlayerThree((prev) => (prev ? new Player(prev.getId(), prev.getName(), 7, 7) : null));
       }
     });
   }, []);
@@ -160,9 +179,11 @@ export const GameScreen = ({
     if (isPaused) return;
 
     const interval = setInterval(() => {
-      setMonsters(currentMonsters => currentMonsters.map(monster => moveMonster(monster) || monster));
+      setMonsters((currentMonsters) => currentMonsters
+        .map((monster) => moveMonster(monster) || monster));
     }, 1000);
-  
+
+    // eslint-disable-next-line consistent-return
     return () => clearInterval(interval);
   }, [moveMonster, isPaused]);
 
@@ -203,6 +224,8 @@ export const GameScreen = ({
           case playerOneBindings[4]: // Drop bomb
             dropBomb(newY1, newX1, 1);
             break;
+          default:
+            break;
         }
       }
 
@@ -222,6 +245,8 @@ export const GameScreen = ({
             break;
           case playerTwoBindings[4]: // Drop bomb
             dropBomb(newY2, newX2, 2);
+            break;
+          default:
             break;
         }
       }
@@ -246,7 +271,9 @@ export const GameScreen = ({
               break;
             case playerThreeBindings[4]: // Drop bomb
               dropBomb(newY3, newX3, 3);
-            break;
+              break;
+            default:
+              break;
           }
           if (newX3 !== playerThree.getX() || newY3 !== playerThree.getY()) {
             setPlayerThree(new Player(playerThree.getId(), playerThree.getName(), newX3, newY3));
@@ -262,52 +289,56 @@ export const GameScreen = ({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [player, playerTwo, keyBindings, bricks, dropBomb, playerOneBombs, playerTwoBombs, playerThreeBombs, playerThree, numOfPlayers, isPaused]);
+  }, [player, playerTwo, keyBindings, bricks, dropBomb,
+    playerOneBombs, playerTwoBombs, playerThreeBombs, playerThree, numOfPlayers, isPaused]);
 
   const handleOpenSettings = () => {
     setIsSettingsOpen(true);
     setIsPaused(true);
   };
-  
+
   const handleCloseSettings = () => {
     setIsSettingsOpen(false);
     setIsPaused(false);
-  };  
+  };
 
   const handleRestartGame = () => {
     // Reset player positions
     setPlayer(new Player('player1', playerName, 2, 2));
     setPlayerTwo(new Player('player2', 'Player 2', 14, 9));
-  
+
     // Reset bomb states
     setPlayerOneBombs(new Map());
     setPlayerTwoBombs(new Map());
-  
+
     // Reset monster positions
     setMonsters([
       new Player('monster1', 'Monster 1', 5, 5),
       new Player('monster2', 'Monster 2', 10, 7),
     ]);
-  
+
     // TODO: Reset the map (destroyed items)
-  
+
     // Close the settings dialog if open
     setIsSettingsOpen(false);
-  
+
     // Unpause the game if it was paused
     setIsPaused(false);
-  
-    console.log("Game restarted");
-  };  
-  
+  };
+
   const handleOpenModifyControls = () => {
     setIsModifyingControls(true);
-    setIsPaused(true); 
+    setIsPaused(true);
+  };
+
+  const saveAndCloseModifyControls = () => {
+    setIsModifyingControls(false);
+    setIsPaused(false);
   };
 
   const renderModifyControlsUI = () => {
     if (!isModifyingControls) return null;
-  
+
     return (
       <StyledDialog
         open={isModifyingControls}
@@ -324,31 +355,37 @@ export const GameScreen = ({
                 {/* Custom layout for "W" above "S" and others horizontally */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <KeyConfigInput
-                    value={arrowKeySymbols[keyBindings[player][0]] || keyBindings[player][0].toUpperCase()}
+                    value={arrowKeySymbols[keyBindings[player][0]]
+                      || keyBindings[player][0].toUpperCase()}
                     readOnly
                   />
                   <div style={{ display: 'flex' }}>
                     <KeyConfigInput
-                      value={arrowKeySymbols[keyBindings[player][1]] || keyBindings[player][1].toUpperCase()}
+                      value={arrowKeySymbols[keyBindings[player][1]]
+                        || keyBindings[player][1].toUpperCase()}
                       readOnly
                     />
                     <KeyConfigInput
-                      value={arrowKeySymbols[keyBindings[player][2]] || keyBindings[player][2].toUpperCase()}
+                      value={arrowKeySymbols[keyBindings[player][2]]
+                        || keyBindings[player][2].toUpperCase()}
                       readOnly
                     />
                     <KeyConfigInput
-                      value={arrowKeySymbols[keyBindings[player][3]] || keyBindings[player][3].toUpperCase()}
+                      value={arrowKeySymbols[keyBindings[player][3]]
+                        || keyBindings[player][3].toUpperCase()}
                       readOnly
                     />
                   </div>
                 </div>
                 <ExtraKeys>
                   <KeyConfigInput
-                    value={arrowKeySymbols[keyBindings[player][4]] || keyBindings[player][4].toUpperCase()}
+                    value={arrowKeySymbols[keyBindings[player][4]]
+                      || keyBindings[player][4].toUpperCase()}
                     readOnly
                   />
                   <KeyConfigInput
-                    value={arrowKeySymbols[keyBindings[player][5]] || keyBindings[player][5].toUpperCase()}
+                    value={arrowKeySymbols[keyBindings[player][5]]
+                      || keyBindings[player][5].toUpperCase()}
                     readOnly
                   />
                 </ExtraKeys>
@@ -365,89 +402,90 @@ export const GameScreen = ({
     );
   };
 
-  const saveAndCloseModifyControls = () => {
-    setIsModifyingControls(false);
-    setIsPaused(false); 
-  };  
+  const renderCellsAndPlayer = () => Array.from({ length: 150 }, (_, index) => {
+    const row = Math.floor(index / 15) + 1;
+    const column = (index % 15) + 1;
+    const isPlayerCell = player.getX() === column && player.getY() === row;
+    const isPlayerTwoCell = playerTwo.getX() === column && playerTwo.getY() === row;
+    const isPlayerThreeCell = playerThree
+    && playerThree.getX() === column && playerThree.getY() === row;
+    const isMonsterCell = monsters.some((monster) => monster.getX() === column
+    && monster.getY() === row);
+    const isWallCell = row === 1 || row === 10 || column === 1 || column === 15;
+    const isBrickCell = bricks.has(`${row}-${column}`);
+    const isBombCell = playerOneBombs.has(`${row}-${column}`) || playerTwoBombs.has(`${row}-${column}`);
 
-  const renderCellsAndPlayer = () => {
-    return Array.from({ length: 150 }, (_, index) => {
-      const row = Math.floor(index / 15) + 1;
-      const column = (index % 15) + 1;
-      const isPlayerCell = player.getX() === column && player.getY() === row;
-      const isPlayerTwoCell = playerTwo.getX() === column && playerTwo.getY() === row;
-      const isPlayerThreeCell = playerThree && playerThree.getX() === column && playerThree.getY() === row;
-      const isMonsterCell = monsters.some(monster => monster.getX() === column && monster.getY() === row);
-      const isWallCell = row === 1 || row === 10 || column === 1 || column === 15;
-      const isBrickCell = bricks.has(`${row}-${column}`);
-      const isBombCell = playerOneBombs.has(`${row}-${column}`) || playerTwoBombs.has(`${row}-${column}`);
-  
-      return (
-        <GridCell key={index} isWall={isWallCell}>
-          {isWallCell && (
-            <img src={wall} alt="Wall" style={{ width: '100%', height: '100%' }} />
-          )}
-          {isBrickCell && (
-            <img src={brick} alt="Brick" style={{ width: '100%', height: '100%' }} />
-          )}
-          {isPlayerCell && (
-            <CharacterContainer>
-              <img src={bombermanPlayer} alt="Player" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
-            </CharacterContainer>
-          )}
-          {isPlayerTwoCell && (
-            <CharacterContainer>
-              <img src={bombermanPlayer} alt="Player 2" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
-            </CharacterContainer>
-          )}
-          {isPlayerThreeCell && (
-            <CharacterContainer>
-              <img src={bombermanPlayer} alt="Player 3" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
-            </CharacterContainer>
-          )}
-          {isMonsterCell && (
+    return (
+      <GridCell key={index} isWall={isWallCell}>
+        {isWallCell && (
+        <img src={wall} alt="Wall" style={{ width: '100%', height: '100%' }} />
+        )}
+        {isBrickCell && (
+        <img src={brick} alt="Brick" style={{ width: '100%', height: '100%' }} />
+        )}
+        {isPlayerCell && (
+        <CharacterContainer>
+          <img src={bombermanPlayer} alt="Player" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+        </CharacterContainer>
+        )}
+        {isPlayerTwoCell && (
+        <CharacterContainer>
+          <img src={bombermanPlayer} alt="Player 2" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+        </CharacterContainer>
+        )}
+        {isPlayerThreeCell && (
+        <CharacterContainer>
+          <img src={bombermanPlayer} alt="Player 3" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+        </CharacterContainer>
+        )}
+        {isMonsterCell && (
           <CharacterContainer>
             <img src={monster} alt="Monster" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
           </CharacterContainer>
-           )}
-          {isBombCell && (
-              <img src={bomb} alt="Bomb" style={{ width: '100%', height: '100%' }} />
-            )}
-        </GridCell>
-      );
-    });
-  };
+        )}
+        {isBombCell && (
+          <img src={bomb} alt="Bomb" style={{ width: '100%', height: '100%' }} />
+        )}
+      </GridCell>
+    );
+  });
 
   return (
     <StyledBackground>
       <StyledSettingsButton onClick={handleOpenSettings}>
         <SettingsIcon />
       </StyledSettingsButton>
-      <StyledGameDialog open={true}>
-      <Grid container spacing={2}>
-        <Grid item xs={2} sx={{mt: 5}}>
-          <PlayerStatus playerName={playerName} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={1} />
-          {numOfPlayers === '3' && (
+      <StyledGameDialog open>
+        <Grid container spacing={2}>
+          <Grid item xs={2} sx={{ mt: 5 }}>
+            <PlayerStatus
+              playerName={playerName}
+              numBombs={numBombs}
+              powers={powers}
+              numObstacles={numObstacles}
+              index={1}
+            />
+            {numOfPlayers === '3' && (
             <>
-              <br/>
-              <PlayerStatus playerName={'Player Two'} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={2} />
+              <br />
+              <PlayerStatus playerName="Player Two" numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={2} />
             </>
-          )}
+            )}
+          </Grid>
+          <Grid item xs={8}>
+            <Paper>
+              <MapContainer>
+                <MyGrid>
+                  {renderCellsAndPlayer()}
+                </MyGrid>
+              </MapContainer>
+            </Paper>
+          </Grid>
+          <Grid item xs={2} sx={{ mt: numOfPlayers === '3' ? 15 : 5 }}>
+            {numOfPlayers === '2' && <PlayerStatus playerName="Player Two" numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={2} />}
+            {numOfPlayers === '3' && <PlayerStatus playerName="Player Three" numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={3} />}
+          </Grid>
         </Grid>
-        <Grid item xs={8}>
-          <Paper>
-            <MapContainer>
-              <MyGrid>
-                {renderCellsAndPlayer()}
-              </MyGrid>
-            </MapContainer>
-          </Paper>
-        </Grid>
-        <Grid item xs={2} sx={{mt: numOfPlayers === '3' ? 15 : 5}}>
-          {numOfPlayers === '2' && <PlayerStatus playerName={'Player Two'} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={2} />}
-          {numOfPlayers === '3' && <PlayerStatus playerName={'Player Three'} numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={3} />}
-        </Grid>
-      </Grid>
       </StyledGameDialog>
       <SettingsScreen
         open={isSettingsOpen}

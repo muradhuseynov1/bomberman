@@ -1,7 +1,10 @@
 class Character {
   private id: string;
+
   private name: string;
+
   private x: number;
+
   private y: number;
 
   constructor(id: string, name: string, x: number = 0, y: number = 0) {

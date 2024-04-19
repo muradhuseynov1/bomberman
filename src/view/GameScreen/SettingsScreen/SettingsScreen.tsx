@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, Button, DialogActions } from '@mui/material';
+import {
+  Dialog, DialogTitle, DialogContent, Button, DialogActions
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { ButtonContainer } from './SettingsScreen.styles';
 import { SettingsScreenProps } from '../../../constants/props';
 
-const SettingsScreen: React.FC<SettingsScreenProps> = ({ open, onClose, onRestart, onModifyControls }) => {
+const SettingsScreen: React.FC<SettingsScreenProps> = (
+  {
+    open,
+    onClose,
+    onRestart,
+    onModifyControls
+  }
+) => {
   const navigate = useNavigate();
   const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -13,7 +22,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ open, onClose, onRestar
   };
 
   const handleQuitConfirm = () => {
-    navigate("/");
+    navigate('/');
   };
 
   const handleQuitCancel = () => {
@@ -37,7 +46,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ open, onClose, onRestar
         </ButtonContainer>
       </DialogContent>
       <Dialog open={openConfirm} onClose={handleQuitCancel} aria-labelledby="confirm-dialog-title">
-        <DialogTitle id="confirm-dialog-title">{"Are you sure you want to exit the game?"}</DialogTitle>
+        <DialogTitle id="confirm-dialog-title">Are you sure you want to exit the game?</DialogTitle>
         <DialogActions>
           <Button onClick={handleQuitConfirm} autoFocus>
             Yes
