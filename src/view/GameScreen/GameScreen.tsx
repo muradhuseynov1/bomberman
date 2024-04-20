@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable consistent-return */
 /* eslint-disable no-shadow */
 /* eslint-disable no-plusplus */
@@ -113,45 +114,8 @@ export const GameScreen = ({
   }, [playerOneBombs, playerTwoBombs,
     playerOneBombActive, playerTwoBombActive, playerThreeBombActive]);
 
-  // TODO: monster should not be a Player object, but a Monster object.
-  // TODO: Later change the Player object to a Monster object.
-  const moveMonster = useCallback((monsterPosition: Monster) => {
-    let newX = monsterPosition.getX();
-    let newY = monsterPosition.getY();
-    let possibleDirections = [1, 2, 3, 4];
-
-    possibleDirections = possibleDirections.filter((direction) => {
-      switch (direction) {
-        case 1:
-          return newY > 2 && !bricks.has(`${newY - 1}-${newX}`) && !(newX === 1 || newX === 15);
-        case 2:
-          return newX < 14 && !bricks.has(`${newY}-${newX + 1}`) && !(newY === 1 || newY === 10);
-        case 3:
-          return newY < 9 && !bricks.has(`${newY + 1}-${newX}`) && !(newX === 1 || newX === 15);
-        case 4:
-          return newX > 2 && !bricks.has(`${newY}-${newX - 1}`) && !(newY === 1 || newY === 10);
-        default:
-          return false;
-      }
-    });
-
-    if (possibleDirections.length > 0) {
-      const direction = possibleDirections[Math.floor(Math.random() * possibleDirections.length)];
-
-      switch (direction) {
-        case 1: newY--; break;
-        case 2: newX++; break;
-        case 3: newY++; break;
-        case 4: newX--; break;
-        default: break;
-      }
-    }
-
-    if ((newX === 2 && newY === 2) || (newX === 14 && newY === 9)) {
-      return monsterPosition;
-    }
-
-    return new Player(monsterPosition.getId(), monsterPosition.getName(), newX, newY);
+  const moveMonsters = useCallback(() => {
+    setMonsters((currentMonsters) => currentMonsters.map((monster) => monster.move(bricks)));
   }, [bricks]);
 
   const checkPlayerCollision = useCallback((
@@ -177,16 +141,12 @@ export const GameScreen = ({
   }, []);
 
   useEffect(() => {
-    if (isPaused) return;
-
     const interval = setInterval(() => {
-      setMonsters((currentMonsters) => currentMonsters
-        .map((monster) => moveMonster(monster) || monster));
+      moveMonsters();
     }, 1000);
 
-    // eslint-disable-next-line consistent-return
     return () => clearInterval(interval);
-  }, [moveMonster, isPaused]);
+  }, [moveMonsters]);
 
   useEffect(() => {
     if (numOfPlayers === '3' && playerThree) {
@@ -314,8 +274,8 @@ export const GameScreen = ({
 
     // Reset monster positions
     setMonsters([
-      new Player('monster1', 'Monster 1', 5, 5),
-      new Player('monster2', 'Monster 2', 10, 7),
+      new Monster('monster1', 'Monster 1', 5, 5),
+      new Monster('monster2', 'Monster 2', 10, 7),
     ]);
 
     // TODO: Reset the map (destroyed items)

@@ -1,6 +1,6 @@
 /* eslint-disable no-plusplus */
 export const generateBricks = (gridRows: number, gridColumns: number) => {
-  const bricks = new Set();
+  const bricks = new Set<string>();
   for (let row = 2; row < gridRows; row++) {
     for (let col = 2; col < gridColumns; col++) {
       if ((row + col) % 2 === 0 && (row % 3 === 0 || col % 2 === 0)) {

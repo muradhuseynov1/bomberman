@@ -1,22 +1,34 @@
-import { Character } from './character';
+class Player {
+  private id: string;
 
-class Player extends Character {
-  private numBombs: number;
+  private name: string;
 
-  constructor(id: string, name: string, x: number = 0, y: number = 0, numBombs: number = 4) {
-    super(id, name, x, y);
-    this.numBombs = numBombs;
+  private x: number;
+
+  private y: number;
+
+  constructor(id: string, name: string, x: number = 0, y: number = 0) {
+    this.id = id;
+    this.name = name;
+    this.x = x;
+    this.y = y;
   }
 
-  getNumBombs(): number {
-    return this.numBombs;
+  getId(): string {
+    return this.id;
   }
 
-  setNumBombs(numBombs: number): void {
-    this.numBombs = numBombs;
+  getName(): string {
+    return this.name;
   }
 
-  // Player-specific methods can be added here
+  getX(): number {
+    return this.x;
+  }
+
+  getY(): number {
+    return this.y;
+  }
 }
 
 export { Player };
