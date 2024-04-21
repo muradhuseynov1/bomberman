@@ -1,4 +1,8 @@
+/* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
+
+import { Player } from './player';
+
 /* eslint-disable no-plusplus */
 class Monster {
   private id: string;
@@ -32,17 +36,15 @@ class Monster {
     return this.y;
   }
 
-  move(bricks: Set<string>): Monster {
+  move(bricks: Set<string>, players: Player[]): { monster: Monster, collisions: Player[] } {
     let newX = this.x;
     let newY = this.y;
     const possibleDirections = [];
-    // Calculate new potential coordinates
     const up = { x: this.x, y: this.y - 1 };
     const right = { x: this.x + 1, y: this.y };
     const down = { x: this.x, y: this.y + 1 };
     const left = { x: this.x - 1, y: this.y };
 
-    // Check each direction for validity
     if (this.y > 2 && !bricks.has(`${up.y}-${up.x}`) && !(up.x === 1 || up.x === 15)) {
       possibleDirections.push(up);
     }
@@ -56,7 +58,6 @@ class Monster {
       possibleDirections.push(left);
     }
 
-    // Randomly select a valid direction to move
     if (possibleDirections.length > 0) {
       const selectedDirection = possibleDirections[Math.floor(
         Math.random() * possibleDirections.length
@@ -65,8 +66,11 @@ class Monster {
       newY = selectedDirection.y;
     }
 
-    // Return a new Monster object with updated coordinates
-    return new Monster(this.id, this.name, newX, newY);
+    const collisions = players.filter((player) => player.getX() === newX && player.getY() === newY);
+    return {
+      monster: new Monster(this.id, this.name, newX, newY),
+      collisions
+    };
   }
 }
 
