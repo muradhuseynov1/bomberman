@@ -4,18 +4,12 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-plusplus */
 import React, { useState, useEffect, useCallback } from 'react';
-import { Paper } from '@mui/material';
-import Grid from '@mui/material/Grid';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useParams } from 'react-router-dom';
 import {
-  MapContainer,
-  MyGrid,
-  StyledGameDialog,
   StyledSettingsButton,
 } from './GameScreen.styles';
 import { StyledBackground } from '../WelcomeScreen/WelcomeScreen.styles';
-import { PlayerStatus } from './PlayerStatusScreen/PlayerStatusScreen';
 import { Player } from '../../model/player';
 import SettingsScreen from './SettingsScreen/SettingsScreen';
 import { generateBricks } from '../../helpers/generateBricks';
@@ -24,6 +18,8 @@ import { GameScreenProps, KeyBindings } from '../../constants/props';
 import { Monster } from '../../model/monster';
 
 import ModifyControlsDialog from './SettingsScreen/ModifyControlsDialog';
+
+import { GameLayout } from './GameLayout';
 
 export const GameScreen = ({
   playerName,
@@ -269,38 +265,14 @@ export const GameScreen = ({
       <StyledSettingsButton onClick={handleOpenSettings}>
         <SettingsIcon />
       </StyledSettingsButton>
-      <StyledGameDialog open>
-        <Grid container spacing={2}>
-          <Grid item xs={2} sx={{ mt: 5 }}>
-            <PlayerStatus
-              playerName={playerName}
-              numBombs={numBombs}
-              powers={powers}
-              numObstacles={numObstacles}
-              index={1}
-            />
-            {numOfPlayers === '3' && (
-            <>
-              <br />
-              <PlayerStatus playerName="Player Two" numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={2} />
-            </>
-            )}
-          </Grid>
-          <Grid item xs={8}>
-            <Paper>
-              <MapContainer>
-                <MyGrid>
-                  {renderCellsAndPlayer()}
-                </MyGrid>
-              </MapContainer>
-            </Paper>
-          </Grid>
-          <Grid item xs={2} sx={{ mt: numOfPlayers === '3' ? 15 : 5 }}>
-            {numOfPlayers === '2' && <PlayerStatus playerName="Player Two" numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={2} />}
-            {numOfPlayers === '3' && <PlayerStatus playerName="Player Three" numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={3} />}
-          </Grid>
-        </Grid>
-      </StyledGameDialog>
+      <GameLayout
+        playerName={playerName}
+        numBombs={numBombs}
+        powers={powers}
+        numObstacles={numObstacles}
+        numOfPlayers={String(numOfPlayers)}
+        renderCellsAndPlayer={renderCellsAndPlayer}
+      />
       <SettingsScreen
         open={isSettingsOpen}
         onClose={handleCloseSettings}
