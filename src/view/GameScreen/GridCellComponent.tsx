@@ -18,7 +18,7 @@ type GridCellComponentProps = {
   players: Player[];
   monsters: Monster[];
   bricks: Set<string>;
-  bombs: Map<string, boolean>;
+  bombs: Map<string, number>;
 }
 
 export const GridCellComponent = ({

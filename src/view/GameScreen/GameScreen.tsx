@@ -1,8 +1,4 @@
-/* eslint-disable max-len */
-/* eslint-disable no-console */
 /* eslint-disable consistent-return */
-/* eslint-disable no-shadow */
-/* eslint-disable no-plusplus */
 import React, { useState, useEffect, useCallback } from 'react';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useParams } from 'react-router-dom';
@@ -20,6 +16,8 @@ import { Monster } from '../../model/monster';
 import ModifyControlsDialog from './SettingsScreen/ModifyControlsDialog';
 
 import { GameLayout } from './GameLayout';
+import { useBombManager } from '../../hooks/useBombManager';
+import { usePlayerActions } from '../../hooks/usePlayerActions';
 
 export const GameScreen = ({
   playerName,
@@ -31,22 +29,35 @@ export const GameScreen = ({
   const [player, setPlayer] = useState(new Player('1', playerName, 2, 2));
   const [playerTwo, setPlayerTwo] = useState(new Player('2', 'Player 2', 14, 9));
   const [playerThree, setPlayerThree] = useState(numOfPlayers === '3' ? new Player('3', 'Player 3', 7, 7) : null);
-  const [playerOneBombs, setPlayerOneBombs] = useState(new Map());
-  const [playerTwoBombs, setPlayerTwoBombs] = useState(new Map());
-  const [playerThreeBombs, setPlayerThreeBombs] = useState(new Map());
+  const { bombs: playerOneBombs, dropBomb: dropPlayerOneBomb } = useBombManager();
+  const { bombs: playerTwoBombs, dropBomb: dropPlayerTwoBomb } = useBombManager();
+  const { bombs: playerThreeBombs, dropBomb: dropPlayerThreeBomb } = useBombManager();
   const [bricks] = useState(() => generateBricks(10, 15));
   const [monsters, setMonsters] = useState([
     new Monster('monster1', 'Monster 1', 5, 5),
     new Monster('monster2', 'Monster 2', 10, 7),
   ]);
   const [keyBindings, setKeyBindings] = useState<KeyBindings>({});
-  const [playerOneBombActive, setPlayerOneBombActive] = useState(false);
-  const [playerTwoBombActive, setPlayerTwoBombActive] = useState(false);
-  const [playerThreeBombActive, setPlayerThreeBombActive] = useState(false);
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isModifyingControls, setIsModifyingControls] = useState(false);
+  const handleKeyDown = usePlayerActions(
+    player,
+    playerTwo,
+    playerThree,
+    setPlayer,
+    setPlayerTwo,
+    setPlayerThree,
+    keyBindings,
+    bricks,
+    dropPlayerOneBomb,
+    dropPlayerTwoBomb,
+    dropPlayerThreeBomb,
+    playerOneBombs,
+    playerTwoBombs,
+    playerThreeBombs
+  );
 
   useEffect(() => {
     const storedBindings = localStorage.getItem('playerKeyBindings');
@@ -56,52 +67,6 @@ export const GameScreen = ({
     }
   }, []);
 
-  const dropBomb = useCallback((x: number, y: number, playerNumber: number) => {
-    const bombId = `${x}-${y}`;
-    const currentBombs = playerNumber === 1 ? new Map(playerOneBombs) : new Map(playerTwoBombs);
-
-    if (!currentBombs.has(bombId)
-      && ((playerNumber === 1 && !playerOneBombActive)
-    || (playerNumber === 2 && !playerTwoBombActive)
-    || (playerNumber === 3 && !playerThreeBombActive))) {
-      currentBombs.set(bombId, 3);
-      if (playerNumber === 1) {
-        setPlayerOneBombs(currentBombs);
-        setPlayerOneBombActive(true);
-      } else if (playerNumber === 2) {
-        setPlayerTwoBombs(currentBombs);
-        setPlayerTwoBombActive(true);
-      } else {
-        setPlayerThreeBombs(currentBombs);
-        setPlayerThreeBombActive(true);
-      }
-
-      const interval = setInterval(() => {
-        currentBombs.set(bombId, currentBombs.get(bombId) - 1);
-        if (currentBombs.get(bombId) <= 0) {
-          currentBombs.delete(bombId);
-          clearInterval(interval);
-
-          if (playerNumber === 1) {
-            setPlayerOneBombActive(false);
-          } else if (playerNumber === 2) {
-            setPlayerTwoBombActive(false);
-          } else {
-            setPlayerThreeBombActive(false);
-          }
-        }
-        if (playerNumber === 1) {
-          setPlayerOneBombs(new Map(currentBombs));
-        } else if (playerNumber === 2) {
-          setPlayerTwoBombs(new Map(currentBombs));
-        } else {
-          setPlayerThreeBombs(new Map(currentBombs));
-        }
-      }, 1000);
-    }
-  }, [playerOneBombs, playerTwoBombs,
-    playerOneBombActive, playerTwoBombActive, playerThreeBombActive]);
-
   const moveMonsters = useCallback(() => {
     setMonsters((currentMonsters) => currentMonsters.map((monster) => {
       const result = monster.move(bricks);
@@ -109,7 +74,7 @@ export const GameScreen = ({
     }));
   }, [bricks]);
 
-  const checkPlayerCollision = useCallback((
+  const checkPlayerMonsterCollision = useCallback((
     currentPlayer: Player,
     currentPlayerTwo: Player,
     currentMonsters: Monster[],
@@ -133,76 +98,17 @@ export const GameScreen = ({
 
   useEffect(() => {
     if (numOfPlayers === '3' && playerThree) {
-      checkPlayerCollision(player, playerTwo, monsters, playerThree);
+      checkPlayerMonsterCollision(player, playerTwo, monsters, playerThree);
     } else {
-      checkPlayerCollision(player, playerTwo, monsters, null);
+      checkPlayerMonsterCollision(player, playerTwo, monsters, null);
     }
-  }, [player, playerTwo, monsters, checkPlayerCollision, playerThree, numOfPlayers]);
+  }, [player, playerTwo, monsters, checkPlayerMonsterCollision, playerThree, numOfPlayers]);
 
   useEffect(() => {
     if (isPaused) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const playerOneEnemies = [playerTwo, playerThree].filter((p): p is Player => p !== null);
-      const playerTwoEnemies = [player, playerThree].filter((p): p is Player => p !== null);
-      const playerThreeEnemies = [player, playerTwo];
-
-      const playerActions = {
-        [keyBindings['1'][0]]: () => player.move('up', bricks, playerOneBombs, playerOneEnemies),
-        [keyBindings['1'][1]]: () => player.move('left', bricks, playerOneBombs, playerOneEnemies),
-        [keyBindings['1'][2]]: () => player.move('down', bricks, playerOneBombs, playerOneEnemies),
-        [keyBindings['1'][3]]: () => player.move('right', bricks, playerOneBombs, playerOneEnemies),
-        [keyBindings['1'][4]]: () => { dropBomb(player.getY(), player.getX(), 1); return player; },
-        [keyBindings['2'][0]]: () => playerTwo.move('up', bricks, playerTwoBombs, playerTwoEnemies),
-        [keyBindings['2'][1]]: () => playerTwo.move('left', bricks, playerTwoBombs, playerTwoEnemies),
-        [keyBindings['2'][2]]: () => playerTwo.move('down', bricks, playerTwoBombs, playerTwoEnemies),
-        [keyBindings['2'][3]]: () => playerTwo.move('right', bricks, playerTwoBombs, playerTwoEnemies),
-        [keyBindings['2'][4]]: () => { dropBomb(playerTwo.getY(), playerTwo.getX(), 2); return playerTwo; },
-      };
-
-      if (playerThree) {
-        playerActions[keyBindings['3'][0]] = () => playerThree?.move('up', bricks, playerThreeBombs, playerThreeEnemies);
-        playerActions[keyBindings['3'][1]] = () => playerThree?.move('left', bricks, playerThreeBombs, playerThreeEnemies);
-        playerActions[keyBindings['3'][2]] = () => playerThree?.move('down', bricks, playerThreeBombs, playerThreeEnemies);
-        playerActions[keyBindings['3'][3]] = () => playerThree?.move('right', bricks, playerThreeBombs, playerThreeEnemies);
-        playerActions[keyBindings['3'][4]] = () => { dropBomb(playerThree?.getY(), playerThree?.getX(), 3); return playerThree; };
-      }
-
-      const action = playerActions[event.key];
-      if (action) {
-        requestAnimationFrame(() => {
-          const updatedPlayer = action();
-          if (updatedPlayer) {
-            if (updatedPlayer.getId() === player.getId()) {
-              setPlayer(new Player(
-                updatedPlayer.getId(),
-                updatedPlayer.getName(),
-                updatedPlayer.getX(),
-                updatedPlayer.getY()
-              ));
-            } else if (updatedPlayer.getId() === playerTwo.getId()) {
-              setPlayerTwo(new Player(
-                updatedPlayer.getId(),
-                updatedPlayer.getName(),
-                updatedPlayer.getX(),
-                updatedPlayer.getY()
-              ));
-            } else if (updatedPlayer.getId() === playerThree?.getId()) {
-              setPlayerThree(new Player(
-                updatedPlayer.getId(),
-                updatedPlayer.getName(),
-                updatedPlayer.getX(),
-                updatedPlayer.getY()
-              ));
-            }
-          }
-        });
-      }
-    };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [player, playerTwo, playerThree, keyBindings, bricks, dropBomb,
-    playerOneBombs, playerTwoBombs, playerThreeBombs, isPaused]);
+  }, [handleKeyDown]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -225,9 +131,6 @@ export const GameScreen = ({
   const handleRestartGame = () => {
     setPlayer(new Player('player1', playerName, 2, 2));
     setPlayerTwo(new Player('player2', 'Player 2', 14, 9));
-
-    setPlayerOneBombs(new Map());
-    setPlayerTwoBombs(new Map());
 
     setMonsters([
       new Monster('monster1', 'Monster 1', 5, 5),
