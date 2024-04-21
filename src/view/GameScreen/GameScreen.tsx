@@ -40,9 +40,9 @@ export const GameScreen = ({
   numObstacles = 4,
 }: GameScreenProps) => {
   const { numOfPlayers } = useParams();
-  const [player, setPlayer] = useState(new Player('player1', playerName, 2, 2));
-  const [playerTwo, setPlayerTwo] = useState(new Player('player2', 'Player 2', 14, 9));
-  const [playerThree, setPlayerThree] = useState(numOfPlayers === '3' ? new Player('player3', 'Player 3', 7, 7) : null);
+  const [player, setPlayer] = useState(new Player('1', playerName, 2, 2));
+  const [playerTwo, setPlayerTwo] = useState(new Player('2', 'Player 2', 14, 9));
+  const [playerThree, setPlayerThree] = useState(numOfPlayers === '3' ? new Player('3', 'Player 3', 7, 7) : null);
   const [playerOneBombs, setPlayerOneBombs] = useState(new Map());
   const [playerTwoBombs, setPlayerTwoBombs] = useState(new Map());
   const [playerThreeBombs, setPlayerThreeBombs] = useState(new Map());
@@ -114,22 +114,30 @@ export const GameScreen = ({
   }, [playerOneBombs, playerTwoBombs,
     playerOneBombActive, playerTwoBombActive, playerThreeBombActive]);
 
+  // const moveMonsters = useCallback(() => {
+  //   const players = [player, playerTwo, playerThree].filter(Boolean);
+  //   setMonsters((currentMonsters) => currentMonsters.map((monster) => {
+  //     const result = monster.move(bricks, players as Player[]);
+  //     result.collisions.forEach((collision) => {
+  //       if (collision.getId() === player.getId()) {
+  //         setPlayer(new Player(player.getId(), player.getName(), 2, 2));
+  //       } else if (collision.getId() === playerTwo.getId()) {
+  //         setPlayerTwo(new Player(playerTwo.getId(), playerTwo.getName(), 14, 9));
+  //       } else if (collision.getId() === playerThree?.getId()) {
+  //         setPlayerThree(new Player(playerThree?.getId(), playerThree.getName(), 7, 7));
+  //       }
+  //     });
+  //     return result.monster;
+  //   }));
+  // }, [bricks, player, playerTwo, playerThree]);
+
   const moveMonsters = useCallback(() => {
     const players = [player, playerTwo, playerThree].filter(Boolean);
     setMonsters((currentMonsters) => currentMonsters.map((monster) => {
       const result = monster.move(bricks, players as Player[]);
-      result.collisions.forEach((collision) => {
-        if (collision.getId() === player.getId()) {
-          setPlayer(new Player(player.getId(), player.getName(), 2, 2));
-        } else if (collision.getId() === playerTwo.getId()) {
-          setPlayerTwo(new Player(playerTwo.getId(), playerTwo.getName(), 14, 9));
-        } else if (collision.getId() === playerThree?.getId()) {
-          setPlayerThree(new Player(playerThree?.getId(), playerThree.getName(), 7, 7));
-        }
-      });
       return result.monster;
     }));
-  }, [bricks, player, playerTwo, playerThree]);
+  }, [bricks]);
 
   useEffect(() => {
     if (isPaused) return;
@@ -140,73 +148,52 @@ export const GameScreen = ({
       const playerThreeEnemies = [player, playerTwo];
 
       const playerActions = {
-        [keyBindings['1'][0]]: () => player.move('up', bricks, playerOneBombs, playerOneEnemies),
-        [keyBindings['1'][1]]: () => player.move('left', bricks, playerOneBombs, playerOneEnemies),
-        [keyBindings['1'][2]]: () => player.move('down', bricks, playerOneBombs, playerOneEnemies),
-        [keyBindings['1'][3]]: () => player.move('right', bricks, playerOneBombs, playerOneEnemies),
+        [keyBindings['1'][0]]: () => player.move('up', bricks, playerOneBombs, playerOneEnemies, monsters),
+        [keyBindings['1'][1]]: () => player.move('left', bricks, playerOneBombs, playerOneEnemies, monsters),
+        [keyBindings['1'][2]]: () => player.move('down', bricks, playerOneBombs, playerOneEnemies, monsters),
+        [keyBindings['1'][3]]: () => player.move('right', bricks, playerOneBombs, playerOneEnemies, monsters),
         [keyBindings['1'][4]]: () => { dropBomb(player.getY(), player.getX(), 1); return player; },
-        [keyBindings['2'][0]]: () => playerTwo.move('up', bricks, playerTwoBombs, playerTwoEnemies),
-        [keyBindings['2'][1]]: () => playerTwo.move('left', bricks, playerTwoBombs, playerTwoEnemies),
-        [keyBindings['2'][2]]: () => playerTwo.move('down', bricks, playerTwoBombs, playerTwoEnemies),
-        [keyBindings['2'][3]]: () => playerTwo.move('right', bricks, playerTwoBombs, playerTwoEnemies),
+        [keyBindings['2'][0]]: () => playerTwo.move('up', bricks, playerTwoBombs, playerTwoEnemies, monsters),
+        [keyBindings['2'][1]]: () => playerTwo.move('left', bricks, playerTwoBombs, playerTwoEnemies, monsters),
+        [keyBindings['2'][2]]: () => playerTwo.move('down', bricks, playerTwoBombs, playerTwoEnemies, monsters),
+        [keyBindings['2'][3]]: () => playerTwo.move('right', bricks, playerTwoBombs, playerTwoEnemies, monsters),
         [keyBindings['2'][4]]: () => { dropBomb(playerTwo.getY(), playerTwo.getX(), 2); return playerTwo; },
       };
 
       if (playerThree) {
-        playerActions[keyBindings['3'][0]] = () => playerThree?.move('up', bricks, playerThreeBombs, playerThreeEnemies);
-        playerActions[keyBindings['3'][1]] = () => playerThree?.move('left', bricks, playerThreeBombs, playerThreeEnemies);
-        playerActions[keyBindings['3'][2]] = () => playerThree?.move('down', bricks, playerThreeBombs, playerThreeEnemies);
-        playerActions[keyBindings['3'][3]] = () => playerThree?.move('right', bricks, playerThreeBombs, playerThreeEnemies);
+        playerActions[keyBindings['3'][0]] = () => playerThree?.move('up', bricks, playerThreeBombs, playerThreeEnemies, monsters);
+        playerActions[keyBindings['3'][1]] = () => playerThree?.move('left', bricks, playerThreeBombs, playerThreeEnemies, monsters);
+        playerActions[keyBindings['3'][2]] = () => playerThree?.move('down', bricks, playerThreeBombs, playerThreeEnemies, monsters);
+        playerActions[keyBindings['3'][3]] = () => playerThree?.move('right', bricks, playerThreeBombs, playerThreeEnemies, monsters);
         playerActions[keyBindings['3'][4]] = () => { dropBomb(playerThree?.getY(), playerThree?.getX(), 3); return playerThree; };
       }
 
       const action = playerActions[event.key];
-      const playerOneCollidedWithMonster = monsters
-        .some((monster) => monster.getX() === player.getX()
-      && monster.getY() === player.getY());
-      const playerTwoCollidedWithMonster = monsters
-        .some((monster) => monster.getX() === playerTwo.getX()
-      && monster.getY() === playerTwo.getY());
-      const playerThreeCollidedWithMonster = playerThree
-      && monsters.some((monster) => monster.getX() === playerThree.getX()
-      && monster.getY() === playerThree.getY());
       if (action) {
         requestAnimationFrame(() => {
           const updatedPlayer = action();
           if (updatedPlayer) {
             if (updatedPlayer.getId() === player.getId()) {
-              if (playerOneCollidedWithMonster) {
-                setPlayer(new Player(player.getId(), player.getName(), 2, 2));
-              } else {
-                setPlayer(new Player(
-                  updatedPlayer.getId(),
-                  updatedPlayer.getName(),
-                  updatedPlayer.getX(),
-                  updatedPlayer.getY()
-                ));
-              }
+              setPlayer(new Player(
+                updatedPlayer.getId(),
+                updatedPlayer.getName(),
+                updatedPlayer.getX(),
+                updatedPlayer.getY()
+              ));
             } else if (updatedPlayer.getId() === playerTwo.getId()) {
-              if (playerTwoCollidedWithMonster) {
-                setPlayerTwo(new Player(playerTwo.getId(), playerTwo.getName(), 14, 9));
-              } else {
-                setPlayerTwo(new Player(
-                  updatedPlayer.getId(),
-                  updatedPlayer.getName(),
-                  updatedPlayer.getX(),
-                  updatedPlayer.getY()
-                ));
-              }
+              setPlayerTwo(new Player(
+                updatedPlayer.getId(),
+                updatedPlayer.getName(),
+                updatedPlayer.getX(),
+                updatedPlayer.getY()
+              ));
             } else if (updatedPlayer.getId() === playerThree?.getId()) {
-              if (playerThreeCollidedWithMonster) {
-                setPlayerThree(new Player(playerThree.getId(), playerThree.getName(), 7, 7));
-              } else {
-                setPlayerThree(new Player(
-                  updatedPlayer.getId(),
-                  updatedPlayer.getName(),
-                  updatedPlayer.getX(),
-                  updatedPlayer.getY()
-                ));
-              }
+              setPlayerThree(new Player(
+                updatedPlayer.getId(),
+                updatedPlayer.getName(),
+                updatedPlayer.getX(),
+                updatedPlayer.getY()
+              ));
             }
           }
         });

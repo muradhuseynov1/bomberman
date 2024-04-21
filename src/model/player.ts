@@ -1,4 +1,14 @@
+/* eslint-disable no-console */
+/* eslint-disable prefer-destructuring */
 /* eslint-disable class-methods-use-this */
+// eslint-disable-next-line import/no-cycle
+import { Monster } from './monster';
+
+const coords: number[][] = [
+  [2, 2],
+  [14, 9],
+  [7, 7],
+];
 
 class Player {
   private id: string;
@@ -36,7 +46,8 @@ class Player {
     direction: string,
     bricks: Set<string>,
     bombs: Map<string, number>,
-    otherPlayers: Player[]
+    otherPlayers: Player[],
+    monsters: Monster[]
   ): Player {
     let newX = this.x;
     let newY = this.y;
@@ -59,6 +70,14 @@ class Player {
     }
 
     const collidesWithPlayer = otherPlayers.some((p) => p.getX() === newX && p.getY() === newY);
+    const collidesWithMonster = monsters.some((m) => m.getX() === newX && m.getY() === newY);
+
+    if (collidesWithMonster) {
+      this.x = coords[parseInt(this.id, 10) - 1][0];
+      this.y = coords[parseInt(this.id, 10) - 1][1];
+      console.log(`Player ${this.id} collided with a monster!`);
+      return this;
+    }
 
     if (!collidesWithPlayer) {
       this.x = newX;
