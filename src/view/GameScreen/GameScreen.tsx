@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-console */
 /* eslint-disable consistent-return */
 /* eslint-disable no-shadow */
@@ -114,30 +115,42 @@ export const GameScreen = ({
   }, [playerOneBombs, playerTwoBombs,
     playerOneBombActive, playerTwoBombActive, playerThreeBombActive]);
 
-  // const moveMonsters = useCallback(() => {
-  //   const players = [player, playerTwo, playerThree].filter(Boolean);
-  //   setMonsters((currentMonsters) => currentMonsters.map((monster) => {
-  //     const result = monster.move(bricks, players as Player[]);
-  //     result.collisions.forEach((collision) => {
-  //       if (collision.getId() === player.getId()) {
-  //         setPlayer(new Player(player.getId(), player.getName(), 2, 2));
-  //       } else if (collision.getId() === playerTwo.getId()) {
-  //         setPlayerTwo(new Player(playerTwo.getId(), playerTwo.getName(), 14, 9));
-  //       } else if (collision.getId() === playerThree?.getId()) {
-  //         setPlayerThree(new Player(playerThree?.getId(), playerThree.getName(), 7, 7));
-  //       }
-  //     });
-  //     return result.monster;
-  //   }));
-  // }, [bricks, player, playerTwo, playerThree]);
-
   const moveMonsters = useCallback(() => {
-    const players = [player, playerTwo, playerThree].filter(Boolean);
     setMonsters((currentMonsters) => currentMonsters.map((monster) => {
-      const result = monster.move(bricks, players as Player[]);
-      return result.monster;
+      const result = monster.move(bricks);
+      return result;
     }));
   }, [bricks]);
+
+  const checkPlayerCollision = useCallback((
+    currentPlayer: Player,
+    currentPlayerTwo: Player,
+    currentMonsters: Monster[],
+    currentPlayerThree: Player | null
+  ) => {
+    currentMonsters.forEach((monsterTemp) => {
+      if (monsterTemp.getX() === currentPlayer.getX()
+        && monsterTemp.getY() === currentPlayer.getY()) {
+        setPlayer((prev) => new Player(prev.getId(), prev.getName(), 2, 2));
+      }
+      if (monsterTemp.getX() === currentPlayerTwo.getX()
+        && monsterTemp.getY() === currentPlayerTwo.getY()) {
+        setPlayerTwo((prev) => new Player(prev.getId(), prev.getName(), 14, 9));
+      }
+      if (currentPlayerThree && monsterTemp.getX() === currentPlayerThree.getX()
+        && monsterTemp.getY() === currentPlayerThree.getY()) {
+        setPlayerThree((prev) => (prev ? new Player(prev.getId(), prev.getName(), 7, 7) : null));
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (numOfPlayers === '3' && playerThree) {
+      checkPlayerCollision(player, playerTwo, monsters, playerThree);
+    } else {
+      checkPlayerCollision(player, playerTwo, monsters, null);
+    }
+  }, [player, playerTwo, monsters, checkPlayerCollision, playerThree, numOfPlayers]);
 
   useEffect(() => {
     if (isPaused) return;
@@ -148,23 +161,23 @@ export const GameScreen = ({
       const playerThreeEnemies = [player, playerTwo];
 
       const playerActions = {
-        [keyBindings['1'][0]]: () => player.move('up', bricks, playerOneBombs, playerOneEnemies, monsters),
-        [keyBindings['1'][1]]: () => player.move('left', bricks, playerOneBombs, playerOneEnemies, monsters),
-        [keyBindings['1'][2]]: () => player.move('down', bricks, playerOneBombs, playerOneEnemies, monsters),
-        [keyBindings['1'][3]]: () => player.move('right', bricks, playerOneBombs, playerOneEnemies, monsters),
+        [keyBindings['1'][0]]: () => player.move('up', bricks, playerOneBombs, playerOneEnemies),
+        [keyBindings['1'][1]]: () => player.move('left', bricks, playerOneBombs, playerOneEnemies),
+        [keyBindings['1'][2]]: () => player.move('down', bricks, playerOneBombs, playerOneEnemies),
+        [keyBindings['1'][3]]: () => player.move('right', bricks, playerOneBombs, playerOneEnemies),
         [keyBindings['1'][4]]: () => { dropBomb(player.getY(), player.getX(), 1); return player; },
-        [keyBindings['2'][0]]: () => playerTwo.move('up', bricks, playerTwoBombs, playerTwoEnemies, monsters),
-        [keyBindings['2'][1]]: () => playerTwo.move('left', bricks, playerTwoBombs, playerTwoEnemies, monsters),
-        [keyBindings['2'][2]]: () => playerTwo.move('down', bricks, playerTwoBombs, playerTwoEnemies, monsters),
-        [keyBindings['2'][3]]: () => playerTwo.move('right', bricks, playerTwoBombs, playerTwoEnemies, monsters),
+        [keyBindings['2'][0]]: () => playerTwo.move('up', bricks, playerTwoBombs, playerTwoEnemies),
+        [keyBindings['2'][1]]: () => playerTwo.move('left', bricks, playerTwoBombs, playerTwoEnemies),
+        [keyBindings['2'][2]]: () => playerTwo.move('down', bricks, playerTwoBombs, playerTwoEnemies),
+        [keyBindings['2'][3]]: () => playerTwo.move('right', bricks, playerTwoBombs, playerTwoEnemies),
         [keyBindings['2'][4]]: () => { dropBomb(playerTwo.getY(), playerTwo.getX(), 2); return playerTwo; },
       };
 
       if (playerThree) {
-        playerActions[keyBindings['3'][0]] = () => playerThree?.move('up', bricks, playerThreeBombs, playerThreeEnemies, monsters);
-        playerActions[keyBindings['3'][1]] = () => playerThree?.move('left', bricks, playerThreeBombs, playerThreeEnemies, monsters);
-        playerActions[keyBindings['3'][2]] = () => playerThree?.move('down', bricks, playerThreeBombs, playerThreeEnemies, monsters);
-        playerActions[keyBindings['3'][3]] = () => playerThree?.move('right', bricks, playerThreeBombs, playerThreeEnemies, monsters);
+        playerActions[keyBindings['3'][0]] = () => playerThree?.move('up', bricks, playerThreeBombs, playerThreeEnemies);
+        playerActions[keyBindings['3'][1]] = () => playerThree?.move('left', bricks, playerThreeBombs, playerThreeEnemies);
+        playerActions[keyBindings['3'][2]] = () => playerThree?.move('down', bricks, playerThreeBombs, playerThreeEnemies);
+        playerActions[keyBindings['3'][3]] = () => playerThree?.move('right', bricks, playerThreeBombs, playerThreeEnemies);
         playerActions[keyBindings['3'][4]] = () => { dropBomb(playerThree?.getY(), playerThree?.getX(), 3); return playerThree; };
       }
 
@@ -223,26 +236,18 @@ export const GameScreen = ({
   };
 
   const handleRestartGame = () => {
-    // Reset player positions
     setPlayer(new Player('player1', playerName, 2, 2));
     setPlayerTwo(new Player('player2', 'Player 2', 14, 9));
 
-    // Reset bomb states
     setPlayerOneBombs(new Map());
     setPlayerTwoBombs(new Map());
 
-    // Reset monster positions
     setMonsters([
       new Monster('monster1', 'Monster 1', 5, 5),
       new Monster('monster2', 'Monster 2', 10, 7),
     ]);
-
-    // TODO: Reset the map (destroyed items)
-
-    // Close the settings dialog if open
     setIsSettingsOpen(false);
 
-    // Unpause the game if it was paused
     setIsPaused(false);
   };
 

@@ -1,8 +1,5 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
-
-import { Player } from './player';
-
 /* eslint-disable no-plusplus */
 class Monster {
   private id: string;
@@ -36,7 +33,7 @@ class Monster {
     return this.y;
   }
 
-  move(bricks: Set<string>, players: Player[]): { monster: Monster, collisions: Player[] } {
+  move(bricks: Set<string>): Monster {
     let newX = this.x;
     let newY = this.y;
     const possibleDirections = [];
@@ -65,12 +62,7 @@ class Monster {
       newX = selectedDirection.x;
       newY = selectedDirection.y;
     }
-
-    const collisions = players.filter((player) => player.getX() === newX && player.getY() === newY);
-    return {
-      monster: new Monster(this.id, this.name, newX, newY),
-      collisions
-    };
+    return new Monster(this.id, this.name, newX, newY);
   }
 }
 
