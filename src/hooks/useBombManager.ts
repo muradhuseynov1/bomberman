@@ -1,4 +1,3 @@
-// hooks/useBombManager.ts
 import { useState, useCallback } from 'react';
 
 type BombMap = Map<string, number>;
