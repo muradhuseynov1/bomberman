@@ -7,11 +7,7 @@
 import { Monster } from './monster';
 import { Player } from './player';
 import monsterImg from '../assets/smartmonster.png';
-
-interface Point {
-    x: number;
-    y: number;
-}
+import { Point } from '../constants/props';
 
 class SmartMonster extends Monster {
   constructor(id: string, name: string, x: number = 0, y: number = 0) {
@@ -25,28 +21,21 @@ class SmartMonster extends Monster {
   move(bricks: Set<string>, players: Player[]): Monster {
     let newX = this.x;
     let newY = this.y;
-    const possibleDirections = [];
+    const possibleDirections: Point[] = [];
 
     const up = { x: this.x, y: this.y - 1 };
     const right = { x: this.x + 1, y: this.y };
     const down = { x: this.x, y: this.y + 1 };
     const left = { x: this.x - 1, y: this.y };
 
-    if (this.y > 2 && !bricks.has(`${up.y}-${up.x}`) && !(up.x === 1 || up.x === 15)) {
-      possibleDirections.push(up);
-    }
-    if (this.x < 14 && !bricks.has(`${right.y}-${right.x}`) && !(right.y === 1 || right.y === 10)) {
-      possibleDirections.push(right);
-    }
-    if (this.y < 9 && !bricks.has(`${down.y}-${down.x}`) && !(down.x === 1 || down.x === 15)) {
-      possibleDirections.push(down);
-    }
-    if (this.x > 2 && !bricks.has(`${left.y}-${left.x}`) && !(left.y === 1 || left.y === 10)) {
-      possibleDirections.push(left);
-    }
-    if (possibleDirections.length === 4) {
-      const randomDirection = possibleDirections[Math.floor(Math.random()
-        * possibleDirections.length)];
+    [up, right, down, left].forEach((dir) => {
+      if (!bricks.has(`${dir.y}-${dir.x}`) && this.isInBounds(dir)) {
+        possibleDirections.push(dir);
+      }
+    });
+
+    if (possibleDirections.length) {
+      const randomDirection = possibleDirections[Math.floor(Math.random() * possibleDirections.length)];
       newX = randomDirection.x;
       newY = randomDirection.y;
     } else {
@@ -67,6 +56,7 @@ class SmartMonster extends Monster {
       const playerDistance = (player.getX() - this.x) ** 2 + (player.getY() - this.y) ** 2;
       return playerDistance < closestDistance ? player : closest;
     });
+
     return this.aStarSearch(
       bricks,
       { x: this.x, y: this.y },
@@ -85,7 +75,11 @@ class SmartMonster extends Monster {
     fScore.set(`${start.x},${start.y}`, this.heuristic(start, goal));
 
     while (openSet.length > 0) {
-      const current = openSet.reduce((a, b) => ((fScore.get(`${a.x},${a.y}`) ?? Infinity) < (fScore.get(`${b.x},${b.y}`) ?? Infinity) ? a : b));
+      const current = openSet.reduce((a, b) => {
+        const scoreA = fScore.get(`${a.x},${a.y}`) ?? Infinity;
+        const scoreB = fScore.get(`${b.x},${b.y}`) ?? Infinity;
+        return scoreA < scoreB ? a : b;
+      });
 
       if (current.x === goal.x && current.y === goal.y) {
         return this.reconstructPath(cameFrom, current);
@@ -116,14 +110,14 @@ class SmartMonster extends Monster {
       [0, -1], // Up
       [-1, 0] // Left
     ];
-    for (const [dx, dy] of directions) {
-      const x = point.x + dx;
-      const y = point.y + dy;
-      const positionKey = `${y}-${x}`;
-      if (!bricks.has(positionKey)) {
-        neighbors.push({ x, y });
+    directions.forEach(([dx, dy]) => {
+      const newX = point.x + dx;
+      const newY = point.y + dy;
+      const positionKey = `${newY}-${newX}`;
+      if (!bricks.has(positionKey) && this.isInBounds({ x: newX, y: newY })) {
+        neighbors.push({ x: newX, y: newY });
       }
-    }
+    });
     return neighbors;
   }
 
@@ -132,14 +126,16 @@ class SmartMonster extends Monster {
   }
 
   private reconstructPath(cameFrom: Map<string, Point>, current: Point): Point[] {
-    const path: Point[] = [current];
-    while (true) {
-      const next = cameFrom.get(`${current.x},${current.y}`);
-      if (!next) break;
-      path.unshift(next);
-      current = next;
+    const path = [];
+    while (current) {
+      path.unshift(current);
+      current = cameFrom.get(`${current.x},${current.y}`) as Point;
     }
     return path;
+  }
+
+  private isInBounds(point: Point): boolean {
+    return point.x >= 2 && point.x < 16 && point.y >= 2 && point.y < 11;
   }
 }
 

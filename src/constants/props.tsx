@@ -31,3 +31,8 @@ export const arrowKeySymbols: { [key: string]: string } = {
   ArrowLeft: '←',
   ArrowRight: '→'
 };
+
+export interface Point {
+  x: number;
+  y: number;
+}
