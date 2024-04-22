@@ -10,7 +10,7 @@ import { Player } from '../../model/player';
 import SettingsScreen from './SettingsScreen/SettingsScreen';
 import { generateBricks } from '../../helpers/generateBricks';
 import { GridCellComponent } from './GridCellComponent';
-import { GameScreenProps, KeyBindings } from '../../constants/props';
+import { KeyBindings } from '../../constants/props';
 import { Monster } from '../../model/monster';
 
 import ModifyControlsDialog from './SettingsScreen/ModifyControlsDialog';
@@ -19,16 +19,16 @@ import { GameLayout } from './GameLayout';
 import { useBombManager } from '../../hooks/useBombManager';
 import { usePlayerActions } from '../../hooks/usePlayerActions';
 
-export const GameScreen = ({
-  playerName,
-  numBombs = 4,
-  powers = [],
-  numObstacles = 4,
-}: GameScreenProps) => {
+const playerNames = ['Player One', 'Player Two', 'Player Three'];
+const numBombs = 4;
+const powers = ['Detonator', 'RollerSkate'];
+const numObstacles = 4;
+
+export const GameScreen = () => {
   const { numOfPlayers } = useParams();
-  const [player, setPlayer] = useState(new Player('1', playerName, 2, 2));
-  const [playerTwo, setPlayerTwo] = useState(new Player('2', 'Player 2', 14, 9));
-  const [playerThree, setPlayerThree] = useState(numOfPlayers === '3' ? new Player('3', 'Player 3', 7, 7) : null);
+  const [player, setPlayer] = useState(new Player('1', playerNames[0], 2, 2));
+  const [playerTwo, setPlayerTwo] = useState(new Player('2', playerNames[1], 14, 9));
+  const [playerThree, setPlayerThree] = useState(numOfPlayers === '3' ? new Player('3', playerNames[2], 7, 7) : null);
   const { bombs: playerOneBombs, dropBomb: dropPlayerOneBomb } = useBombManager();
   const { bombs: playerTwoBombs, dropBomb: dropPlayerTwoBomb } = useBombManager();
   const { bombs: playerThreeBombs, dropBomb: dropPlayerThreeBomb } = useBombManager();
@@ -135,8 +135,8 @@ export const GameScreen = ({
   };
 
   const handleRestartGame = () => {
-    setPlayer(new Player('player1', playerName, 2, 2));
-    setPlayerTwo(new Player('player2', 'Player 2', 14, 9));
+    setPlayer(new Player('player1', playerNames[0], 2, 2));
+    setPlayerTwo(new Player('player2', playerNames[1], 14, 9));
 
     setMonsters([
       new Monster('monster1', 'Monster 1', 5, 5),
@@ -175,7 +175,7 @@ export const GameScreen = ({
         <SettingsIcon />
       </StyledSettingsButton>
       <GameLayout
-        playerName={playerName}
+        playerName={playerNames[0]}
         numBombs={numBombs}
         powers={powers}
         numObstacles={numObstacles}

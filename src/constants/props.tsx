@@ -1,29 +1,22 @@
 export interface SettingsScreenProps {
-    open: boolean;
-    onClose: () => void;
-    onRestart: () => void;
-    onModifyControls?: () => void;
+  open: boolean;
+  onClose: () => void;
+  onRestart: () => void;
+  onModifyControls?: () => void;
 }
 
 export type Power = 'Detonator' | 'RollerSkate' | 'Invincibility' | 'Ghost' | 'Obstacle';
 
 export type PlayerStatusProps = {
-    playerName: string;
-    numBombs: number;
-    powers: Power[];
-    numObstacles: number;
-    index: number;
-}
-
-export type GameScreenProps = {
-    playerName: string;
-    numBombs: number;
-    powers: Power[];
-    numObstacles: number;
+  playerName: string;
+  numBombs: number;
+  powers: Power[];
+  numObstacles: number;
+  index: number;
 }
 
 export interface KeyBindings {
-    [playerNumber: string]: string[];
+  [playerNumber: string]: string[];
 }
 
 export const DEFAULT_KEY_BINDINGS: KeyBindings = {
