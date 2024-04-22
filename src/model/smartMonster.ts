@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-constant-condition */
 /* eslint-disable no-restricted-syntax */
@@ -100,7 +101,12 @@ class SmartMonster extends Monster {
 
   private getNeighbors(point: Point, bricks: Set<string>): Point[] {
     const neighbors: Point[] = [];
-    const directions = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+    const directions = [
+      [0, 1], // Down
+      [1, 0], // Right
+      [0, -1], // Up
+      [-1, 0] // Left
+    ];
     for (const [dx, dy] of directions) {
       const x = point.x + dx;
       const y = point.y + dy;
