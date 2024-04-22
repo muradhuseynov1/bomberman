@@ -46,6 +46,8 @@ export const GameScreen = () => {
   const [monsters, setMonsters] = useState([
     new SmartMonster('monster1', 'Monster 1', 5, 5),
     new ForkMonster('monster2', 'Monster 2', 10, 7),
+    new GhostMonster('monster2', 'Monster 2', 10, 7),
+    new Monster('monster2', 'Monster 2', 10, 7),
   ]);
   const [keyBindings, setKeyBindings] = useState<KeyBindings>({});
 
@@ -164,6 +166,8 @@ export const GameScreen = () => {
     setMonsters([
       new SmartMonster('monster1', 'Monster 1', 5, 5),
       new ForkMonster('monster2', 'Monster 2', 10, 7),
+      new GhostMonster('monster2', 'Monster 2', 10, 7),
+      new Monster('monster2', 'Monster 2', 10, 7),
     ]);
     setIsSettingsOpen(false);
 
