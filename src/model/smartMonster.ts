@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable max-len */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-constant-condition */
@@ -22,22 +23,25 @@ class SmartMonster extends Monster {
   }
 
   move(bricks: Set<string>, players: Player[]): Monster {
+    let newX = this.x;
+    let newY = this.y;
     const possibleDirections = this.getPossibleDirections(bricks);
-    if (possibleDirections.length > 0) {
+    if (possibleDirections.length === 4) {
+      console.log('working');
       const randomDirection = possibleDirections[Math.floor(Math.random()
         * possibleDirections.length)];
-      this.x = randomDirection.x;
-      this.y = randomDirection.y;
+      newX = randomDirection.x;
+      newY = randomDirection.y;
     } else {
       const path = this.findPathToNearestPlayer(players, bricks);
       if (path.length > 1) {
-        this.x = path[1].x;
-        this.y = path[1].y;
+        newX = path[1].x;
+        newY = path[1].y;
       } else {
         return super.move(bricks, players);
       }
     }
-    return this;
+    return new SmartMonster(this.id, this.name, newX, newY);
   }
 
   private getPossibleDirections(bricks: Set<string>): Point[] {

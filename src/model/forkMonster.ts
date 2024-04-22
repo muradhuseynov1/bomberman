@@ -41,10 +41,7 @@ class ForkMonster extends Monster {
       newX = chosenDirection.x;
       newY = chosenDirection.y;
     }
-
-    this.x = newX;
-    this.y = newY;
-    return this;
+    return new ForkMonster(this.id, this.name, newX, newY);
   }
 
   chooseDirection(

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
 /* eslint-disable no-console */
 /* eslint-disable consistent-return */
@@ -35,6 +36,7 @@ import { GameScreenProps, KeyBindings, arrowKeySymbols } from '../../constants/p
 import { Monster } from '../../model/monster';
 import { GhostMonster } from '../../model/ghostMonster';
 import { SmartMonster } from '../../model/smartMonster';
+import { ForkMonster } from '../../model/forkMonster';
 
 export const GameScreen = ({
   playerName,
@@ -51,7 +53,7 @@ export const GameScreen = ({
   const [playerThreeBombs, setPlayerThreeBombs] = useState(new Map());
   const [bricks] = useState(() => generateBricks(10, 15));
   const [monsters, setMonsters] = useState([
-    new SmartMonster('monster1', 'Monster 1', 5, 5),
+    new ForkMonster('monster1', 'Monster 1', 5, 5),
     new GhostMonster('monster2', 'Monster 2', 10, 7),
   ]);
   const [keyBindings, setKeyBindings] = useState<KeyBindings>({});
