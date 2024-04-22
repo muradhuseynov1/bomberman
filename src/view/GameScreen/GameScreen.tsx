@@ -4,7 +4,9 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-shadow */
 /* eslint-disable no-plusplus */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {
+  useState, useEffect, useCallback, useRef
+} from 'react';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useParams } from 'react-router-dom';
 import {
@@ -50,6 +52,17 @@ export const GameScreen = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isModifyingControls, setIsModifyingControls] = useState(false);
+
+  const playerRef = useRef(player);
+  const playerTwoRef = useRef(playerTwo);
+  const playerThreeRef = useRef(playerThree);
+
+  useEffect(() => {
+    playerRef.current = player;
+    playerTwoRef.current = playerTwo;
+    playerThreeRef.current = playerThree;
+  }, [player, playerTwo, playerThree]);
+
   const handleKeyDown = usePlayerActions([
     {
       player,
@@ -86,15 +99,13 @@ export const GameScreen = () => {
   }, []);
 
   const moveMonsters = useCallback(() => {
-    setMonsters((currentMonsters: Monster[]) => currentMonsters.map((monster) => {
-      const players = [player, playerTwo];
-      if (numOfPlayers === '3' && playerThree) {
-        players.push(playerThree);
-      }
-      const result = monster.move(bricks, players);
-      return result;
-    }) as (SmartMonster | ForkMonster)[]);
-  }, [bricks, player, playerTwo, playerThree, numOfPlayers]);
+    if (!isPaused) {
+      setMonsters((currentMonsters: Monster[]) => currentMonsters.map((monster) => {
+        const players = [playerRef.current, playerTwoRef.current, playerThreeRef.current].filter(Boolean) as Player[];
+        return monster.move(bricks, players);
+      }) as (SmartMonster | ForkMonster)[]);
+    }
+  }, [bricks, isPaused]);
 
   const checkPlayerMonsterCollision = useCallback((
     currentPlayer: Player,
