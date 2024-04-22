@@ -1,14 +1,18 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
+
+import { Player } from './player';
+import monsterImg from '../assets/monster.png';
 /* eslint-disable no-plusplus */
 class Monster {
-  private id: string;
+  protected id: string;
 
-  private name: string;
+  protected name: string;
 
-  private x: number;
+  protected x: number;
 
-  private y: number;
+  protected y: number;
 
   constructor(id: string, name: string, x: number = 0, y: number = 0) {
     this.id = id;
@@ -33,7 +37,11 @@ class Monster {
     return this.y;
   }
 
-  move(bricks: Set<string>): Monster {
+  getImg(): string {
+    return monsterImg;
+  }
+
+  move(bricks: Set<string>, players: Player[]): Monster {
     let newX = this.x;
     let newY = this.y;
     const possibleDirections = [];

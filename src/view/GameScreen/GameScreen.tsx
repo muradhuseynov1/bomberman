@@ -33,6 +33,8 @@ import {
 } from '../ConfigScreen/ConfigScreen.styles';
 import { GameScreenProps, KeyBindings, arrowKeySymbols } from '../../constants/props';
 import { Monster } from '../../model/monster';
+import { GhostMonster } from '../../model/ghostMonster';
+import { SmartMonster } from '../../model/smartMonster';
 
 export const GameScreen = ({
   playerName,
@@ -49,8 +51,8 @@ export const GameScreen = ({
   const [playerThreeBombs, setPlayerThreeBombs] = useState(new Map());
   const [bricks] = useState(() => generateBricks(10, 15));
   const [monsters, setMonsters] = useState([
-    new Monster('monster1', 'Monster 1', 5, 5),
-    new Monster('monster2', 'Monster 2', 10, 7),
+    new SmartMonster('monster1', 'Monster 1', 5, 5),
+    new GhostMonster('monster2', 'Monster 2', 10, 7),
   ]);
   const [keyBindings, setKeyBindings] = useState<KeyBindings>({});
   const [playerOneBombActive, setPlayerOneBombActive] = useState(false);
@@ -117,7 +119,11 @@ export const GameScreen = ({
 
   const moveMonsters = useCallback(() => {
     setMonsters((currentMonsters) => currentMonsters.map((monster) => {
-      const result = monster.move(bricks);
+      const players = [player, playerTwo];
+      if (numOfPlayers === '3' && playerThree) {
+        players.push(playerThree);
+      }
+      const result = monster.move(bricks, players);
       return result;
     }));
   }, [bricks]);
