@@ -135,7 +135,7 @@ class SmartMonster extends Monster {
   }
 
   private isInBounds(point: Point): boolean {
-    return point.x >= 2 && point.x < 16 && point.y >= 2 && point.y < 11;
+    return point.x >= 2 && point.x < 15 && point.y >= 2 && point.y < 10;
   }
 }
 
