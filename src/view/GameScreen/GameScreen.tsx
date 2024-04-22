@@ -42,22 +42,32 @@ export const GameScreen = ({
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isModifyingControls, setIsModifyingControls] = useState(false);
-  const handleKeyDown = usePlayerActions(
-    player,
-    playerTwo,
-    playerThree,
-    setPlayer,
-    setPlayerTwo,
-    setPlayerThree,
-    keyBindings,
-    bricks,
-    dropPlayerOneBomb,
-    dropPlayerTwoBomb,
-    dropPlayerThreeBomb,
-    playerOneBombs,
-    playerTwoBombs,
-    playerThreeBombs
-  );
+  const handleKeyDown = usePlayerActions([
+    {
+      player,
+      setNewPlayer: setPlayer,
+      dropBomb: dropPlayerOneBomb,
+      bombs: playerOneBombs,
+      keyBindings: keyBindings['1'],
+      enemies: [playerTwo, playerThree].filter((p): p is Player => p !== null),
+    },
+    {
+      player: playerTwo,
+      setNewPlayer: setPlayerTwo,
+      dropBomb: dropPlayerTwoBomb,
+      bombs: playerTwoBombs,
+      keyBindings: keyBindings['2'],
+      enemies: [player, playerThree].filter((p): p is Player => p !== null),
+    },
+    playerThree ? {
+      player: playerThree,
+      setNewPlayer: setPlayerThree,
+      dropBomb: dropPlayerThreeBomb,
+      bombs: playerThreeBombs,
+      keyBindings: keyBindings['3'],
+      enemies: [player, playerTwo]
+    } : null
+  ], bricks);
 
   useEffect(() => {
     const storedBindings = localStorage.getItem('playerKeyBindings');
