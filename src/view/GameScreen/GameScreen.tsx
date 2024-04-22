@@ -97,11 +97,7 @@ export const GameScreen = ({
   }, []);
 
   useEffect(() => {
-    if (numOfPlayers === '3' && playerThree) {
-      checkPlayerMonsterCollision(player, playerTwo, monsters, playerThree);
-    } else {
-      checkPlayerMonsterCollision(player, playerTwo, monsters, null);
-    }
+    checkPlayerMonsterCollision(player, playerTwo, monsters, playerThree ?? null);
   }, [player, playerTwo, monsters, checkPlayerMonsterCollision, playerThree, numOfPlayers]);
 
   useEffect(() => {
