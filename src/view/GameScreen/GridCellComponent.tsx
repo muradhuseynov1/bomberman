@@ -6,7 +6,6 @@ import {
 import wallImage from '../../assets/wall.jpeg';
 import brickImage from '../../assets/brick.jpeg';
 import playerImage from '../../assets/player-image.png';
-import monsterImage from '../../assets/monster.png';
 import bombImage from '../../assets/bomb.png';
 import { Player } from '../../model/player';
 import { Monster } from '../../model/monster';
@@ -47,7 +46,7 @@ export const GridCellComponent = ({
       )}
       {monster && (
         <CharacterContainer>
-          <img src={monsterImage} alt="Monster" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+          <img src={monster.getImg()} alt="Monster" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
         </CharacterContainer>
       )}
       {isBombCell && <img src={bombImage} alt="Bomb" style={{ width: '100%', height: '100%' }} />}

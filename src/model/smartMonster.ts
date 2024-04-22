@@ -25,9 +25,26 @@ class SmartMonster extends Monster {
   move(bricks: Set<string>, players: Player[]): Monster {
     let newX = this.x;
     let newY = this.y;
-    const possibleDirections = this.getPossibleDirections(bricks);
+    const possibleDirections = [];
+
+    const up = { x: this.x, y: this.y - 1 };
+    const right = { x: this.x + 1, y: this.y };
+    const down = { x: this.x, y: this.y + 1 };
+    const left = { x: this.x - 1, y: this.y };
+
+    if (this.y > 2 && !bricks.has(`${up.y}-${up.x}`) && !(up.x === 1 || up.x === 15)) {
+      possibleDirections.push(up);
+    }
+    if (this.x < 14 && !bricks.has(`${right.y}-${right.x}`) && !(right.y === 1 || right.y === 10)) {
+      possibleDirections.push(right);
+    }
+    if (this.y < 9 && !bricks.has(`${down.y}-${down.x}`) && !(down.x === 1 || down.x === 15)) {
+      possibleDirections.push(down);
+    }
+    if (this.x > 2 && !bricks.has(`${left.y}-${left.x}`) && !(left.y === 1 || left.y === 10)) {
+      possibleDirections.push(left);
+    }
     if (possibleDirections.length === 4) {
-      console.log('working');
       const randomDirection = possibleDirections[Math.floor(Math.random()
         * possibleDirections.length)];
       newX = randomDirection.x;
@@ -38,21 +55,10 @@ class SmartMonster extends Monster {
         newX = path[1].x;
         newY = path[1].y;
       } else {
-        return super.move(bricks, players);
+        return new SmartMonster(this.id, this.name, newX, newY);
       }
     }
     return new SmartMonster(this.id, this.name, newX, newY);
-  }
-
-  private getPossibleDirections(bricks: Set<string>): Point[] {
-    const directions = [
-      { x: this.x, y: this.y - 1 }, // Up
-      { x: this.x + 1, y: this.y }, // Right
-      { x: this.x, y: this.y + 1 }, // Down
-      { x: this.x - 1, y: this.y } // Left
-    ];
-
-    return directions.filter((dir) => !bricks.has(`${dir.y}-${dir.x}`));
   }
 
   private findPathToNearestPlayer(players: Player[], bricks: Set<string>): Point[] {
@@ -61,7 +67,6 @@ class SmartMonster extends Monster {
       const playerDistance = (player.getX() - this.x) ** 2 + (player.getY() - this.y) ** 2;
       return playerDistance < closestDistance ? player : closest;
     });
-
     return this.aStarSearch(
       bricks,
       { x: this.x, y: this.y },

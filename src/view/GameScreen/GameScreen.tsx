@@ -42,8 +42,8 @@ export const GameScreen = () => {
   const { bombs: playerThreeBombs, dropBomb: dropPlayerThreeBomb } = useBombManager();
   const [bricks] = useState(() => generateBricks(10, 15));
   const [monsters, setMonsters] = useState([
-    new ForkMonster('monster1', 'Monster 1', 5, 5),
-    new GhostMonster('monster2', 'Monster 2', 10, 7),
+    new SmartMonster('monster1', 'Monster 1', 5, 5),
+    new ForkMonster('monster2', 'Monster 2', 10, 7),
   ]);
   const [keyBindings, setKeyBindings] = useState<KeyBindings>({});
 
@@ -86,15 +86,15 @@ export const GameScreen = () => {
   }, []);
 
   const moveMonsters = useCallback(() => {
-    setMonsters((currentMonsters) => currentMonsters.map((monster) => {
+    setMonsters((currentMonsters: Monster[]) => currentMonsters.map((monster) => {
       const players = [player, playerTwo];
       if (numOfPlayers === '3' && playerThree) {
         players.push(playerThree);
       }
       const result = monster.move(bricks, players);
       return result;
-    }));
-  }, [bricks]);
+    }) as (SmartMonster | ForkMonster)[]);
+  }, [bricks, player, playerTwo, playerThree, numOfPlayers]);
 
   const checkPlayerMonsterCollision = useCallback((
     currentPlayer: Player,
@@ -151,8 +151,8 @@ export const GameScreen = () => {
     setPlayerTwo(new Player('player2', playerNames[1], 14, 9));
 
     setMonsters([
-      new Monster('monster1', 'Monster 1', 5, 5),
-      new Monster('monster2', 'Monster 2', 10, 7),
+      new SmartMonster('monster1', 'Monster 1', 5, 5),
+      new ForkMonster('monster2', 'Monster 2', 10, 7),
     ]);
     setIsSettingsOpen(false);
 
