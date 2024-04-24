@@ -11,7 +11,7 @@ import { Player } from '../../model/player';
 import SettingsScreen from './SettingsScreen/SettingsScreen';
 import { generateBricks } from '../../helpers/generateBricks';
 import { GridCellComponent } from './GridCellComponent';
-import { KeyBindings } from '../../constants/props';
+import { KeyBindings, Power } from '../../constants/props';
 import { Monster } from '../../model/monster';
 
 import ModifyControlsDialog from './SettingsScreen/ModifyControlsDialog';
@@ -22,7 +22,7 @@ import { usePlayerActions } from '../../hooks/usePlayerActions';
 
 const playerNames = ['Player One', 'Player Two', 'Player Three'];
 const numBombs = 4;
-const powers = ['Detonator', 'RollerSkate'];
+const powers: Power[] = ['Detonator', 'RollerSkate'];
 const numObstacles = 4;
 
 export const GameScreen = () => {

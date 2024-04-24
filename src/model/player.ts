@@ -3,7 +3,7 @@
 /* eslint-disable class-methods-use-this */
 // eslint-disable-next-line import/no-cycle
 
-import { Power } from "../constants/props";
+import { Power } from '../constants/props';
 
 class Player {
   private id: string;
@@ -24,9 +24,17 @@ class Player {
 
   private obstacles: number;
 
-
-
-  constructor(id: string, name: string, x: number, y: number, isActive: boolean = true, bombs: number = 4, bombRange: number = 2, powerUps: Power[] = [], obstacles: number = 0) {
+  constructor(
+    id: string,
+    name: string,
+    x: number,
+    y: number,
+    isActive: boolean = true,
+    bombs: number = 4,
+    bombRange: number = 2,
+    powerUps: Power[] = [],
+    obstacles: number = 0
+  ) {
     this.id = id;
     this.name = name;
     this.x = x;
