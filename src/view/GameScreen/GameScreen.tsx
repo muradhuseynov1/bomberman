@@ -22,11 +22,11 @@ const playerNames = ['Player One', 'Player Two', 'Player Three'];
 const numBombs = 4;
 const powers = ['Detonator', 'RollerSkate'];
 const numObstacles = 4;
+const defaultMap: never[] = [];
 
 const fetchMap = async () => {
-  const response = await fetch('/map.txt');
-  const mapText = await response.text();
-  return mapText.split(/\r?\n/).map((row) => row.trim().split('').slice(0, 15));
+  const mapData = JSON.parse(localStorage.getItem('selectedMap') || '[]');
+  return mapData.length > 0 ? mapData : defaultMap; // Provide a default map as a fallback
 };
 
 export const GameScreen = () => {
