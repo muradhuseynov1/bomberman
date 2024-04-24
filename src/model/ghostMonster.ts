@@ -5,6 +5,7 @@
 import { Monster } from './monster';
 import { Player } from './player';
 import monsterImg from '../assets/ghostmonster.png';
+import { Point } from '../constants/props';
 
 /* eslint-disable no-plusplus */
 class GhostMonster extends Monster {
@@ -12,27 +13,20 @@ class GhostMonster extends Monster {
     return monsterImg;
   }
 
-  move(map: string[][], players: Player[]): Monster {
+  move(map: string[][], players: Player[], bombs: Map<string, number>): Monster {
     let newX = this.x;
     let newY = this.y;
-    const possibleDirections = [];
+    const possibleDirections: Point[] = [];
     const up = { x: this.x, y: this.y - 1 };
     const right = { x: this.x + 1, y: this.y };
     const down = { x: this.x, y: this.y + 1 };
     const left = { x: this.x - 1, y: this.y };
 
-    if (this.y > 1 && !(up.x === 1 || up.x === 15)) {
-      possibleDirections.push(up);
-    }
-    if (this.x < 15 && !(right.y === 1 || right.y === 10)) {
-      possibleDirections.push(right);
-    }
-    if (this.y < 9 && !(down.x === 1 || down.x === 15)) {
-      possibleDirections.push(down);
-    }
-    if (this.x > 2 && !(left.y === 1 || left.y === 10)) {
-      possibleDirections.push(left);
-    }
+    [up, right, down, left].forEach((dir) => {
+      if (this.isValidMove(dir.x, dir.y, map, bombs) && this.isInBounds(dir)) {
+        possibleDirections.push(dir);
+      }
+    });
 
     if (possibleDirections.length > 0) {
       const selectedDirection = possibleDirections[Math.floor(
@@ -42,6 +36,15 @@ class GhostMonster extends Monster {
       newY = selectedDirection.y;
     }
     return new GhostMonster(this.id, this.name, newX, newY);
+  }
+
+  protected isValidMove(
+    y: number,
+    x: number,
+    map: string[][],
+    bombs: Map<string, number>
+  ): boolean {
+    return (!(bombs.has(`${y}-${x}`)));
   }
 }
 

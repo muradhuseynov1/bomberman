@@ -18,7 +18,7 @@ class SmartMonster extends Monster {
     return monsterImg;
   }
 
-  move(map: string[][], players: Player[]): Monster {
+  move(map: string[][], players: Player[], bombs: Map<string, number>): Monster {
     let newX = this.x;
     let newY = this.y;
     const possibleDirections: Point[] = [];
@@ -29,7 +29,7 @@ class SmartMonster extends Monster {
     const left = { x: this.x - 1, y: this.y };
 
     [up, right, down, left].forEach((dir) => {
-      if (map[dir.y][dir.x] === ' ' && this.isInBounds(dir)) {
+      if (this.isValidMove(dir.x, dir.y, map, bombs) && this.isInBounds(dir)) {
         possibleDirections.push(dir);
       }
     });

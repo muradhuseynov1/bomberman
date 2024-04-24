@@ -47,6 +47,7 @@ export const GameScreen = () => {
   const { bombs: playerOneBombs, dropBomb: dropPlayerOneBomb } = useBombManager();
   const { bombs: playerTwoBombs, dropBomb: dropPlayerTwoBomb } = useBombManager();
   const { bombs: playerThreeBombs, dropBomb: dropPlayerThreeBomb } = useBombManager();
+  const allBombs = new Map([...playerOneBombs, ...playerTwoBombs, ...playerThreeBombs]);
   const [map, setMap] = useState<string[][]>([]);
   const [monsters, setMonsters] = useState([
     new SmartMonster('monster1', 'Monster 1', 5, 5),
@@ -113,10 +114,10 @@ export const GameScreen = () => {
     if (!isPaused) {
       setMonsters((currentMonsters: Monster[]) => currentMonsters.map((monster) => {
         const players = [playerRef.current, playerTwoRef.current, playerThreeRef.current].filter(Boolean) as Player[];
-        return monster.move(map, players);
+        return monster.move(map, players, allBombs);
       }));
     }
-  }, [map, isPaused]);
+  }, [map, isPaused, allBombs]);
 
   const checkPlayerMonsterCollision = useCallback((
     currentPlayer: Player,

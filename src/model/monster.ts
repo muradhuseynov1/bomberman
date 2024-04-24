@@ -42,7 +42,7 @@ class Monster {
     return monsterImg;
   }
 
-  move(map: string[][], players: Player[]): Monster {
+  move(map: string[][], players: Player[], bombs: Map<string, number>): Monster {
     let newX = this.x;
     let newY = this.y;
     const possibleDirections: Point[] = [];
@@ -52,7 +52,7 @@ class Monster {
     const left: Point = { x: this.x - 1, y: this.y };
 
     [up, right, down, left].forEach((dir) => {
-      if (map[dir.y][dir.x] === ' ' && this.isInBounds(dir)) {
+      if (this.isValidMove(dir.x, dir.y, map, bombs) && this.isInBounds(dir)) {
         possibleDirections.push(dir);
       }
     });
@@ -69,6 +69,15 @@ class Monster {
 
   protected isInBounds(point: Point): boolean {
     return point.x >= 1 && point.x < 15 && point.y >= 1 && point.y < 10;
+  }
+
+  protected isValidMove(
+    y: number,
+    x: number,
+    map: string[][],
+    bombs: Map<string, number>
+  ): boolean {
+    return (map[x][y] === ' ' && bombs && !(bombs.has(`${y}-${x}`)));
   }
 }
 
