@@ -2,11 +2,12 @@ import React from 'react';
 import { Grid, Paper } from '@mui/material';
 import { MapContainer, MyGrid, StyledGameDialog } from './GameScreen.styles';
 import { PlayerStatus } from './PlayerStatusScreen/PlayerStatusScreen';
+import { Power } from '../../constants/props';
 
 type GameLayoutProps = {
   playerName: string;
   numBombs: number;
-  powers: any[];
+  powers: Power[];
   numObstacles: number;
   numOfPlayers: string;
   renderCellsAndPlayer: () => React.ReactNode;
