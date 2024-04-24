@@ -145,7 +145,7 @@ export const GameScreen = () => {
   };
 
   const handleRestartGame = () => {
-    setPlayer(new Player('player1', playerNames[0], 2, 2));
+    setPlayer(new Player('player1', playerNames[0], 1, 1));
     setPlayerTwo(new Player('player2', playerNames[1], 13, 8));
 
     setMonsters([
