@@ -26,7 +26,7 @@ const defaultMap: never[] = [];
 
 const fetchMap = async () => {
   const mapData = JSON.parse(localStorage.getItem('selectedMap') || '[]');
-  return mapData.length > 0 ? mapData : defaultMap; // Provide a default map as a fallback
+  return mapData.length > 0 ? mapData : defaultMap;
 };
 
 export const GameScreen = () => {
