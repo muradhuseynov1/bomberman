@@ -68,16 +68,17 @@ class Monster {
   }
 
   protected isInBounds(point: Point): boolean {
-    return point.x >= 1 && point.x < 15 && point.y >= 1 && point.y < 10;
+    return point.x >= 1 && point.x < 14 && point.y >= 1 && point.y < 9;
   }
 
   protected isValidMove(
-    y: number,
     x: number,
+    y: number,
     map: string[][],
     bombs: Map<string, number>
   ): boolean {
-    return (map[x][y] === ' ' && bombs && !(bombs.has(`${y}-${x}`)));
+    console.log(bombs);
+    return (map[y][x] === ' ' && !(bombs.has(`${y}-${x}`)));
   }
 }
 
