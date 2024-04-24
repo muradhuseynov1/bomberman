@@ -77,7 +77,6 @@ class Monster {
     map: string[][],
     bombs: Map<string, number>
   ): boolean {
-    console.log(bombs);
     return (map[y][x] === ' ' && !(bombs.has(`${y}-${x}`)));
   }
 }

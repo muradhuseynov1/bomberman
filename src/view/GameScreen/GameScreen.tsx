@@ -70,6 +70,15 @@ export const GameScreen = () => {
   const playerOneBombsRef = useRef(playerOneBombs);
   const playerTwoBombsRef = useRef(playerTwoBombs);
   const playerThreeBombsRef = useRef(playerThreeBombs);
+  const smartMonstersRef = useRef<Monster[]>([]);
+  const ghostMonstersRef = useRef<Monster[]>([]);
+  const forkMonstersRef = useRef<Monster[]>([]);
+
+  useEffect(() => {
+    smartMonstersRef.current = monsters.filter((monster) => monster instanceof SmartMonster);
+    ghostMonstersRef.current = monsters.filter((monster) => monster instanceof GhostMonster);
+    forkMonstersRef.current = monsters.filter((monster) => monster instanceof ForkMonster);
+  }, [monsters]);
 
   useEffect(() => {
     playerRef.current = player;
@@ -118,19 +127,56 @@ export const GameScreen = () => {
     }
   }, []);
 
-  const moveMonsters = useCallback(() => {
+  const moveSmartMonsters = useCallback(() => {
     if (!isPaused) {
-      setMonsters((currentMonsters: Monster[]) => currentMonsters.map((monster) => {
+      setMonsters((monsters) => monsters.map((monster) => {
         const players = [playerRef.current, playerTwoRef.current, playerThreeRef.current].filter(Boolean) as Player[];
         const allBombs = new Map([
           ...playerOneBombsRef.current,
           ...playerTwoBombsRef.current,
           ...playerThreeBombsRef.current
         ]);
-        return monster.move(map, players, allBombs);
+        if (monster instanceof SmartMonster) {
+          return monster.move(map, players, allBombs);
+        }
+        return monster;
       }));
     }
-  }, [map, isPaused]);
+  }, [isPaused, map]);
+
+  const moveGhostMonsters = useCallback(() => {
+    if (!isPaused) {
+      setMonsters((monsters) => monsters.map((monster) => {
+        const players = [playerRef.current, playerTwoRef.current, playerThreeRef.current].filter(Boolean) as Player[];
+        const allBombs = new Map([
+          ...playerOneBombsRef.current,
+          ...playerTwoBombsRef.current,
+          ...playerThreeBombsRef.current
+        ]);
+        if (monster instanceof GhostMonster) {
+          return monster.move(map, players, allBombs);
+        }
+        return monster;
+      }));
+    }
+  }, [isPaused, map]);
+
+  const moveForkMonsters = useCallback(() => {
+    if (!isPaused) {
+      setMonsters((monsters) => monsters.map((monster) => {
+        const players = [playerRef.current, playerTwoRef.current, playerThreeRef.current].filter(Boolean) as Player[];
+        const allBombs = new Map([
+          ...playerOneBombsRef.current,
+          ...playerTwoBombsRef.current,
+          ...playerThreeBombsRef.current
+        ]);
+        if (monster instanceof ForkMonster || monster instanceof Monster) {
+          return monster.move(map, players, allBombs);
+        }
+        return monster;
+      }));
+    }
+  }, [isPaused, map]);
 
   const checkPlayerMonsterCollision = useCallback((
     currentPlayer: Player,
@@ -165,12 +211,16 @@ export const GameScreen = () => {
   }, [handleKeyDown]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      moveMonsters();
-    }, 700);
+    const smartInterval = setInterval(moveSmartMonsters, 400); // faster interval for smart monsters
+    const ghostInterval = setInterval(moveGhostMonsters, 1000); // slower interval for ghost monsters
+    const forkInterval = setInterval(moveForkMonsters, 700); // default interval for fork monsters
 
-    return () => clearInterval(interval);
-  }, [moveMonsters]);
+    return () => {
+      clearInterval(smartInterval);
+      clearInterval(ghostInterval);
+      clearInterval(forkInterval);
+    };
+  }, [moveSmartMonsters, moveGhostMonsters, moveForkMonsters]);
 
   const handleOpenSettings = () => {
     setIsSettingsOpen(true);
