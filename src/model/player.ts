@@ -74,8 +74,7 @@ class Player {
 
   // eslint-disable-next-line no-unused-vars
   isValidMove(y: number, x: number, map: string[][], bombs: Map<string, number>): boolean {
-    // Only moveable if the space is empty ' '
-    return map[y][x] === ' ';
+    return (map[y][x] === ' ' && !(bombs.has(`${y}-${x}`)));
   }
 }
 
