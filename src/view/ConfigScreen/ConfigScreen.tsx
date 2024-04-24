@@ -110,9 +110,9 @@ export const ConfigScreen = () => {
   }, [numOfPlayers, playerKeyBindings]);
 
   const fetchMap = async (mapName: any) => {
-    const response = await fetch(`/maps/${mapName}.txt`);
-    const mapText = await response.text();
-    return mapText.split(/\r?\n/).map((row) => row.trim().split('').slice(0, 15));
+    const map = await import(`../../maps/${mapName}.txt`);
+    const mapText = map.default;
+    return mapText.split(/\r?\n/).map((row: any) => row.trim().split('').slice(0, 15));
   };
 
   const handleMapSelect = async (map: any) => {
