@@ -55,8 +55,9 @@ class Player {
         newX -= this.x > 0 && this.isValidMove(this.y, newX - 1, map, bombs) ? 1 : 0;
         break;
       case 'right':
-        // eslint-disable-next-line max-len
-        newX += this.x < map[0].length - 1 && this.isValidMove(this.y, newX + 1, map, bombs) ? 1 : 0;
+        newX += (
+          this.x < map[0].length - 1 && this.isValidMove(this.y, newX + 1, map, bombs)
+        ) ? 1 : 0;
         break;
       default:
         break;

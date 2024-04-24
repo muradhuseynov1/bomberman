@@ -33,7 +33,6 @@ class Monster {
     return this.y;
   }
 
-  // Modified to check the full map
   move(map: string[][]): Monster {
     let newX = this.x;
     let newY = this.y;
@@ -55,8 +54,8 @@ class Monster {
     }
 
     if (possibleDirections.length > 0) {
-      // eslint-disable-next-line max-len
-      const selectedDirection = possibleDirections[Math.floor(Math.random() * possibleDirections.length)];
+      const index = Math.floor(Math.random() * possibleDirections.length);
+      const selectedDirection = possibleDirections[index];
       newX = selectedDirection.x;
       newY = selectedDirection.y;
     }
