@@ -64,7 +64,6 @@ export const GameScreen = () => {
     fetchMap().then(setMap);
   }, []);
 
-
   const playerRef = useRef(player);
   const playerTwoRef = useRef(playerTwo);
   const playerThreeRef = useRef(playerThree);
@@ -115,7 +114,7 @@ export const GameScreen = () => {
       setMonsters((currentMonsters: Monster[]) => currentMonsters.map((monster) => {
         const players = [playerRef.current, playerTwoRef.current, playerThreeRef.current].filter(Boolean) as Player[];
         return monster.move(map, players);
-      }) as (SmartMonster | ForkMonster)[]);
+      }));
     }
   }, [map, isPaused]);
 
@@ -174,6 +173,7 @@ export const GameScreen = () => {
     setPlayerTwo(new Player('player2', playerNames[1], 13, 8));
 
     setMonsters([
+
       new SmartMonster('monster1', 'Monster 1', 5, 5),
       new ForkMonster('monster2', 'Monster 2', 10, 7),
       new GhostMonster('monster2', 'Monster 2', 10, 7),

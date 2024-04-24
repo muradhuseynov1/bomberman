@@ -14,7 +14,7 @@ class ForkMonster extends Monster {
     return monsterImg;
   }
 
-  move(bricks: Set<string>, players: Player[]): ForkMonster {
+  move(map: string[][], players: Player[]): ForkMonster {
     let newX = this.x;
     let newY = this.y;
     const possibleDirections: Point[] = [];
@@ -25,7 +25,7 @@ class ForkMonster extends Monster {
     const left: Point = { x: this.x - 1, y: this.y };
 
     [up, right, down, left].forEach((dir) => {
-      if (!bricks.has(`${dir.y}-${dir.x}`) && this.isInBounds(dir)) {
+      if (map[dir.y][dir.x] === ' ' && this.isInBounds(dir)) {
         possibleDirections.push(dir);
       }
     });
@@ -87,10 +87,6 @@ class ForkMonster extends Monster {
     }
 
     return bestDirection;
-  }
-
-  private isInBounds(point: Point): boolean {
-    return point.x >= 2 && point.x < 15 && point.y >= 2 && point.y < 10;
   }
 }
 

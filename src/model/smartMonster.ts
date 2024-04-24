@@ -18,7 +18,7 @@ class SmartMonster extends Monster {
     return monsterImg;
   }
 
-  move(bricks: Set<string>, players: Player[]): Monster {
+  move(map: string[][], players: Player[]): Monster {
     let newX = this.x;
     let newY = this.y;
     const possibleDirections: Point[] = [];
@@ -29,7 +29,7 @@ class SmartMonster extends Monster {
     const left = { x: this.x - 1, y: this.y };
 
     [up, right, down, left].forEach((dir) => {
-      if (!bricks.has(`${dir.y}-${dir.x}`) && this.isInBounds(dir)) {
+      if (map[dir.y][dir.x] === ' ' && this.isInBounds(dir)) {
         possibleDirections.push(dir);
       }
     });
@@ -39,7 +39,7 @@ class SmartMonster extends Monster {
       newX = randomDirection.x;
       newY = randomDirection.y;
     } else {
-      const path = this.findPathToNearestPlayer(players, bricks);
+      const path = this.findPathToNearestPlayer(players, map);
       if (path.length > 1) {
         newX = path[1].x;
         newY = path[1].y;
@@ -50,7 +50,7 @@ class SmartMonster extends Monster {
     return new SmartMonster(this.id, this.name, newX, newY);
   }
 
-  private findPathToNearestPlayer(players: Player[], bricks: Set<string>): Point[] {
+  private findPathToNearestPlayer(players: Player[], map: string[][]): Point[] {
     const closestPlayer = players.reduce((closest, player) => {
       const closestDistance = (closest.getX() - this.x) ** 2 + (closest.getY() - this.y) ** 2;
       const playerDistance = (player.getX() - this.x) ** 2 + (player.getY() - this.y) ** 2;
@@ -58,13 +58,13 @@ class SmartMonster extends Monster {
     });
 
     return this.aStarSearch(
-      bricks,
+      map,
       { x: this.x, y: this.y },
       { x: closestPlayer.getX(), y: closestPlayer.getY() }
     );
   }
 
-  private aStarSearch(bricks: Set<string>, start: Point, goal: Point): Point[] {
+  private aStarSearch(map: string[][], start: Point, goal: Point): Point[] {
     let openSet: Point[] = [start];
     const cameFrom: Map<string, Point> = new Map();
 
@@ -86,7 +86,7 @@ class SmartMonster extends Monster {
       }
 
       openSet = openSet.filter((pt) => pt.x !== current.x || pt.y !== current.y);
-      for (const neighbor of this.getNeighbors(current, bricks)) {
+      for (const neighbor of this.getNeighbors(current, map)) {
         const tentativeGScore = (gScore.get(`${current.x},${current.y}`) ?? Infinity) + 1;
         if (tentativeGScore < (gScore.get(`${neighbor.x},${neighbor.y}`) ?? Infinity)) {
           cameFrom.set(`${neighbor.x},${neighbor.y}`, current);
@@ -102,7 +102,7 @@ class SmartMonster extends Monster {
     return [];
   }
 
-  private getNeighbors(point: Point, bricks: Set<string>): Point[] {
+  private getNeighbors(point: Point, map: string[][]): Point[] {
     const neighbors: Point[] = [];
     const directions = [
       [0, 1], // Down
@@ -113,8 +113,7 @@ class SmartMonster extends Monster {
     directions.forEach(([dx, dy]) => {
       const newX = point.x + dx;
       const newY = point.y + dy;
-      const positionKey = `${newY}-${newX}`;
-      if (!bricks.has(positionKey) && this.isInBounds({ x: newX, y: newY })) {
+      if (map[newX][newY] === ' ' && this.isInBounds({ x: newX, y: newY })) {
         neighbors.push({ x: newX, y: newY });
       }
     });
@@ -132,10 +131,6 @@ class SmartMonster extends Monster {
       current = cameFrom.get(`${current.x},${current.y}`) as Point;
     }
     return path;
-  }
-
-  private isInBounds(point: Point): boolean {
-    return point.x >= 2 && point.x < 15 && point.y >= 2 && point.y < 10;
   }
 }
 

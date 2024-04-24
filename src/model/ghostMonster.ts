@@ -12,7 +12,7 @@ class GhostMonster extends Monster {
     return monsterImg;
   }
 
-  move(bricks: Set<string>, players: Player[]): Monster {
+  move(map: string[][], players: Player[]): Monster {
     let newX = this.x;
     let newY = this.y;
     const possibleDirections = [];
@@ -21,10 +21,10 @@ class GhostMonster extends Monster {
     const down = { x: this.x, y: this.y + 1 };
     const left = { x: this.x - 1, y: this.y };
 
-    if (this.y > 2 && !(up.x === 1 || up.x === 15)) {
+    if (this.y > 1 && !(up.x === 1 || up.x === 15)) {
       possibleDirections.push(up);
     }
-    if (this.x < 14 && !(right.y === 1 || right.y === 10)) {
+    if (this.x < 15 && !(right.y === 1 || right.y === 10)) {
       possibleDirections.push(right);
     }
     if (this.y < 9 && !(down.x === 1 || down.x === 15)) {
