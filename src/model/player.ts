@@ -37,8 +37,7 @@ class Player {
 
   move(
     direction: string,
-    bricks: Set<string>,
-    bombs: Map<string, number>,
+    map: string[][],
     otherPlayers: Player[]
   ): Player {
     let newX = this.x;
@@ -46,16 +45,16 @@ class Player {
 
     switch (direction) {
       case 'up':
-        newY -= this.y > 2 && this.isValidMove(newY - 1, this.x, bricks, bombs) ? 1 : 0;
+        newY -= this.y > 0 && this.isValidMove(newY - 1, this.x, map) ? 1 : 0;
         break;
       case 'down':
-        newY += this.y < 9 && this.isValidMove(newY + 1, this.x, bricks, bombs) ? 1 : 0;
+        newY += this.y < map.length - 1 && this.isValidMove(newY + 1, this.x, map) ? 1 : 0;
         break;
       case 'left':
-        newX -= this.x > 2 && this.isValidMove(this.y, newX - 1, bricks, bombs) ? 1 : 0;
+        newX -= this.x > 0 && this.isValidMove(this.y, newX - 1, map) ? 1 : 0;
         break;
       case 'right':
-        newX += this.x < 14 && this.isValidMove(this.y, newX + 1, bricks, bombs) ? 1 : 0;
+        newX += this.x < map[0].length - 1 && this.isValidMove(this.y, newX + 1, map) ? 1 : 0;
         break;
       default:
         break;
@@ -71,8 +70,9 @@ class Player {
     return this;
   }
 
-  isValidMove(y: number, x: number, bricks: Set<string>, bombs: Map<string, number>): boolean {
-    return !(bricks.has(`${y}-${x}`) || bombs.has(`${y}-${x}`));
+  isValidMove(y: number, x: number, map: string[][]): boolean {
+    // Only moveable if the space is empty ' '
+    return map[y][x] === ' ';
   }
 }
 
