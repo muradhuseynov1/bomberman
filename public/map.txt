@@ -3,7 +3,7 @@ W  BB         W
 W  B          W
 W             W
 W             W
-W       O     W
+W             W
 W             W
 W           B W
 W           B W

@@ -38,6 +38,7 @@ class Player {
   move(
     direction: string,
     map: string[][],
+    bombs: Map<string, number>,
     otherPlayers: Player[]
   ): Player {
     let newX = this.x;
@@ -45,16 +46,17 @@ class Player {
 
     switch (direction) {
       case 'up':
-        newY -= this.y > 0 && this.isValidMove(newY - 1, this.x, map) ? 1 : 0;
+        newY -= this.y > 0 && this.isValidMove(newY - 1, this.x, map, bombs) ? 1 : 0;
         break;
       case 'down':
-        newY += this.y < map.length - 1 && this.isValidMove(newY + 1, this.x, map) ? 1 : 0;
+        newY += this.y < map.length - 1 && this.isValidMove(newY + 1, this.x, map, bombs) ? 1 : 0;
         break;
       case 'left':
-        newX -= this.x > 0 && this.isValidMove(this.y, newX - 1, map) ? 1 : 0;
+        newX -= this.x > 0 && this.isValidMove(this.y, newX - 1, map, bombs) ? 1 : 0;
         break;
       case 'right':
-        newX += this.x < map[0].length - 1 && this.isValidMove(this.y, newX + 1, map) ? 1 : 0;
+        // eslint-disable-next-line max-len
+        newX += this.x < map[0].length - 1 && this.isValidMove(this.y, newX + 1, map, bombs) ? 1 : 0;
         break;
       default:
         break;
@@ -70,7 +72,8 @@ class Player {
     return this;
   }
 
-  isValidMove(y: number, x: number, map: string[][]): boolean {
+  // eslint-disable-next-line no-unused-vars
+  isValidMove(y: number, x: number, map: string[][], bombs: Map<string, number>): boolean {
     // Only moveable if the space is empty ' '
     return map[y][x] === ' ';
   }

@@ -165,12 +165,13 @@ export const GameScreen = () => {
   const renderCellsAndPlayer = () => map.flatMap((row, rowIndex) => row.map((cell, colIndex) => (
     <GridCellComponent
       // eslint-disable-next-line react/no-array-index-key
-      key={`${rowIndex}-${colIndex}`} // Correctly using `key` prop
+      key={`${rowIndex}-${colIndex}`}
       row={rowIndex}
       column={colIndex}
       players={[player, playerTwo, playerThree].filter((p) => p !== null) as Player[]}
       monsters={monsters}
       map={map}
+      bombs={new Map([...playerOneBombs, ...playerTwoBombs, ...playerThreeBombs])}
     />
   )));
 

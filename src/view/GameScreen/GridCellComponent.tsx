@@ -17,6 +17,7 @@ type GridCellComponentProps = {
   players: Player[];
   monsters: Monster[];
   map: string[][];
+  bombs: Map<string, number>;
 }
 
 export const GridCellComponent = ({
@@ -24,12 +25,13 @@ export const GridCellComponent = ({
   column,
   players,
   monsters,
-  map
+  map,
+  bombs
 }: GridCellComponentProps) => {
   const cellContent = map[row][column];
-  const isWallCell = cellContent === 'W'; // use map to determine content
+  const isWallCell = cellContent === 'W';
   const isBrickCell = cellContent === 'B';
-  const isBombCell = cellContent === 'O'; // assumption
+  const isBombCell = bombs.has(`${row}-${column}`);
   const player = players.find((p) => p.getX() === column && p.getY() === row);
   const monster = monsters.find((m) => m.getX() === column && m.getY() === row);
 
