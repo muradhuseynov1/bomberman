@@ -41,35 +41,33 @@ class Monster {
     return monsterImg;
   }
 
-  move(bricks: Set<string>, players: Player[]): Monster {
+  move(map: string[][], players: Player[]): Monster {
     let newX = this.x;
     let newY = this.y;
     const possibleDirections = [];
-    const up = { x: this.x, y: this.y - 1 };
-    const right = { x: this.x + 1, y: this.y };
-    const down = { x: this.x, y: this.y + 1 };
-    const left = { x: this.x - 1, y: this.y };
 
-    if (this.y > 2 && !bricks.has(`${up.y}-${up.x}`) && !(up.x === 1 || up.x === 15)) {
-      possibleDirections.push(up);
+    // Directions checking considering the boundaries and
+    // non-walkable cells ('W' for walls, 'B' for bricks)
+    if (this.y > 0 && map[this.y - 1][this.x] === ' ') { // Up
+      possibleDirections.push({ x: this.x, y: this.y - 1 });
     }
-    if (this.x < 14 && !bricks.has(`${right.y}-${right.x}`) && !(right.y === 1 || right.y === 10)) {
-      possibleDirections.push(right);
+    if (this.x < map[0].length - 1 && map[this.y][this.x + 1] === ' ') { // Right
+      possibleDirections.push({ x: this.x + 1, y: this.y });
     }
-    if (this.y < 9 && !bricks.has(`${down.y}-${down.x}`) && !(down.x === 1 || down.x === 15)) {
-      possibleDirections.push(down);
+    if (this.y < map.length - 1 && map[this.y + 1][this.x] === ' ') { // Down
+      possibleDirections.push({ x: this.x, y: this.y + 1 });
     }
-    if (this.x > 2 && !bricks.has(`${left.y}-${left.x}`) && !(left.y === 1 || left.y === 10)) {
-      possibleDirections.push(left);
+    if (this.x > 0 && map[this.y][this.x - 1] === ' ') { // Left
+      possibleDirections.push({ x: this.x - 1, y: this.y });
     }
 
     if (possibleDirections.length > 0) {
-      const selectedDirection = possibleDirections[Math.floor(
-        Math.random() * possibleDirections.length
-      )];
+      const index = Math.floor(Math.random() * possibleDirections.length);
+      const selectedDirection = possibleDirections[index];
       newX = selectedDirection.x;
       newY = selectedDirection.y;
     }
+
     return new Monster(this.id, this.name, newX, newY);
   }
 }
