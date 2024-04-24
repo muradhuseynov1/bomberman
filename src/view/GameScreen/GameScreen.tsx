@@ -1,5 +1,12 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable max-len */
+/* eslint-disable no-console */
 /* eslint-disable consistent-return */
-import React, { useState, useEffect, useCallback } from 'react';
+/* eslint-disable no-shadow */
+/* eslint-disable no-plusplus */
+import React, {
+  useState, useEffect, useCallback, useRef
+} from 'react';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useParams } from 'react-router-dom';
 import {
@@ -11,6 +18,9 @@ import SettingsScreen from './SettingsScreen/SettingsScreen';
 import { GridCellComponent } from './GridCellComponent';
 import { KeyBindings } from '../../constants/props';
 import { Monster } from '../../model/monster';
+import { GhostMonster } from '../../model/ghostMonster';
+import { SmartMonster } from '../../model/smartMonster';
+import { ForkMonster } from '../../model/forkMonster';
 
 import ModifyControlsDialog from './SettingsScreen/ModifyControlsDialog';
 
@@ -39,7 +49,9 @@ export const GameScreen = () => {
   const { bombs: playerThreeBombs, dropBomb: dropPlayerThreeBomb } = useBombManager();
   const [map, setMap] = useState<string[][]>([]);
   const [monsters, setMonsters] = useState([
-    new Monster('monster1', 'Monster 1', 5, 5),
+    new SmartMonster('monster1', 'Monster 1', 5, 5),
+    new ForkMonster('monster2', 'Monster 2', 10, 7),
+    new GhostMonster('monster2', 'Monster 2', 10, 7),
     new Monster('monster2', 'Monster 2', 10, 7),
   ]);
   const [keyBindings, setKeyBindings] = useState<KeyBindings>({});
@@ -51,6 +63,34 @@ export const GameScreen = () => {
   useEffect(() => {
     fetchMap().then(setMap);
   }, []);
+
+  const playerRef = useRef(player);
+  const playerTwoRef = useRef(playerTwo);
+  const playerThreeRef = useRef(playerThree);
+  const playerOneBombsRef = useRef(playerOneBombs);
+  const playerTwoBombsRef = useRef(playerTwoBombs);
+  const playerThreeBombsRef = useRef(playerThreeBombs);
+  const smartMonstersRef = useRef<Monster[]>([]);
+  const ghostMonstersRef = useRef<Monster[]>([]);
+  const forkMonstersRef = useRef<Monster[]>([]);
+
+  useEffect(() => {
+    smartMonstersRef.current = monsters.filter((monster) => monster instanceof SmartMonster);
+    ghostMonstersRef.current = monsters.filter((monster) => monster instanceof GhostMonster);
+    forkMonstersRef.current = monsters.filter((monster) => monster instanceof ForkMonster);
+  }, [monsters]);
+
+  useEffect(() => {
+    playerRef.current = player;
+    playerTwoRef.current = playerTwo;
+    playerThreeRef.current = playerThree;
+  }, [player, playerTwo, playerThree]);
+
+  useEffect(() => {
+    playerOneBombsRef.current = playerOneBombs;
+    playerTwoBombsRef.current = playerTwoBombs;
+    playerThreeBombsRef.current = playerThreeBombs;
+  }, [playerOneBombs, playerTwoBombs, playerThreeBombs]);
 
   const handleKeyDown = usePlayerActions([
     {
@@ -87,12 +127,56 @@ export const GameScreen = () => {
     }
   }, []);
 
-  const moveMonsters = useCallback(() => {
-    setMonsters((currentMonsters) => currentMonsters.map((monster) => {
-      const result = monster.move(map);
-      return result;
-    }));
-  }, [map]);
+  const moveSmartMonsters = useCallback(() => {
+    if (!isPaused) {
+      setMonsters((monsters) => monsters.map((monster) => {
+        const players = [playerRef.current, playerTwoRef.current, playerThreeRef.current].filter(Boolean) as Player[];
+        const allBombs = new Map([
+          ...playerOneBombsRef.current,
+          ...playerTwoBombsRef.current,
+          ...playerThreeBombsRef.current
+        ]);
+        if (monster instanceof SmartMonster) {
+          return monster.move(map, players, allBombs);
+        }
+        return monster;
+      }));
+    }
+  }, [isPaused, map]);
+
+  const moveGhostMonsters = useCallback(() => {
+    if (!isPaused) {
+      setMonsters((monsters) => monsters.map((monster) => {
+        const players = [playerRef.current, playerTwoRef.current, playerThreeRef.current].filter(Boolean) as Player[];
+        const allBombs = new Map([
+          ...playerOneBombsRef.current,
+          ...playerTwoBombsRef.current,
+          ...playerThreeBombsRef.current
+        ]);
+        if (monster instanceof GhostMonster) {
+          return monster.move(map, players, allBombs);
+        }
+        return monster;
+      }));
+    }
+  }, [isPaused, map]);
+
+  const moveForkMonsters = useCallback(() => {
+    if (!isPaused) {
+      setMonsters((monsters) => monsters.map((monster) => {
+        const players = [playerRef.current, playerTwoRef.current, playerThreeRef.current].filter(Boolean) as Player[];
+        const allBombs = new Map([
+          ...playerOneBombsRef.current,
+          ...playerTwoBombsRef.current,
+          ...playerThreeBombsRef.current
+        ]);
+        if (monster instanceof ForkMonster || monster instanceof Monster) {
+          return monster.move(map, players, allBombs);
+        }
+        return monster;
+      }));
+    }
+  }, [isPaused, map]);
 
   const checkPlayerMonsterCollision = useCallback((
     currentPlayer: Player,
@@ -127,12 +211,16 @@ export const GameScreen = () => {
   }, [handleKeyDown]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      moveMonsters();
-    }, 700);
+    const smartInterval = setInterval(moveSmartMonsters, 400); // faster interval for smart monsters
+    const ghostInterval = setInterval(moveGhostMonsters, 1000); // slower interval for ghost monsters
+    const forkInterval = setInterval(moveForkMonsters, 700); // default interval for fork monsters
 
-    return () => clearInterval(interval);
-  }, [moveMonsters]);
+    return () => {
+      clearInterval(smartInterval);
+      clearInterval(ghostInterval);
+      clearInterval(forkInterval);
+    };
+  }, [moveSmartMonsters, moveGhostMonsters, moveForkMonsters]);
 
   const handleOpenSettings = () => {
     setIsSettingsOpen(true);
@@ -149,7 +237,10 @@ export const GameScreen = () => {
     setPlayerTwo(new Player('player2', playerNames[1], 13, 8));
 
     setMonsters([
-      new Monster('monster1', 'Monster 1', 5, 5),
+
+      new SmartMonster('monster1', 'Monster 1', 5, 5),
+      new ForkMonster('monster2', 'Monster 2', 10, 7),
+      new GhostMonster('monster2', 'Monster 2', 10, 7),
       new Monster('monster2', 'Monster 2', 10, 7),
     ]);
     setIsSettingsOpen(false);

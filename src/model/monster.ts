@@ -1,14 +1,19 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
+
+import { Player } from './player';
+import monsterImg from '../assets/monster.png';
+import { Point } from '../constants/props';
 /* eslint-disable no-plusplus */
 class Monster {
-  private id: string;
+  protected id: string;
 
-  private name: string;
+  protected name: string;
 
-  private x: number;
+  protected x: number;
 
-  private y: number;
+  protected y: number;
 
   constructor(id: string, name: string, x: number = 0, y: number = 0) {
     this.id = id;
@@ -33,25 +38,24 @@ class Monster {
     return this.y;
   }
 
-  move(map: string[][]): Monster {
+  getImg(): string {
+    return monsterImg;
+  }
+
+  move(map: string[][], players: Player[], bombs: Map<string, number>): Monster {
     let newX = this.x;
     let newY = this.y;
-    const possibleDirections = [];
+    const possibleDirections: Point[] = [];
+    const up: Point = { x: this.x, y: this.y - 1 };
+    const right: Point = { x: this.x + 1, y: this.y };
+    const down: Point = { x: this.x, y: this.y + 1 };
+    const left: Point = { x: this.x - 1, y: this.y };
 
-    // Directions checking considering the boundaries and
-    // non-walkable cells ('W' for walls, 'B' for bricks)
-    if (this.y > 0 && map[this.y - 1][this.x] === ' ') { // Up
-      possibleDirections.push({ x: this.x, y: this.y - 1 });
-    }
-    if (this.x < map[0].length - 1 && map[this.y][this.x + 1] === ' ') { // Right
-      possibleDirections.push({ x: this.x + 1, y: this.y });
-    }
-    if (this.y < map.length - 1 && map[this.y + 1][this.x] === ' ') { // Down
-      possibleDirections.push({ x: this.x, y: this.y + 1 });
-    }
-    if (this.x > 0 && map[this.y][this.x - 1] === ' ') { // Left
-      possibleDirections.push({ x: this.x - 1, y: this.y });
-    }
+    [up, right, down, left].forEach((dir) => {
+      if (this.isValidMove(dir.x, dir.y, map, bombs) && this.isInBounds(dir)) {
+        possibleDirections.push(dir);
+      }
+    });
 
     if (possibleDirections.length > 0) {
       const index = Math.floor(Math.random() * possibleDirections.length);
@@ -61,6 +65,19 @@ class Monster {
     }
 
     return new Monster(this.id, this.name, newX, newY);
+  }
+
+  protected isInBounds(point: Point): boolean {
+    return point.x >= 1 && point.x < 14 && point.y >= 1 && point.y < 9;
+  }
+
+  protected isValidMove(
+    x: number,
+    y: number,
+    map: string[][],
+    bombs: Map<string, number>
+  ): boolean {
+    return (map[y][x] === ' ' && !(bombs.has(`${y}-${x}`)));
   }
 }
 
