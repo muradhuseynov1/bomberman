@@ -40,7 +40,7 @@ export const GridCellComponent = ({
     <GridCell key={index} isWall={isWallCell}>
       {isWallCell && <img src={wallImage} alt="Wall" style={{ width: '100%', height: '100%' }} />}
       {isBrickCell && <img src={brickImage} alt="Brick" style={{ width: '100%', height: '100%' }} />}
-      {player && (
+      {player && player.isAlive() && (
         <CharacterContainer>
           <img src={playerImage} alt="Player" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
         </CharacterContainer>

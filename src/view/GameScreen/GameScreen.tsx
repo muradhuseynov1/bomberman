@@ -1,3 +1,4 @@
+// /* eslint-disable max-len */
 /* eslint-disable consistent-return */
 import React, { useState, useEffect, useCallback } from 'react';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -29,10 +30,21 @@ export const GameScreen = () => {
   const [player, setPlayer] = useState(new Player('1', playerNames[0], 2, 2));
   const [playerTwo, setPlayerTwo] = useState(new Player('2', playerNames[1], 14, 9));
   const [playerThree, setPlayerThree] = useState(numOfPlayers === '3' ? new Player('3', playerNames[2], 7, 7) : null);
-  const { bombs: playerOneBombs, dropBomb: dropPlayerOneBomb } = useBombManager();
-  const { bombs: playerTwoBombs, dropBomb: dropPlayerTwoBomb } = useBombManager();
-  const { bombs: playerThreeBombs, dropBomb: dropPlayerThreeBomb } = useBombManager();
+  const players = [player, playerTwo, playerThree].filter((p): p is Player => p !== null);
+  const setPlayers = [setPlayer, setPlayerTwo, setPlayerThree];
   const [bricks] = useState(() => generateBricks(10, 15));
+  const {
+    bombs: playerOneBombs,
+    dropBomb: dropPlayerOneBomb
+  } = useBombManager(players, setPlayers, bricks);
+  const {
+    bombs: playerTwoBombs,
+    dropBomb: dropPlayerTwoBomb
+  } = useBombManager(players, setPlayers, bricks);
+  const {
+    bombs: playerThreeBombs,
+    dropBomb: dropPlayerThreeBomb
+  } = useBombManager(players, setPlayers, bricks);
   const [monsters, setMonsters] = useState([
     new Monster('monster1', 'Monster 1', 5, 5),
     new Monster('monster2', 'Monster 2', 10, 7),
@@ -123,6 +135,14 @@ export const GameScreen = () => {
 
     return () => clearInterval(interval);
   }, [moveMonsters]);
+
+  useEffect(() => {
+    if (!player.isAlive()) {
+      // Show death screen or disable player controls
+      // eslint-disable-next-line no-console
+      console.log(`${player.getName()} has been defeated.`);
+    }
+  }, [player.isAlive()]);
 
   const handleOpenSettings = () => {
     setIsSettingsOpen(true);

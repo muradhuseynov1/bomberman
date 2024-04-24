@@ -3,6 +3,8 @@
 /* eslint-disable class-methods-use-this */
 // eslint-disable-next-line import/no-cycle
 
+import { Power } from "../constants/props";
+
 class Player {
   private id: string;
 
@@ -12,11 +14,42 @@ class Player {
 
   private y: number;
 
-  constructor(id: string, name: string, x: number = 0, y: number = 0) {
+  private isActive: boolean;// New attribute to track if the player is still active
+
+  private bombs: number;
+
+  private bombRange: number;
+
+  private powerUps: Power[];
+
+  private obstacles: number;
+
+
+
+  constructor(id: string, name: string, x: number, y: number, isActive: boolean = true, bombs: number = 4, bombRange: number = 2, powerUps: Power[] = [], obstacles: number = 0) {
     this.id = id;
     this.name = name;
     this.x = x;
     this.y = y;
+    this.isActive = isActive;
+    this.bombs = bombs;
+    this.bombRange = bombRange;
+    this.powerUps = powerUps;
+    this.obstacles = obstacles;
+  }
+
+  static fromPlayer(player: Player): Player {
+    return new Player(
+      player.id,
+      player.name,
+      player.x,
+      player.y,
+      player.isActive,
+      player.bombs,
+      player.bombRange,
+      player.powerUps,
+      player.obstacles
+    );
   }
 
   getId(): string {
@@ -73,6 +106,21 @@ class Player {
 
   isValidMove(y: number, x: number, bricks: Set<string>, bombs: Map<string, number>): boolean {
     return !(bricks.has(`${y}-${x}`) || bombs.has(`${y}-${x}`));
+  }
+
+  killPlayer(): void {
+    console.log(`${this.name} has been killed.`);
+    this.isActive = false;
+  }
+
+  resetPosition(startX: number, startY: number): void {
+    this.x = startX;
+    this.y = startY;
+    this.isActive = true;
+  }
+
+  isAlive(): boolean {
+    return this.isActive;
   }
 }
 

@@ -33,12 +33,7 @@ export const usePlayerActions = (
           requestAnimationFrame(() => {
             const updatedPlayer = action();
             if (updatedPlayer) {
-              info.setNewPlayer(new Player(
-                updatedPlayer.getId(),
-                updatedPlayer.getName(),
-                updatedPlayer.getX(),
-                updatedPlayer.getY()
-              ));
+              info.setNewPlayer(Player.fromPlayer(updatedPlayer));
             }
           });
         }
