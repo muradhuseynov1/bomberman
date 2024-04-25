@@ -4,7 +4,7 @@ import {
   GridCell
 } from './GameScreen.styles';
 import wallImage from '../../assets/wall.jpeg';
-import brickImage from '../../assets/brick.jpeg';
+import boxImage from '../../assets/box.png';
 import playerImage from '../../assets/player-image.png';
 import bombImage from '../../assets/bomb.png';
 import { Player } from '../../model/player';
@@ -29,7 +29,7 @@ export const GridCellComponent = ({
 }: GridCellComponentProps) => {
   const cellContent = map[row][column];
   const isWallCell = cellContent === 'W';
-  const isBrickCell = cellContent === 'B';
+  const isBoxCell = cellContent === 'B';
   const isBombCell = bombs.has(`${row}-${column}`);
   const player = players.find((p) => p.getX() === column && p.getY() === row);
   const monster = monsters.find((m) => m.getX() === column && m.getY() === row);
@@ -37,7 +37,7 @@ export const GridCellComponent = ({
   return (
     <GridCell isWall={isWallCell}>
       {isWallCell && <img src={wallImage} alt="Wall" style={{ width: '100%', height: '100%' }} />}
-      {isBrickCell && <img src={brickImage} alt="Brick" style={{ width: '100%', height: '100%' }} />}
+      {isBoxCell && <img src={boxImage} alt="Box" style={{ width: '100%', height: '100%' }} />}
       {player && (
         <CharacterContainer>
           <img src={playerImage} alt="Player" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
