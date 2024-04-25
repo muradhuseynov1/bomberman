@@ -33,9 +33,10 @@ export const GridCellComponent = ({
   const isBombCell = bombs.has(`${row}-${column}`);
   const player = players.find((p) => p.getX() === column && p.getY() === row);
   const monster = monsters.find((m) => m.getX() === column && m.getY() === row);
+  const isEmptyCell = !isWallCell && !isBoxCell;
 
   return (
-    <GridCell isWall={isWallCell}>
+    <GridCell isWall={isWallCell} style={{ backgroundColor: isEmptyCell ? 'green' : 'transparent' }}>
       {isWallCell && <img src={wallImage} alt="Wall" style={{ width: '100%', height: '100%' }} />}
       {isBoxCell && <img src={boxImage} alt="Box" style={{ width: '100%', height: '100%' }} />}
       {player && (

@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-console */
 /* eslint-disable max-len */
 /* eslint-disable no-alert */
 import React, {
@@ -24,7 +26,7 @@ import { GameLayout } from './GameLayout';
 import { useBombManager } from '../../hooks/useBombManager';
 import { usePlayerActions } from '../../hooks/usePlayerActions';
 
-const playerNames = ['Player One', 'Player Two', 'Player Three'];
+const playerNames = ['Player 1', 'Player 2', 'Player 3'];
 const numBombs = 1;
 const powers = ['Detonator', 'RollerSkate'];
 const numObstacles = 4;
@@ -36,24 +38,70 @@ const fetchMap = async () => {
 };
 
 export const GameScreen = () => {
-  const { numOfPlayers } = useParams();
+  const { numOfPlayers, numOfRounds, selectedMap } = useParams();
   const [player, setPlayer] = useState(new Player('1', playerNames[0], 1, 1));
   const [playerTwo, setPlayerTwo] = useState(new Player('2', playerNames[1], 13, 8));
-  const [playerThree, setPlayerThree] = useState(numOfPlayers === '3' ? new Player('3', playerNames[2], 7, 7) : null);
+  const [playerThree, setPlayerThree] = useState(numOfPlayers === '3' ? new Player('3', playerNames[2], 1, 8) : null);
   const { bombs: playerOneBombs, dropBomb: dropPlayerOneBomb } = useBombManager();
   const { bombs: playerTwoBombs, dropBomb: dropPlayerTwoBomb } = useBombManager();
   const { bombs: playerThreeBombs, dropBomb: dropPlayerThreeBomb } = useBombManager();
+  console.log(numOfRounds);
   const [map, setMap] = useState<string[][]>([]);
-  const [monsters, setMonsters] = useState([
-    new SmartMonster('monster1', 'Monster 1', 5, 5),
-    new ForkMonster('monster2', 'Monster 2', 10, 7),
-    new GhostMonster('monster2', 'Monster 2', 10, 7),
-    new Monster('monster2', 'Monster 2', 10, 7),
-  ]);
   const [keyBindings, setKeyBindings] = useState<KeyBindings>({});
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isModifyingControls, setIsModifyingControls] = useState(false);
+  const [monsters, setMonsters] = useState([] as Monster[]);
+  useEffect(() => {
+    switch (selectedMap) {
+      case 'map1':
+        if (numOfPlayers === '3') {
+          setMonsters([
+            new SmartMonster('monster1', 'Monster 1', 6, 5),
+            new Monster('monster2', 'Monster 2', 10, 2),
+          ]);
+        } else {
+          setMonsters([
+            new SmartMonster('monster1', 'Monster 1', 6, 5),
+            new Monster('monster2', 'Monster 2', 10, 2),
+            new Monster('monster3', 'Monster 3', 4, 8),
+          ]);
+        }
+        break;
+      case 'map2':
+        if (numOfPlayers === '3') {
+          setMonsters([
+            new GhostMonster('monster1', 'Monster 1', 6, 5),
+            new SmartMonster('monster2', 'Monster 2', 10, 2),
+          ]);
+        } else {
+          setMonsters([
+            new GhostMonster('monster1', 'Monster 1', 7, 5),
+            new SmartMonster('monster2', 'Monster 2', 4, 8),
+            new Monster('monster3', 'Monster 3', 6, 1),
+          ]);
+        }
+        break;
+      case 'map3':
+        if (numOfPlayers === '3') {
+          setMonsters([
+            new ForkMonster('monster1', 'Monster 1', 7, 4),
+            new GhostMonster('monster2', 'Monster 2', 11, 1),
+            new Monster('monster3', 'Monster 3', 5, 8),
+          ]);
+        } else {
+          setMonsters([
+            new ForkMonster('monster1', 'Monster 1', 9, 1),
+            new SmartMonster('monster2', 'Monster 2', 6, 3),
+            new Monster('monster3', 'Monster 3', 5, 8),
+            new GhostMonster('monster4', 'Monster 4', 8, 6),
+          ]);
+        }
+        break;
+      default:
+        setMonsters([]);
+    }
+  }, [selectedMap]);
 
   useEffect(() => {
     fetchMap().then(setMap);
@@ -124,7 +172,7 @@ export const GameScreen = () => {
 
   const moveSmartMonsters = useCallback(() => {
     if (!isPaused) {
-      setMonsters((smartMonsters) => smartMonsters.map((monster) => {
+      setMonsters((smartMonsters) => smartMonsters.map((monster, idx, self) => {
         const players = [
           playerRef.current, playerTwoRef.current, playerThreeRef.current
         ].filter(Boolean) as Player[];
@@ -133,8 +181,9 @@ export const GameScreen = () => {
           ...playerTwoBombsRef.current,
           ...playerThreeBombsRef.current
         ]);
+        const otherMonsters = self.filter((m, i) => i !== idx);
         if (monster instanceof SmartMonster) {
-          return monster.move(map, players, allBombs);
+          return monster.move(map, players, allBombs, otherMonsters);
         }
         return monster;
       }));
@@ -162,7 +211,7 @@ export const GameScreen = () => {
 
   const moveForkMonsters = useCallback(() => {
     if (!isPaused) {
-      setMonsters((basicForkMonsters) => basicForkMonsters.map((monster) => {
+      setMonsters((basicForkMonsters) => basicForkMonsters.map((monster, idx, self) => {
         const players = [
           playerRef.current, playerTwoRef.current, playerThreeRef.current
         ].filter(Boolean) as Player[];
@@ -171,8 +220,9 @@ export const GameScreen = () => {
           ...playerTwoBombsRef.current,
           ...playerThreeBombsRef.current
         ]);
+        const otherMonsters = self.filter((m, i) => i !== idx);
         if (monster instanceof ForkMonster || monster instanceof Monster) {
-          return monster.move(map, players, allBombs);
+          return monster.move(map, players, allBombs, otherMonsters);
         }
         return monster;
       }));
@@ -180,11 +230,51 @@ export const GameScreen = () => {
   }, [isPaused, map]);
 
   const resetGame = () => {
-    // Reset players and potentially the game state
     setPlayer(new Player('1', playerNames[0], 1, 1, true));
     setPlayerTwo(new Player('2', playerNames[1], 13, 8, true));
-    setPlayerThree(numOfPlayers === '3' ? new Player('3', playerNames[2], 7, 7, true) : null);
-    // Other state resets as necessary
+    setPlayerThree(numOfPlayers === '3' ? new Player('3', playerNames[2], 1, 8, true) : null);
+    if (selectedMap === 'map1') {
+      if (numOfPlayers === '3') {
+        setMonsters([
+          new SmartMonster('monster1', 'Monster 1', 6, 5),
+          new Monster('monster2', 'Monster 2', 10, 2),
+        ]);
+      } else {
+        setMonsters([
+          new SmartMonster('monster1', 'Monster 1', 6, 5),
+          new Monster('monster2', 'Monster 2', 10, 2),
+          new Monster('monster3', 'Monster 3', 4, 8),
+        ]);
+      }
+    } else if (selectedMap === 'map2') {
+      if (numOfPlayers === '3') {
+        setMonsters([
+          new GhostMonster('monster1', 'Monster 1', 6, 5),
+          new SmartMonster('monster2', 'Monster 2', 10, 2),
+        ]);
+      } else {
+        setMonsters([
+          new GhostMonster('monster1', 'Monster 1', 7, 5),
+          new SmartMonster('monster2', 'Monster 2', 4, 8),
+          new Monster('monster3', 'Monster 3', 6, 1),
+        ]);
+      }
+    } else if (selectedMap === 'map3') {
+      if (numOfPlayers === '3') {
+        setMonsters([
+          new ForkMonster('monster1', 'Monster 1', 7, 4),
+          new GhostMonster('monster2', 'Monster 2', 11, 1),
+          new Monster('monster3', 'Monster 3', 5, 8),
+        ]);
+      } else {
+        setMonsters([
+          new ForkMonster('monster1', 'Monster 1', 9, 1),
+          new SmartMonster('monster2', 'Monster 2', 6, 3),
+          new Monster('monster3', 'Monster 3', 5, 8),
+          new GhostMonster('monster4', 'Monster 4', 8, 6),
+        ]);
+      }
+    }
   };
 
   const checkEndOfRound = () => {
@@ -192,12 +282,11 @@ export const GameScreen = () => {
 
     if (activePlayers.length === 1) {
       alert(`${activePlayers[0]?.getName()} wins the round!`);
-      resetGame(); // Reset game to initial conditions or go to next round
+      resetGame();
     } else if (activePlayers.length === 0) {
       alert('No players left, draw!');
       resetGame();
     }
-    // else: If more than one player is still active, do nothing and wait for more gameplay.
   };
 
   const checkPlayerMonsterCollision = useCallback((
@@ -238,7 +327,7 @@ export const GameScreen = () => {
   }, [handleKeyDown]);
 
   useEffect(() => {
-    const smartInterval = setInterval(moveSmartMonsters, 400);
+    const smartInterval = setInterval(moveSmartMonsters, 600);
     const ghostInterval = setInterval(moveGhostMonsters, 1000);
     const forkInterval = setInterval(moveForkMonsters, 700);
 
@@ -264,11 +353,10 @@ export const GameScreen = () => {
     setPlayerTwo(new Player('player2', playerNames[1], 13, 8));
 
     setMonsters([
-
       new SmartMonster('monster1', 'Monster 1', 5, 5),
-      new ForkMonster('monster2', 'Monster 2', 10, 7),
-      new GhostMonster('monster2', 'Monster 2', 10, 7),
-      new Monster('monster2', 'Monster 2', 10, 7),
+      new ForkMonster('monster2', 'Monster 2', 5, 8),
+      new GhostMonster('monster2', 'Monster 2', 9, 7),
+      new Monster('monster2', 'Monster 2', 10, 5),
     ]);
     setIsSettingsOpen(false);
 
