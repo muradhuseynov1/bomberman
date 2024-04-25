@@ -1,9 +1,5 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
-/* eslint-disable no-console */
-/* eslint-disable consistent-return */
-/* eslint-disable no-shadow */
-/* eslint-disable no-plusplus */
+/* eslint-disable no-alert */
 import React, {
   useState, useEffect, useCallback, useRef
 } from 'react';
@@ -29,7 +25,7 @@ import { useBombManager } from '../../hooks/useBombManager';
 import { usePlayerActions } from '../../hooks/usePlayerActions';
 
 const playerNames = ['Player One', 'Player Two', 'Player Three'];
-const numBombs = 4;
+const numBombs = 1;
 const powers = ['Detonator', 'RollerSkate'];
 const numObstacles = 4;
 const defaultMap: never[] = [];
@@ -55,7 +51,6 @@ export const GameScreen = () => {
     new Monster('monster2', 'Monster 2', 10, 7),
   ]);
   const [keyBindings, setKeyBindings] = useState<KeyBindings>({});
-
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isModifyingControls, setIsModifyingControls] = useState(false);
@@ -129,8 +124,10 @@ export const GameScreen = () => {
 
   const moveSmartMonsters = useCallback(() => {
     if (!isPaused) {
-      setMonsters((monsters) => monsters.map((monster) => {
-        const players = [playerRef.current, playerTwoRef.current, playerThreeRef.current].filter(Boolean) as Player[];
+      setMonsters((smartMonsters) => smartMonsters.map((monster) => {
+        const players = [
+          playerRef.current, playerTwoRef.current, playerThreeRef.current
+        ].filter(Boolean) as Player[];
         const allBombs = new Map([
           ...playerOneBombsRef.current,
           ...playerTwoBombsRef.current,
@@ -146,8 +143,10 @@ export const GameScreen = () => {
 
   const moveGhostMonsters = useCallback(() => {
     if (!isPaused) {
-      setMonsters((monsters) => monsters.map((monster) => {
-        const players = [playerRef.current, playerTwoRef.current, playerThreeRef.current].filter(Boolean) as Player[];
+      setMonsters((ghostMonsters) => ghostMonsters.map((monster) => {
+        const players = [
+          playerRef.current, playerTwoRef.current, playerThreeRef.current
+        ].filter(Boolean) as Player[];
         const allBombs = new Map([
           ...playerOneBombsRef.current,
           ...playerTwoBombsRef.current,
@@ -163,8 +162,10 @@ export const GameScreen = () => {
 
   const moveForkMonsters = useCallback(() => {
     if (!isPaused) {
-      setMonsters((monsters) => monsters.map((monster) => {
-        const players = [playerRef.current, playerTwoRef.current, playerThreeRef.current].filter(Boolean) as Player[];
+      setMonsters((basicForkMonsters) => basicForkMonsters.map((monster) => {
+        const players = [
+          playerRef.current, playerTwoRef.current, playerThreeRef.current
+        ].filter(Boolean) as Player[];
         const allBombs = new Map([
           ...playerOneBombsRef.current,
           ...playerTwoBombsRef.current,
@@ -178,42 +179,68 @@ export const GameScreen = () => {
     }
   }, [isPaused, map]);
 
+  const resetGame = () => {
+    // Reset players and potentially the game state
+    setPlayer(new Player('1', playerNames[0], 1, 1, true));
+    setPlayerTwo(new Player('2', playerNames[1], 13, 8, true));
+    setPlayerThree(numOfPlayers === '3' ? new Player('3', playerNames[2], 7, 7, true) : null);
+    // Other state resets as necessary
+  };
+
+  const checkEndOfRound = () => {
+    const activePlayers = [player, playerTwo, playerThree].filter((p) => p && p.isActive());
+
+    if (activePlayers.length === 1) {
+      alert(`${activePlayers[0]?.getName()} wins the round!`);
+      resetGame(); // Reset game to initial conditions or go to next round
+    } else if (activePlayers.length === 0) {
+      alert('No players left, draw!');
+      resetGame();
+    }
+    // else: If more than one player is still active, do nothing and wait for more gameplay.
+  };
+
   const checkPlayerMonsterCollision = useCallback((
     currentPlayer: Player,
     currentPlayerTwo: Player,
-    currentMonsters: Monster[],
-    currentPlayerThree: Player | null
+    currentPlayerThree: Player | null,
+    currentMonsters: Monster[]
   ) => {
-    currentMonsters.forEach((monsterTemp) => {
-      if (monsterTemp.getX() === currentPlayer.getX()
-        && monsterTemp.getY() === currentPlayer.getY()) {
-        setPlayer((prev) => new Player(prev.getId(), prev.getName(), 1, 1));
+    currentMonsters.forEach((collisionMonster) => {
+      if (collisionMonster.getX() === currentPlayer.getX() && collisionMonster.getY() === currentPlayer.getY()) {
+        setPlayer(
+          (prev) => new Player(prev.getId(), prev.getName(), prev.getX(), prev.getY(), false)
+        );
       }
-      if (monsterTemp.getX() === currentPlayerTwo.getX()
-        && monsterTemp.getY() === currentPlayerTwo.getY()) {
-        setPlayerTwo((prev) => new Player(prev.getId(), prev.getName(), 13, 8));
+      if (currentPlayerTwo && collisionMonster.getX() === currentPlayerTwo.getX() && collisionMonster.getY() === currentPlayerTwo.getY()) {
+        setPlayerTwo(
+          (prev) => new Player(prev.getId(), prev.getName(), prev.getX(), prev.getY(), false)
+        );
       }
-      if (currentPlayerThree && monsterTemp.getX() === currentPlayerThree.getX()
-        && monsterTemp.getY() === currentPlayerThree.getY()) {
-        setPlayerThree((prev) => (prev ? new Player(prev.getId(), prev.getName(), 7, 7) : null));
+      if (currentPlayerThree && collisionMonster.getX() === currentPlayerThree.getX() && collisionMonster.getY() === currentPlayerThree.getY()) {
+        setPlayerThree(
+          (prev) => (prev ? new Player(prev.getId(), prev.getName(), prev.getX(), prev.getY(), false) : null)
+        );
       }
     });
-  }, [map]);
+    checkEndOfRound();
+  }, [player, playerTwo, playerThree, monsters]);
 
   useEffect(() => {
-    checkPlayerMonsterCollision(player, playerTwo, monsters, playerThree ?? null);
-  }, [player, playerTwo, monsters, checkPlayerMonsterCollision, playerThree, numOfPlayers]);
+    checkPlayerMonsterCollision(player, playerTwo, playerThree, monsters);
+  }, [player, playerTwo, monsters, playerThree]);
 
   useEffect(() => {
     if (isPaused) return;
     window.addEventListener('keydown', handleKeyDown);
+    // eslint-disable-next-line consistent-return
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
   useEffect(() => {
-    const smartInterval = setInterval(moveSmartMonsters, 400); // faster interval for smart monsters
-    const ghostInterval = setInterval(moveGhostMonsters, 1000); // slower interval for ghost monsters
-    const forkInterval = setInterval(moveForkMonsters, 700); // default interval for fork monsters
+    const smartInterval = setInterval(moveSmartMonsters, 400);
+    const ghostInterval = setInterval(moveGhostMonsters, 1000);
+    const forkInterval = setInterval(moveForkMonsters, 700);
 
     return () => {
       clearInterval(smartInterval);
