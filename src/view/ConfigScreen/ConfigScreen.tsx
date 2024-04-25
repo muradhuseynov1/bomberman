@@ -48,10 +48,6 @@ export const ConfigScreen = () => {
   const [selectedMap, setSelectedMap] = useState('map1');
   const [keyErrors, setKeyErrors] = useState<KeyErrors>({});
 
-  const handleMapSelect = (map: string) => {
-    setSelectedMap(map);
-  };
-
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
@@ -112,6 +108,18 @@ export const ConfigScreen = () => {
   useEffect(() => {
     validateInputs();
   }, [numOfPlayers, playerKeyBindings]);
+
+  const fetchMap = async (mapName: string) => {
+    const response = await fetch(`/maps/${mapName}.txt`);
+    const mapText = await response.text();
+    return mapText.split(/\r?\n/).map((row) => row.trim().split('').slice(0, 15));
+  };
+
+  const handleMapSelect = async (map: string) => {
+    setSelectedMap(map);
+    const mapData = await fetchMap(map);
+    localStorage.setItem('selectedMap', JSON.stringify(mapData));
+  };
 
   const renderKeyConfig = (player: number) => (
     <>

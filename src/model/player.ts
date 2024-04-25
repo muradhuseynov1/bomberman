@@ -60,6 +60,60 @@ class Player {
     );
   }
 
+  move(
+    direction: string,
+    map: string[][],
+    bombs: Map<string, number>,
+    otherPlayers: Player[]
+  ): Player {
+    let newX = this.x;
+    let newY = this.y;
+
+    switch (direction) {
+      case 'up':
+        newY -= this.y > 0 && this.isValidMove(newY - 1, this.x, map, bombs) ? 1 : 0;
+        break;
+      case 'down':
+        newY += this.y < map.length - 1 && this.isValidMove(newY + 1, this.x, map, bombs) ? 1 : 0;
+        break;
+      case 'left':
+        newX -= this.x > 0 && this.isValidMove(this.y, newX - 1, map, bombs) ? 1 : 0;
+        break;
+      case 'right':
+        newX += (
+          this.x < map[0].length - 1 && this.isValidMove(this.y, newX + 1, map, bombs)
+        ) ? 1 : 0;
+        break;
+      default:
+        break;
+    }
+
+    const collidesWithPlayer = otherPlayers.some((p) => p.getX() === newX && p.getY() === newY);
+
+    if (!collidesWithPlayer) {
+      this.x = newX;
+      this.y = newY;
+    }
+
+    return this;
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  isValidMove(y: number, x: number, map: string[][], bombs: Map<string, number>): boolean {
+    return (map[y][x] === ' ' && !(bombs.has(`${y}-${x}`)));
+  }
+
+  killPlayer(): void {
+    console.log(`${this.name} has been killed.`);
+    this.isActive = false;
+  }
+
+  resetPosition(startX: number, startY: number): void {
+    this.x = startX;
+    this.y = startY;
+    this.isActive = true;
+  }
+
   getId(): string {
     return this.id;
   }
@@ -76,55 +130,20 @@ class Player {
     return this.y;
   }
 
-  move(
-    direction: string,
-    bricks: Set<string>,
-    bombs: Map<string, number>,
-    otherPlayers: Player[]
-  ): Player {
-    let newX = this.x;
-    let newY = this.y;
-
-    switch (direction) {
-      case 'up':
-        newY -= this.y > 2 && this.isValidMove(newY - 1, this.x, bricks, bombs) ? 1 : 0;
-        break;
-      case 'down':
-        newY += this.y < 9 && this.isValidMove(newY + 1, this.x, bricks, bombs) ? 1 : 0;
-        break;
-      case 'left':
-        newX -= this.x > 2 && this.isValidMove(this.y, newX - 1, bricks, bombs) ? 1 : 0;
-        break;
-      case 'right':
-        newX += this.x < 14 && this.isValidMove(this.y, newX + 1, bricks, bombs) ? 1 : 0;
-        break;
-      default:
-        break;
-    }
-
-    const collidesWithPlayer = otherPlayers.some((p) => p.getX() === newX && p.getY() === newY);
-
-    if (!collidesWithPlayer) {
-      this.x = newX;
-      this.y = newY;
-    }
-
-    return this;
+  getBombs(): number {
+    return this.bombs;
   }
 
-  isValidMove(y: number, x: number, bricks: Set<string>, bombs: Map<string, number>): boolean {
-    return !(bricks.has(`${y}-${x}`) || bombs.has(`${y}-${x}`));
+  getBombRange(): number {
+    return this.bombRange;
   }
 
-  killPlayer(): void {
-    console.log(`${this.name} has been killed.`);
-    this.isActive = false;
+  getPowerUps(): Power[] {
+    return this.powerUps;
   }
 
-  resetPosition(startX: number, startY: number): void {
-    this.x = startX;
-    this.y = startY;
-    this.isActive = true;
+  getObstacles(): number {
+    return this.obstacles;
   }
 
   isAlive(): boolean {
