@@ -5,7 +5,24 @@ export interface SettingsScreenProps {
   onModifyControls?: () => void;
 }
 
-export type Power = 'Detonator' | 'RollerSkate' | 'Invincibility' | 'Ghost' | 'Obstacle';
+export type Power = 'AddBomb' | 'BlastRangeUp' | 'Detonator' | 'RollerSkate' | 'Invincibility' | 'Ghost' | 'Obstacle';
+
+export type BaseContent = 'Empty' | 'Brick' | 'Wall';
+
+export interface Obstacle {
+  ownerId: string;
+  coords: {x: number, y: number};
+}
+
+export interface Bomb {
+  range: number;
+  coords: {x: number, y: number};
+  ownerId?: string; // if a player with Detonator power places the bomb, this stores the player's id
+}
+
+export type gameItem = BaseContent | Power | Obstacle | Bomb;
+
+export type GameMap = gameItem[][];
 
 export type PlayerStatusProps = {
   playerName: string;

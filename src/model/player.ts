@@ -3,7 +3,7 @@
 /* eslint-disable class-methods-use-this */
 // eslint-disable-next-line import/no-cycle
 
-import { Power } from '../constants/props';
+import { GameMap, Power } from '../constants/props';
 
 class Player {
   private id: string;
@@ -64,7 +64,8 @@ class Player {
     direction: string,
     map: string[][],
     bombs: Map<string, number>,
-    otherPlayers: Player[]
+    otherPlayers: Player[],
+    setMap: (m: string[][]) => void
   ): Player {
     let newX = this.x;
     let newY = this.y;
@@ -93,14 +94,46 @@ class Player {
     if (!collidesWithPlayer) {
       this.x = newX;
       this.y = newY;
+      this.checksPowerUp(map, setMap);
     }
 
     return this;
   }
 
+  addPowerUp(powerUp: Power): void {
+    switch (powerUp) {
+      case 'AddBomb':
+        this.bombs += 1;
+        break;
+      case 'BlastRangeUp':
+        this.bombRange += 1;
+        break;
+      case 'Obstacle':
+        this.obstacles += 3;
+        this.powerUps.push(powerUp);
+        break;
+      default:
+        this.powerUps.push(powerUp);
+        break;
+    }
+    console.log(`${this.name} has picked up a ${powerUp} power-up.`);
+  }
+
+  checksPowerUp(map: string[][], setMap: (m: string[][]) => void): void {
+    const powerUp = map[this.y][this.x];
+    if (powerUp === 'P') {
+      const powerUpOptions: Power[] = ['AddBomb', 'BlastRangeUp', 'Detonator', 'RollerSkate', 'Invincibility', 'Ghost', 'Obstacle'];
+      const randomPowerUp = powerUpOptions[Math.floor(Math.random() * powerUpOptions.length)];
+      this.addPowerUp(randomPowerUp);
+      const newMap = [...map];
+      newMap[this.y][this.x] = ' ';
+      setMap(newMap);
+    }
+  }
+
   // eslint-disable-next-line no-unused-vars
   isValidMove(y: number, x: number, map: string[][], bombs: Map<string, number>): boolean {
-    return (map[y][x] === ' ' && !(bombs.has(`${y}-${x}`)));
+    return (map[y][x] === ' ' || map[y][x] === 'P') && !bombs.has(`${y}-${x}`);
   }
 
   killPlayer(): void {

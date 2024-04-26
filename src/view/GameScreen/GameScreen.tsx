@@ -1,4 +1,4 @@
-// /* eslint-disable max-len */
+/* eslint-disable max-len */
 /* eslint-disable consistent-return */
 import React, {
   useState, useEffect, useCallback, useRef
@@ -12,7 +12,12 @@ import { StyledBackground } from '../WelcomeScreen/WelcomeScreen.styles';
 import { Player } from '../../model/player';
 import SettingsScreen from './SettingsScreen/SettingsScreen';
 import { GridCellComponent } from './GridCellComponent';
-import { KeyBindings, Power } from '../../constants/props';
+import {
+  GameMap,
+  KeyBindings,
+  Power,
+  gameItem
+} from '../../constants/props';
 import { Monster } from '../../model/monster';
 
 import ModifyControlsDialog from './SettingsScreen/ModifyControlsDialog';
@@ -29,7 +34,29 @@ const defaultMap: never[] = [];
 
 const fetchMap = async () => {
   const mapData = JSON.parse(localStorage.getItem('selectedMap') || '[]');
-  return mapData.length > 0 ? mapData : defaultMap;
+  if (mapData.length <= 0) return defaultMap;
+  const powerUpOptions: Power[] = ['AddBomb', 'BlastRangeUp', 'Detonator', 'RollerSkate', 'Invincibility', 'Ghost', 'Obstacle'];
+  const randomPowerUp = powerUpOptions[Math.floor(Math.random() * powerUpOptions.length)];
+  const initialMap: GameMap = mapData.map((row: string) => {
+    const mapRow: gameItem[] = [];
+    row.split('').forEach((cell: string) => {
+      switch (cell) {
+        case ' ':
+          mapRow.push('Empty');
+          break;
+        case 'B':
+          mapRow.push('Brick');
+          break;
+        case 'P':
+          mapRow.push(randomPowerUp);
+          break;
+        default:
+          throw new Error('Invalid map data');
+      }
+    });
+    return mapRow;
+  });
+  return initialMap;
 };
 
 export const GameScreen = () => {
@@ -37,22 +64,22 @@ export const GameScreen = () => {
   const [player, setPlayer] = useState(new Player('1', playerNames[0], 1, 1));
   const [playerTwo, setPlayerTwo] = useState(new Player('2', playerNames[1], 13, 8));
   const [playerThree, setPlayerThree] = useState(numOfPlayers === '3' ? new Player('3', playerNames[2], 7, 7) : null);
-  const [map, setMap] = useState<string[][]>([]);
-  const playerRef = useRef([player, playerTwo, playerThree].filter((p): p is Player => p !== null));
-  playerRef.current = [player, playerTwo, playerThree].filter((p): p is Player => p !== null);
+  const [map, setMap] = useState<GameMap>([]);
+  const playersRef = useRef([player, playerTwo, playerThree].filter((p): p is Player => p !== null));
+  playersRef.current = [player, playerTwo, playerThree].filter((p): p is Player => p !== null);
   const setPlayers = [setPlayer, setPlayerTwo, setPlayerThree];
   const {
     bombs: playerOneBombs,
     dropBomb: dropPlayerOneBomb
-  } = useBombManager(0, playerRef, setPlayers, map, setMap);
+  } = useBombManager(0, playersRef, setPlayers, map, setMap);
   const {
     bombs: playerTwoBombs,
     dropBomb: dropPlayerTwoBomb
-  } = useBombManager(1, playerRef, setPlayers, map, setMap);
+  } = useBombManager(1, playersRef, setPlayers, map, setMap);
   const {
     bombs: playerThreeBombs,
     dropBomb: dropPlayerThreeBomb
-  } = useBombManager(2, playerRef, setPlayers, map, setMap);
+  } = useBombManager(2, playersRef, setPlayers, map, setMap);
   const [monsters, setMonsters] = useState([
     new Monster('monster1', 'Monster 1', 5, 5),
     new Monster('monster2', 'Monster 2', 10, 7),
@@ -94,7 +121,7 @@ export const GameScreen = () => {
       keyBindings: keyBindings['3'],
       enemies: [player, playerTwo]
     } : null
-  ], map);
+  ], map, setMap);
 
   useEffect(() => {
     const storedBindings = localStorage.getItem('playerKeyBindings');
@@ -120,7 +147,8 @@ export const GameScreen = () => {
     currentMonsters.forEach((monsterTemp) => {
       if (monsterTemp.getX() === currentPlayer.getX()
         && monsterTemp.getY() === currentPlayer.getY()) {
-        setPlayer((prev) => new Player(prev.getId(), prev.getName(), 1, 1));
+        currentPlayer.killPlayer();
+        setPlayer(Player.fromPlayer(currentPlayer));
       }
       if (monsterTemp.getX() === currentPlayerTwo.getX()
         && monsterTemp.getY() === currentPlayerTwo.getY()) {
