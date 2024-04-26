@@ -12,11 +12,14 @@ class Player {
 
   private y: number;
 
-  constructor(id: string, name: string, x: number = 0, y: number = 0) {
+  private active: boolean = true;
+
+  constructor(id: string, name: string, x: number = 0, y: number = 0, active: boolean = true) {
     this.id = id;
     this.name = name;
     this.x = x;
     this.y = y;
+    this.active = active;
   }
 
   getId(): string {
@@ -33,6 +36,10 @@ class Player {
 
   getY(): number {
     return this.y;
+  }
+
+  isActive(): boolean {
+    return this.active;
   }
 
   move(

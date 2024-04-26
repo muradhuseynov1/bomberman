@@ -17,7 +17,7 @@ export function App() {
           <Route path="/" element={<WelcomeScreen />} />
           <Route path="/config" element={<ConfigScreen />} />
           <Route path="/instructions" element={<InstructionsScreen />} />
-          <Route path="/game/:numOfPlayers" element={(<GameScreen />)} />
+          <Route path="/game/:numOfPlayers/:numOfRounds/:selectedMap" element={<GameScreen />} />
         </Routes>
       </ThemeProvider>
     </GameSettingsProvider>

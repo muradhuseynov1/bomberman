@@ -33,7 +33,7 @@ export const GameLayout = ({
         {numOfPlayers === '3' && (
           <>
             <br />
-            <PlayerStatus playerName="Player Two" numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={2} />
+            <PlayerStatus playerName="Player 2" numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={2} />
           </>
         )}
       </Grid>
@@ -47,8 +47,8 @@ export const GameLayout = ({
         </Paper>
       </Grid>
       <Grid item xs={2} sx={{ mt: numOfPlayers === '3' ? 15 : 5 }}>
-        {numOfPlayers === '2' && <PlayerStatus playerName="Player Two" numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={2} />}
-        {numOfPlayers === '3' && <PlayerStatus playerName="Player Three" numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={3} />}
+        {numOfPlayers === '2' && <PlayerStatus playerName="Player 2" numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={2} />}
+        {numOfPlayers === '3' && <PlayerStatus playerName="Player 3" numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={3} />}
       </Grid>
     </Grid>
   </StyledGameDialog>

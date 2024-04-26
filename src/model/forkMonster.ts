@@ -1,8 +1,9 @@
+/* eslint-disable max-len */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable class-methods-use-this */
 import { Monster } from './monster';
 import { Player } from './player';
-import monsterImg from '../assets/prosmartmonster.jpg';
+import monsterImg from '../assets/prosmartmonster.png';
 import { Point } from '../constants/props';
 
 class ForkMonster extends Monster {
@@ -14,7 +15,7 @@ class ForkMonster extends Monster {
     return monsterImg;
   }
 
-  move(map: string[][], players: Player[], bombs: Map<string, number>): ForkMonster {
+  move(map: string[][], players: Player[], bombs: Map<string, number>, otherMonsters: Monster[]): ForkMonster {
     let newX = this.x;
     let newY = this.y;
     const possibleDirections: Point[] = [];
@@ -25,7 +26,7 @@ class ForkMonster extends Monster {
     const left: Point = { x: this.x - 1, y: this.y };
 
     [up, right, down, left].forEach((dir) => {
-      if (this.isValidMove(dir.x, dir.y, map, bombs) && this.isInBounds(dir)) {
+      if (this.isValidMove(dir.x, dir.y, map, bombs, otherMonsters) && this.isInBounds(dir)) {
         possibleDirections.push(dir);
       }
     });
