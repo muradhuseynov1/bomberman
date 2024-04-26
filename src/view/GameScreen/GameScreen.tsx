@@ -16,7 +16,8 @@ import {
   GameMap,
   KeyBindings,
   Power,
-  gameItem
+  gameItem,
+  randomPowerUpGenerator
 } from '../../constants/props';
 import { Monster } from '../../model/monster';
 
@@ -32,30 +33,43 @@ const powers: Power[] = ['Detonator', 'RollerSkate'];
 const numObstacles = 4;
 const defaultMap: never[] = [];
 
-const fetchMap = async () => {
-  const mapData = JSON.parse(localStorage.getItem('selectedMap') || '[]');
+const fetchMap = async (): Promise<GameMap> => {
+  const mapDataString = localStorage.getItem('selectedMap') || '[]';
+  let mapData;
+  try {
+    mapData = JSON.parse(mapDataString);
+  } catch (error) {
+    console.error('Failed to parse map data:', mapDataString);
+    return defaultMap; // Return the default map if parsing fails
+  }
+
+  // Check if the parsed data is an array of strings
+  if (!Array.isArray(mapData) || !mapData.every((row) => Array.isArray(row))) {
+    console.error('Invalid map data:', mapData);
+    return defaultMap; // Return the default map if data is invalid
+  }
+  // If no map data is available, return the default map
   if (mapData.length <= 0) return defaultMap;
-  const powerUpOptions: Power[] = ['AddBomb', 'BlastRangeUp', 'Detonator', 'RollerSkate', 'Invincibility', 'Ghost', 'Obstacle'];
-  const randomPowerUp = powerUpOptions[Math.floor(Math.random() * powerUpOptions.length)];
-  const initialMap: GameMap = mapData.map((row: string) => {
-    const mapRow: gameItem[] = [];
-    row.split('').forEach((cell: string) => {
+
+  // Convert the string data to GameMap format
+  const initialMap: GameMap = mapData.map((row: Array<string>) => {
+    const mapRow: gameItem[] = row.map((cell: string) => {
       switch (cell) {
         case ' ':
-          mapRow.push('Empty');
-          break;
+          return 'Empty';
+        case 'W':
+          return 'Wall';
         case 'B':
-          mapRow.push('Brick');
-          break;
+          return 'Box';
         case 'P':
-          mapRow.push(randomPowerUp);
-          break;
+          return randomPowerUpGenerator();
         default:
-          throw new Error('Invalid map data');
+          throw new Error(`Invalid map data: unexpected character '${cell}'`);
       }
     });
     return mapRow;
   });
+
   return initialMap;
 };
 

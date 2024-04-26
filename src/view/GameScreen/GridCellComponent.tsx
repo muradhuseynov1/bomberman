@@ -4,20 +4,21 @@ import {
   GridCell
 } from './GameScreen.styles';
 import wallImage from '../../assets/wall.jpeg';
-import brickImage from '../../assets/brick.jpeg';
+import boxImage from '../../assets/brick.jpeg';
 import playerImage from '../../assets/player-image.png';
 import monsterImage from '../../assets/monster.png';
 import bombImage from '../../assets/bomb.png';
 import addBombImage from '../../assets/addbomb.png';
 import { Player } from '../../model/player';
 import { Monster } from '../../model/monster';
+import { GameMap, isPower } from '../../constants/props';
 
 type GridCellComponentProps = {
   row: number;
   column: number;
   players: Player[];
   monsters: Monster[];
-  map: string[][];
+  map: GameMap;
   bombs: Map<string, number>;
 }
 
@@ -30,9 +31,9 @@ export const GridCellComponent = ({
   bombs
 }: GridCellComponentProps) => {
   const cellContent = map[row][column];
-  const isWallCell = cellContent === 'W';
-  const isBrickCell = cellContent === 'B';
-  const isPowerUpCell = cellContent === 'P';
+  const isWallCell = cellContent === 'Wall';
+  const isBoxCell = cellContent === 'Box';
+  const isPowerUpCell = isPower(cellContent);
   const isBombCell = bombs.has(`${row}-${column}`);
   const player = players.find((p) => p.getX() === column && p.getY() === row);
   const monster = monsters.find((m) => m.getX() === column && m.getY() === row);
@@ -40,7 +41,7 @@ export const GridCellComponent = ({
   return (
     <GridCell isWall={isWallCell}>
       {isWallCell && <img src={wallImage} alt="Wall" style={{ width: '100%', height: '100%' }} />}
-      {isBrickCell && <img src={brickImage} alt="Brick" style={{ width: '100%', height: '100%' }} />}
+      {isBoxCell && <img src={boxImage} alt="Box" style={{ width: '100%', height: '100%' }} />}
       {isPowerUpCell && <img src={addBombImage} alt="PowerUp" style={{ width: '100%', height: '100%' }} />}
       {player && player.isAlive() && (
         <CharacterContainer>

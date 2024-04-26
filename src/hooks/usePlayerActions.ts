@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { useCallback } from 'react';
 import { Player } from '../model/player';
+import { GameMap } from '../constants/props';
 
 type PlayerInfo = {
   player: Player,
@@ -13,8 +14,8 @@ type PlayerInfo = {
 
 export const usePlayerActions = (
   playersInfo: Array<PlayerInfo | null>,
-  map: string[][],
-  setMap: (m: string[][]) => void
+  map: GameMap,
+  setMap: (m: GameMap) => void
 ) => {
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     playersInfo.forEach((info) => {

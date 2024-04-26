@@ -3,7 +3,7 @@
 /* eslint-disable class-methods-use-this */
 // eslint-disable-next-line import/no-cycle
 
-import { GameMap, Power } from '../constants/props';
+import { GameMap, Power, isPower } from '../constants/props';
 
 class Player {
   private id: string;
@@ -62,10 +62,10 @@ class Player {
 
   move(
     direction: string,
-    map: string[][],
+    map: GameMap,
     bombs: Map<string, number>,
     otherPlayers: Player[],
-    setMap: (m: string[][]) => void
+    setMap: (m: GameMap) => void
   ): Player {
     let newX = this.x;
     let newY = this.y;
@@ -119,21 +119,21 @@ class Player {
     console.log(`${this.name} has picked up a ${powerUp} power-up.`);
   }
 
-  checksPowerUp(map: string[][], setMap: (m: string[][]) => void): void {
-    const powerUp = map[this.y][this.x];
-    if (powerUp === 'P') {
+  checksPowerUp(map: GameMap, setMap: (m: GameMap) => void): void {
+    const cell = map[this.y][this.x];
+    if (isPower(cell)) {
       const powerUpOptions: Power[] = ['AddBomb', 'BlastRangeUp', 'Detonator', 'RollerSkate', 'Invincibility', 'Ghost', 'Obstacle'];
       const randomPowerUp = powerUpOptions[Math.floor(Math.random() * powerUpOptions.length)];
       this.addPowerUp(randomPowerUp);
       const newMap = [...map];
-      newMap[this.y][this.x] = ' ';
+      newMap[this.y][this.x] = 'Empty';
       setMap(newMap);
     }
   }
 
   // eslint-disable-next-line no-unused-vars
-  isValidMove(y: number, x: number, map: string[][], bombs: Map<string, number>): boolean {
-    return (map[y][x] === ' ' || map[y][x] === 'P') && !bombs.has(`${y}-${x}`);
+  isValidMove(y: number, x: number, map: GameMap, bombs: Map<string, number>): boolean {
+    return (map[y][x] === 'Empty' || isPower(map[y][x])) && !bombs.has(`${y}-${x}`);
   }
 
   killPlayer(): void {

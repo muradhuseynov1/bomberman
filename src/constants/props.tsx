@@ -7,7 +7,7 @@ export interface SettingsScreenProps {
 
 export type Power = 'AddBomb' | 'BlastRangeUp' | 'Detonator' | 'RollerSkate' | 'Invincibility' | 'Ghost' | 'Obstacle';
 
-export type BaseContent = 'Empty' | 'Brick' | 'Wall';
+export type BaseContent = 'Empty' | 'Box' | 'Wall';
 
 export interface Obstacle {
   ownerId: string;
@@ -23,6 +23,16 @@ export interface Bomb {
 export type gameItem = BaseContent | Power | Obstacle | Bomb;
 
 export type GameMap = gameItem[][];
+
+export function randomPowerUpGenerator(): Power {
+  const powerUpOptions: Power[] = ['AddBomb', 'BlastRangeUp', 'Detonator', 'RollerSkate', 'Invincibility', 'Ghost', 'Obstacle'];
+  return powerUpOptions[Math.floor(Math.random() * powerUpOptions.length)];
+}
+
+export const isPower = (cell: gameItem): cell is Power => {
+  const powerUpOptions: Power[] = ['AddBomb', 'BlastRangeUp', 'Detonator', 'RollerSkate', 'Invincibility', 'Ghost', 'Obstacle'];
+  return powerUpOptions.includes(cell as Power);
+};
 
 export type PlayerStatusProps = {
   playerName: string;

@@ -1,5 +1,8 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
+
+import { GameMap } from '../constants/props';
+
 /* eslint-disable no-plusplus */
 class Monster {
   private id: string;
@@ -33,23 +36,23 @@ class Monster {
     return this.y;
   }
 
-  move(map: string[][]): Monster {
+  move(map: GameMap): Monster {
     let newX = this.x;
     let newY = this.y;
     const possibleDirections = [];
 
     // Directions checking considering the boundaries and
     // non-walkable cells ('W' for walls, 'B' for bricks)
-    if (this.y > 0 && map[this.y - 1][this.x] === ' ') { // Up
+    if (this.y > 0 && map[this.y - 1][this.x] === 'Empty') { // Up
       possibleDirections.push({ x: this.x, y: this.y - 1 });
     }
-    if (this.x < map[0].length - 1 && map[this.y][this.x + 1] === ' ') { // Right
+    if (this.x < map[0].length - 1 && map[this.y][this.x + 1] === 'Empty') { // Right
       possibleDirections.push({ x: this.x + 1, y: this.y });
     }
-    if (this.y < map.length - 1 && map[this.y + 1][this.x] === ' ') { // Down
+    if (this.y < map.length - 1 && map[this.y + 1][this.x] === 'Empty') { // Down
       possibleDirections.push({ x: this.x, y: this.y + 1 });
     }
-    if (this.x > 0 && map[this.y][this.x - 1] === ' ') { // Left
+    if (this.x > 0 && map[this.y][this.x - 1] === 'Empty') { // Left
       possibleDirections.push({ x: this.x - 1, y: this.y });
     }
 

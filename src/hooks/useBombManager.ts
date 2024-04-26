@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import { Player } from '../model/player';
-import { GameMap } from '../constants/props';
+import { GameMap, randomPowerUpGenerator } from '../constants/props';
 
 type BombMap = Map<string, number>;
 
@@ -9,7 +9,7 @@ export const useBombManager = (
   playersRef: React.MutableRefObject<Player[]>,
   setPlayers: ((player: Player) => void)[],
   map: GameMap,
-  setMap: (m: string[][]) => void
+  setMap: (m: GameMap) => void
 ) => {
   const [bombs, setBombs] = useState<BombMap>(new Map());
   const intervals = useRef<Map<string, NodeJS.Timeout>>(new Map());
@@ -57,8 +57,8 @@ export const useBombManager = (
     // Check each position in the explosion range
     positionsToCheck.forEach(({ newY, newX }) => {
       // Check for bricks at the position and remove them
-      if (map[newY]?.[newX] === 'Bomb') {
-        newMap[newY][newX] = 'P'; // Change 'B' to ' ' or any other marker for destroyed cells
+      if (map[newY]?.[newX] === 'Box') {
+        newMap[newY][newX] = randomPowerUpGenerator();
       }
 
       // Check for players at the position and kill them if present
