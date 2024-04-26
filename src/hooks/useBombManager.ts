@@ -1,8 +1,7 @@
-import { useCallback, useRef, useState } from 'react';
+/* eslint-disable no-plusplus */
+import { useCallback } from 'react';
 import { Player } from '../model/player';
-import { GameMap, randomPowerUpGenerator } from '../constants/props';
-
-type BombMap = Map<string, number>;
+import { Bomb, GameMap, randomPowerUpGenerator } from '../model/gameItem';
 
 export const useBombManager = (
   playerID: number,
@@ -11,28 +10,8 @@ export const useBombManager = (
   map: GameMap,
   setMap: (m: GameMap) => void
 ) => {
-  const [bombs, setBombs] = useState<BombMap>(new Map());
-  const intervals = useRef<Map<string, NodeJS.Timeout>>(new Map());
-
-  const clearBomb = useCallback((bombId: string) => {
-    const interval = intervals.current.get(bombId);
-    if (interval) {
-      clearInterval(interval);
-      intervals.current.delete(bombId);
-    }
-    setBombs((prev) => {
-      const newBombs = new Map(prev);
-      newBombs.delete(bombId);
-      return newBombs;
-    });
-  }, []);
-
-  const explodeBomb = useCallback((bombId: string): void => {
-    const [y, x] = bombId.split('-').map(Number);
-    const players = playersRef.current;
-    const blastRange = players[playerID].getBombRange();
-
-    // Calculate the explosion range
+  const explodeBomb = useCallback((y: number, x: number, bomb: Bomb): void => {
+    const blastRange = bomb.range;
     const newMap: GameMap = [];
     map.map((row) => newMap.push([...row]));
     const positionsToCheck = [];
@@ -54,53 +33,58 @@ export const useBombManager = (
         positionsToCheck.push({ newY: y, newX: x + dx });
       }
     }
-    // Check each position in the explosion range
     positionsToCheck.forEach(({ newY, newX }) => {
-      // Check for bricks at the position and remove them
-      if (map[newY]?.[newX] === 'Box') {
-        newMap[newY][newX] = randomPowerUpGenerator();
+      const affectedItem = map[newY][newX];
+
+      // TODO: Trigger other bombs
+      // if (typeof affectedItem !== 'string' && 'range' in affectedItem) {
+      //   explodeBomb(newY, newX, affectedItem);
+      // }
+
+      // Destroy boxes and potentially drop power-ups
+      if (affectedItem === 'Box') {
+        newMap[newY][newX] = randomPowerUpGenerator(); // Replace with a power-up or empty
       }
 
-      // Check for players at the position and kill them if present
-      players.forEach((player, index) => {
+      playersRef.current.forEach((player, index) => {
         if (player.getX() === newX && player.getY() === newY && player.isAlive()) {
-          // eslint-disable-next-line no-console
-          console.log(`Player ${player.getName()} was killed by the bomb at [${newY}, ${newX}]`);
+          if (player.isInvincible()) return; // Skip invincible players
           player.killPlayer();
           setPlayers[index](Player.fromPlayer(player));
         }
       });
     });
 
+    // Update the map with changes
     setMap(newMap);
-  }, [playersRef, setPlayers, map, setMap, clearBomb]);
+
+    // Check and update players' positions if they are in the blast range
+  }, [map, setMap, playersRef, setPlayers]);
 
   const dropBomb = useCallback((y: number, x: number): void => {
-    if (!playersRef.current[playerID].isAlive()) return;
-    if (playersRef.current[playerID].getBombs() <= 0) return;
-    const bombId = `${y}-${x}`;
-    if (!bombs.has(bombId)) {
-      const newBombs = new Map(bombs);
-      newBombs.set(bombId, 3); // Countdown starts at 3 seconds
+    if (map[y][x] !== 'Empty') return; // Ensure the cell is empty before placing a bomb
 
-      const interval = setInterval(() => {
-        const timeLeft = newBombs.get(bombId);
-        if (timeLeft === undefined) {
-          clearInterval(interval);
-          return;
-        }
-        if (timeLeft <= 0) {
-          explodeBomb(bombId);
-          clearBomb(bombId);
-        } else {
-          newBombs.set(bombId, timeLeft - 1);
-          setBombs(new Map(newBombs));
-        }
-      }, 1000);
+    const player = playersRef.current[playerID];
+    if (player.getBombs() <= 0) return; // Ensure the player has bombs left
+    player.decrementBombs();
+    const bomb: Bomb = {
+      ownerId: player.getId(),
+      coords: { x, y },
+      range: player.getBombRange(), // Assuming getBombRange is a method of Player
+    };
 
-      setBombs(newBombs);
-    }
-  }, [bombs, explodeBomb]);
+    // Place the bomb in the map
+    const newMap = map.map((row) => [...row]);
+    newMap[y][x] = bomb;
+    setMap(newMap);
 
-  return { bombs, dropBomb };
+    setPlayers[playerID](Player.fromPlayer(player));
+
+    // Set a timer for the bomb to explode
+    setTimeout(() => {
+      explodeBomb(y, x, bomb);
+    }, 3000); // Explodes after 3 seconds
+  }, [map, setMap, playersRef, explodeBomb]);
+
+  return { dropBomb };
 };

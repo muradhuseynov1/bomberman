@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
 
-import { GameMap } from '../constants/props';
+import { GameMap } from './gameItem';
 
 /* eslint-disable no-plusplus */
 class Monster {

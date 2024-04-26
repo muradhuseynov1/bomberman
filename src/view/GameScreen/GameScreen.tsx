@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable max-len */
 /* eslint-disable consistent-return */
 import React, {
@@ -12,13 +13,13 @@ import { StyledBackground } from '../WelcomeScreen/WelcomeScreen.styles';
 import { Player } from '../../model/player';
 import SettingsScreen from './SettingsScreen/SettingsScreen';
 import { GridCellComponent } from './GridCellComponent';
+import { KeyBindings } from '../../constants/props';
 import {
   GameMap,
-  KeyBindings,
-  Power,
   gameItem,
   randomPowerUpGenerator
-} from '../../constants/props';
+} from '../../model/gameItem';
+
 import { Monster } from '../../model/monster';
 
 import ModifyControlsDialog from './SettingsScreen/ModifyControlsDialog';
@@ -28,9 +29,6 @@ import { useBombManager } from '../../hooks/useBombManager';
 import { usePlayerActions } from '../../hooks/usePlayerActions';
 
 const playerNames = ['Player One', 'Player Two', 'Player Three'];
-const numBombs = 4;
-const powers: Power[] = ['Detonator', 'RollerSkate'];
-const numObstacles = 4;
 const defaultMap: never[] = [];
 
 const fetchMap = async (): Promise<GameMap> => {
@@ -83,15 +81,12 @@ export const GameScreen = () => {
   playersRef.current = [player, playerTwo, playerThree].filter((p): p is Player => p !== null);
   const setPlayers = [setPlayer, setPlayerTwo, setPlayerThree];
   const {
-    bombs: playerOneBombs,
     dropBomb: dropPlayerOneBomb
   } = useBombManager(0, playersRef, setPlayers, map, setMap);
   const {
-    bombs: playerTwoBombs,
     dropBomb: dropPlayerTwoBomb
   } = useBombManager(1, playersRef, setPlayers, map, setMap);
   const {
-    bombs: playerThreeBombs,
     dropBomb: dropPlayerThreeBomb
   } = useBombManager(2, playersRef, setPlayers, map, setMap);
   const [monsters, setMonsters] = useState([
@@ -115,7 +110,6 @@ export const GameScreen = () => {
       player,
       setNewPlayer: setPlayer,
       dropBomb: dropPlayerOneBomb,
-      bombs: playerOneBombs,
       keyBindings: keyBindings['1'],
       enemies: [playerTwo, playerThree].filter((p): p is Player => p !== null),
     },
@@ -123,7 +117,6 @@ export const GameScreen = () => {
       player: playerTwo,
       setNewPlayer: setPlayerTwo,
       dropBomb: dropPlayerTwoBomb,
-      bombs: playerTwoBombs,
       keyBindings: keyBindings['2'],
       enemies: [player, playerThree].filter((p): p is Player => p !== null),
     },
@@ -131,7 +124,6 @@ export const GameScreen = () => {
       player: playerThree,
       setNewPlayer: setPlayerThree,
       dropBomb: dropPlayerThreeBomb,
-      bombs: playerThreeBombs,
       keyBindings: keyBindings['3'],
       enemies: [player, playerTwo]
     } : null
@@ -160,17 +152,25 @@ export const GameScreen = () => {
   ) => {
     currentMonsters.forEach((monsterTemp) => {
       if (monsterTemp.getX() === currentPlayer.getX()
-        && monsterTemp.getY() === currentPlayer.getY()) {
+        && monsterTemp.getY() === currentPlayer.getY()
+        && currentPlayer.isAlive()
+        && currentPlayer.isInvincible() === false) {
         currentPlayer.killPlayer();
         setPlayer(Player.fromPlayer(currentPlayer));
       }
       if (monsterTemp.getX() === currentPlayerTwo.getX()
-        && monsterTemp.getY() === currentPlayerTwo.getY()) {
-        setPlayerTwo((prev) => new Player(prev.getId(), prev.getName(), 13, 8));
+        && monsterTemp.getY() === currentPlayerTwo.getY()
+        && currentPlayerTwo.isAlive()
+        && currentPlayerTwo.isInvincible() === false) {
+        currentPlayerTwo.killPlayer();
+        setPlayerTwo(Player.fromPlayer(currentPlayerTwo));
       }
       if (currentPlayerThree && monsterTemp.getX() === currentPlayerThree.getX()
-        && monsterTemp.getY() === currentPlayerThree.getY()) {
-        setPlayerThree((prev) => (prev ? new Player(prev.getId(), prev.getName(), 7, 7) : null));
+        && monsterTemp.getY() === currentPlayerThree.getY()
+        && currentPlayerThree.isAlive()
+        && currentPlayerThree.isInvincible() === false) {
+        currentPlayerThree.killPlayer();
+        setPlayerThree(Player.fromPlayer(currentPlayerThree));
       }
     });
   }, [map]);
@@ -238,7 +238,6 @@ export const GameScreen = () => {
       players={[player, playerTwo, playerThree].filter((p) => p !== null) as Player[]}
       monsters={monsters}
       map={map}
-      bombs={new Map([...playerOneBombs, ...playerTwoBombs, ...playerThreeBombs])}
     />
   )));
 
@@ -248,11 +247,9 @@ export const GameScreen = () => {
         <SettingsIcon />
       </StyledSettingsButton>
       <GameLayout
-        playerName={playerNames[0]}
-        numBombs={numBombs}
-        powers={powers}
-        numObstacles={numObstacles}
-        numOfPlayers={String(numOfPlayers)}
+        player={player}
+        playerTwo={playerTwo}
+        playerThree={playerThree}
         renderCellsAndPlayer={renderCellsAndPlayer}
       />
       <SettingsScreen

@@ -3,7 +3,9 @@
 /* eslint-disable class-methods-use-this */
 // eslint-disable-next-line import/no-cycle
 
-import { GameMap, Power, isPower } from '../constants/props';
+import {
+  GameMap, Power, isPower
+} from './gameItem';
 
 class Player {
   private id: string;
@@ -63,7 +65,6 @@ class Player {
   move(
     direction: string,
     map: GameMap,
-    bombs: Map<string, number>,
     otherPlayers: Player[],
     setMap: (m: GameMap) => void
   ): Player {
@@ -72,17 +73,17 @@ class Player {
 
     switch (direction) {
       case 'up':
-        newY -= this.y > 0 && this.isValidMove(newY - 1, this.x, map, bombs) ? 1 : 0;
+        newY -= this.y > 0 && this.isValidMove(newY - 1, this.x, map) ? 1 : 0;
         break;
       case 'down':
-        newY += this.y < map.length - 1 && this.isValidMove(newY + 1, this.x, map, bombs) ? 1 : 0;
+        newY += this.y < map.length - 1 && this.isValidMove(newY + 1, this.x, map) ? 1 : 0;
         break;
       case 'left':
-        newX -= this.x > 0 && this.isValidMove(this.y, newX - 1, map, bombs) ? 1 : 0;
+        newX -= this.x > 0 && this.isValidMove(this.y, newX - 1, map) ? 1 : 0;
         break;
       case 'right':
         newX += (
-          this.x < map[0].length - 1 && this.isValidMove(this.y, newX + 1, map, bombs)
+          this.x < map[0].length - 1 && this.isValidMove(this.y, newX + 1, map)
         ) ? 1 : 0;
         break;
       default:
@@ -94,7 +95,7 @@ class Player {
     if (!collidesWithPlayer) {
       this.x = newX;
       this.y = newY;
-      this.checksPowerUp(map, setMap);
+      this.checkCollisionWithPowerUp(map, setMap);
     }
 
     return this;
@@ -108,6 +109,19 @@ class Player {
       case 'BlastRangeUp':
         this.bombRange += 1;
         break;
+      case 'RollerSkate':
+        if (!this.powerUps.includes('RollerSkate')) {
+          this.powerUps.push(powerUp);
+        }
+        break;
+      case 'Invincibility':
+        this.powerUps.push(powerUp);
+        // TODO: Implement invincibility for a short time
+        break;
+      case 'Ghost':
+        this.powerUps.push(powerUp);
+        // TODO: Implement ghost mode for a short time
+        break;
       case 'Obstacle':
         this.obstacles += 3;
         this.powerUps.push(powerUp);
@@ -119,12 +133,10 @@ class Player {
     console.log(`${this.name} has picked up a ${powerUp} power-up.`);
   }
 
-  checksPowerUp(map: GameMap, setMap: (m: GameMap) => void): void {
+  checkCollisionWithPowerUp(map: GameMap, setMap: (m: GameMap) => void): void {
     const cell = map[this.y][this.x];
     if (isPower(cell)) {
-      const powerUpOptions: Power[] = ['AddBomb', 'BlastRangeUp', 'Detonator', 'RollerSkate', 'Invincibility', 'Ghost', 'Obstacle'];
-      const randomPowerUp = powerUpOptions[Math.floor(Math.random() * powerUpOptions.length)];
-      this.addPowerUp(randomPowerUp);
+      this.addPowerUp(cell as Power);
       const newMap = [...map];
       newMap[this.y][this.x] = 'Empty';
       setMap(newMap);
@@ -132,8 +144,8 @@ class Player {
   }
 
   // eslint-disable-next-line no-unused-vars
-  isValidMove(y: number, x: number, map: GameMap, bombs: Map<string, number>): boolean {
-    return (map[y][x] === 'Empty' || isPower(map[y][x])) && !bombs.has(`${y}-${x}`);
+  isValidMove(y: number, x: number, map: GameMap): boolean {
+    return map[y][x] === 'Empty' || isPower(map[y][x]) || (this.isGhost() && map[y][x] !== 'Obstacle');
   }
 
   killPlayer(): void {
@@ -145,6 +157,18 @@ class Player {
     this.x = startX;
     this.y = startY;
     this.isActive = true;
+  }
+
+  decrementBombs(): void {
+    this.bombs -= 1;
+  }
+
+  isInvincible(): boolean {
+    return this.powerUps.includes('Invincibility');
+  }
+
+  isGhost(): boolean {
+    return this.powerUps.includes('Ghost');
   }
 
   getId(): string {

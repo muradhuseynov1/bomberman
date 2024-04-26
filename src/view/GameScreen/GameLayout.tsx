@@ -2,39 +2,32 @@ import React from 'react';
 import { Grid, Paper } from '@mui/material';
 import { MapContainer, MyGrid, StyledGameDialog } from './GameScreen.styles';
 import { PlayerStatus } from './PlayerStatusScreen/PlayerStatusScreen';
-import { Power } from '../../constants/props';
+import { Player } from '../../model/player';
 
 type GameLayoutProps = {
-  playerName: string;
-  numBombs: number;
-  powers: Power[];
-  numObstacles: number;
-  numOfPlayers: string;
+  player: Player,
+  playerTwo: Player,
+  playerThree: Player | null,
   renderCellsAndPlayer: () => React.ReactNode;
 };
 
 export const GameLayout = ({
-  playerName,
-  numBombs,
-  powers,
-  numObstacles,
-  numOfPlayers,
+  player,
+  playerTwo,
+  playerThree,
   renderCellsAndPlayer
 }: GameLayoutProps) => (
   <StyledGameDialog open>
     <Grid container spacing={2}>
       <Grid item xs={2} sx={{ mt: 5 }}>
         <PlayerStatus
-          playerName={playerName}
-          numBombs={numBombs}
-          powers={powers}
-          numObstacles={numObstacles}
+          player={player}
           index={1}
         />
-        {numOfPlayers === '3' && (
+        {playerThree && (
           <>
             <br />
-            <PlayerStatus playerName="Player Two" numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={2} />
+            <PlayerStatus player={playerThree} index={2} />
           </>
         )}
       </Grid>
@@ -47,9 +40,9 @@ export const GameLayout = ({
           </MapContainer>
         </Paper>
       </Grid>
-      <Grid item xs={2} sx={{ mt: numOfPlayers === '3' ? 15 : 5 }}>
-        {numOfPlayers === '2' && <PlayerStatus playerName="Player Two" numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={2} />}
-        {numOfPlayers === '3' && <PlayerStatus playerName="Player Three" numBombs={numBombs} powers={powers} numObstacles={numObstacles} index={3} />}
+      <Grid item xs={2} sx={{ mt: playerThree ? 15 : 5 }}>
+        {!playerThree && <PlayerStatus player={playerTwo} index={2} />}
+        {playerThree && <PlayerStatus player={playerThree} index={3} />}
       </Grid>
     </Grid>
   </StyledGameDialog>
