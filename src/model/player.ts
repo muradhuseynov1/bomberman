@@ -38,10 +38,6 @@ class Player {
     return this.y;
   }
 
-  deactivate() {
-    this.active = false;
-  }
-
   isActive(): boolean {
     return this.active;
   }

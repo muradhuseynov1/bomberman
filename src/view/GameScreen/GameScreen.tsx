@@ -1,7 +1,5 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 /* eslint-disable max-len */
-/* eslint-disable no-alert */
 import React, {
   useState, useEffect, useCallback, useRef
 } from 'react';
@@ -19,6 +17,7 @@ import { Monster } from '../../model/monster';
 import { GhostMonster } from '../../model/ghostMonster';
 import { SmartMonster } from '../../model/smartMonster';
 import { ForkMonster } from '../../model/forkMonster';
+import { RoundResultDialog } from './RoundResultDialog';
 
 import ModifyControlsDialog from './SettingsScreen/ModifyControlsDialog';
 
@@ -52,6 +51,8 @@ export const GameScreen = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [isModifyingControls, setIsModifyingControls] = useState(false);
   const [monsters, setMonsters] = useState([] as Monster[]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [resultMessage, setResultMessage] = useState('');
   useEffect(() => {
     switch (selectedMap) {
       case 'map1':
@@ -229,7 +230,7 @@ export const GameScreen = () => {
     }
   }, [isPaused, map]);
 
-  const resetGame = () => {
+  const resetRound = () => {
     setPlayer(new Player('1', playerNames[0], 1, 1, true));
     setPlayerTwo(new Player('2', playerNames[1], 13, 8, true));
     setPlayerThree(numOfPlayers === '3' ? new Player('3', playerNames[2], 1, 8, true) : null);
@@ -280,13 +281,22 @@ export const GameScreen = () => {
   const checkEndOfRound = () => {
     const activePlayers = [player, playerTwo, playerThree].filter((p) => p && p.isActive());
 
-    if (activePlayers.length === 1) {
-      alert(`${activePlayers[0]?.getName()} wins the round!`);
-      resetGame();
-    } else if (activePlayers.length === 0) {
-      alert('No players left, draw!');
-      resetGame();
+    if (activePlayers.length <= 1) {
+      const recheckedActivePlayers = [player, playerTwo, playerThree].filter((p) => p && p.isActive());
+      if (recheckedActivePlayers.length === 1) {
+        setResultMessage(`${recheckedActivePlayers[0]?.getName()} wins the round!`);
+      } else if (recheckedActivePlayers.length === 0) {
+        setResultMessage('No players left, draw!');
+      }
+      setDialogOpen(true);
+      setIsPaused(true);
+      resetRound();
     }
+  };
+
+  const handleClose = () => {
+    setDialogOpen(false);
+    setIsPaused(false);
   };
 
   const checkPlayerMonsterCollision = useCallback((
@@ -298,17 +308,17 @@ export const GameScreen = () => {
     currentMonsters.forEach((collisionMonster) => {
       if (collisionMonster.getX() === currentPlayer.getX() && collisionMonster.getY() === currentPlayer.getY()) {
         setPlayer(
-          (prev) => new Player(prev.getId(), prev.getName(), prev.getX(), prev.getY(), false)
+          (prev) => new Player(prev.getId(), prev.getName(), 0, 0, false)
         );
       }
       if (currentPlayerTwo && collisionMonster.getX() === currentPlayerTwo.getX() && collisionMonster.getY() === currentPlayerTwo.getY()) {
         setPlayerTwo(
-          (prev) => new Player(prev.getId(), prev.getName(), prev.getX(), prev.getY(), false)
+          (prev) => new Player(prev.getId(), prev.getName(), 14, 9, false)
         );
       }
       if (currentPlayerThree && collisionMonster.getX() === currentPlayerThree.getX() && collisionMonster.getY() === currentPlayerThree.getY()) {
         setPlayerThree(
-          (prev) => (prev ? new Player(prev.getId(), prev.getName(), prev.getX(), prev.getY(), false) : null)
+          (prev) => (prev ? new Player(prev.getId(), prev.getName(), 0, 9, false) : null)
         );
       }
     });
@@ -359,7 +369,6 @@ export const GameScreen = () => {
       new Monster('monster2', 'Monster 2', 10, 5),
     ]);
     setIsSettingsOpen(false);
-
     setIsPaused(false);
   };
 
@@ -374,7 +383,7 @@ export const GameScreen = () => {
       key={`${rowIndex}-${colIndex}`}
       row={rowIndex}
       column={colIndex}
-      players={[player, playerTwo, playerThree].filter((p) => p !== null) as Player[]}
+      players={[player, playerTwo, playerThree].filter((p) => p?.isActive()) as Player[]}
       monsters={monsters}
       map={map}
       bombs={new Map([...playerOneBombs, ...playerTwoBombs, ...playerThreeBombs])}
@@ -383,6 +392,7 @@ export const GameScreen = () => {
 
   return (
     <StyledBackground>
+      <RoundResultDialog open={dialogOpen} onClose={handleClose} resultMessage={resultMessage} />
       <StyledSettingsButton onClick={handleOpenSettings}>
         <SettingsIcon />
       </StyledSettingsButton>
