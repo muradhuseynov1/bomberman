@@ -25,11 +25,12 @@ import { GameLayout } from './GameLayout';
 import { useBombManager } from '../../hooks/useBombManager';
 import { usePlayerActions } from '../../hooks/usePlayerActions';
 
+import { defaultMap } from '../../constants/contants';
+
 const playerNames = ['Player 1', 'Player 2', 'Player 3'];
 const numBombs = 1;
 const powers = ['Detonator', 'RollerSkate'];
 const numObstacles = 4;
-const defaultMap: never[] = [];
 
 const fetchMap = async () => {
   const mapData = JSON.parse(localStorage.getItem('selectedMap') || '[]');
