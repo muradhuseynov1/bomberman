@@ -68,7 +68,7 @@ export const ConfigScreen = () => {
 
   const handlePlay = () => {
     localStorage.setItem('playerKeyBindings', JSON.stringify(playerKeyBindings));
-    navigate(`/game/${numOfPlayers}`);
+    navigate(`/game/${numOfPlayers}/${rounds}/${selectedMap}`);
   };
 
   const handleKeyDown = (

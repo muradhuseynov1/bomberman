@@ -18,8 +18,7 @@ export const usePlayerActions = (
 ) => {
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     playersInfo.forEach((info) => {
-      if (info !== null) {
-        if (!info.player.isAlive()) return;
+      if (info && info.player.isAlive()) {
         const actions = {
           [info.keyBindings[0]]: () => info.player.move('up', map, info.enemies, setMap),
           [info.keyBindings[1]]: () => info.player.move('left', map, info.enemies, setMap),
