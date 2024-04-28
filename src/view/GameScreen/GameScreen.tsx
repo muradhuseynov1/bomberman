@@ -154,21 +154,21 @@ export const GameScreen = () => {
       if (monsterTemp.getX() === currentPlayer.getX()
         && monsterTemp.getY() === currentPlayer.getY()
         && currentPlayer.isAlive()
-        && currentPlayer.isInvincible() === false) {
+        && !currentPlayer.isInvincible()) {
         currentPlayer.killPlayer();
         setPlayer(Player.fromPlayer(currentPlayer));
       }
       if (monsterTemp.getX() === currentPlayerTwo.getX()
         && monsterTemp.getY() === currentPlayerTwo.getY()
         && currentPlayerTwo.isAlive()
-        && currentPlayerTwo.isInvincible() === false) {
+        && !currentPlayerTwo.isInvincible()) {
         currentPlayerTwo.killPlayer();
         setPlayerTwo(Player.fromPlayer(currentPlayerTwo));
       }
       if (currentPlayerThree && monsterTemp.getX() === currentPlayerThree.getX()
         && monsterTemp.getY() === currentPlayerThree.getY()
         && currentPlayerThree.isAlive()
-        && currentPlayerThree.isInvincible() === false) {
+        && !currentPlayerThree.isInvincible()) {
         currentPlayerThree.killPlayer();
         setPlayerThree(Player.fromPlayer(currentPlayerThree));
       }
