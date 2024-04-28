@@ -3,9 +3,9 @@
 /* eslint-disable no-console */
 
 import { Monster } from './monster';
-import { Player } from './player';
 import monsterImg from '../assets/ghostmonster.png';
 import { Point } from '../constants/props';
+import { GameMap, isBomb } from './gameItem';
 
 /* eslint-disable no-plusplus */
 class GhostMonster extends Monster {
@@ -13,7 +13,7 @@ class GhostMonster extends Monster {
     return monsterImg;
   }
 
-  move(map: string[][], players: Player[], bombs: Map<string, number>): Monster {
+  move(map: GameMap): Monster {
     let newX = this.x;
     let newY = this.y;
     const possibleDirections: Point[] = [];
@@ -23,7 +23,7 @@ class GhostMonster extends Monster {
     const left = { x: this.x - 1, y: this.y };
 
     [up, right, down, left].forEach((dir) => {
-      if (this.isValidMove(dir.x, dir.y, map, bombs) && this.isInBounds(dir)) {
+      if (this.isValidMove(dir.x, dir.y, map) && this.isInBounds(dir)) {
         possibleDirections.push(dir);
       }
     });
@@ -41,10 +41,9 @@ class GhostMonster extends Monster {
   protected isValidMove(
     y: number,
     x: number,
-    map: string[][],
-    bombs: Map<string, number>
+    map: GameMap
   ): boolean {
-    return (!(bombs.has(`${y}-${x}`)));
+    return (!(isBomb(map[y][x])));
   }
 }
 
