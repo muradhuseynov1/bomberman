@@ -66,19 +66,19 @@ export const GameScreen = () => {
   const [playerTwo, setPlayerTwo] = useState(new Player('2', playerNames[1], 13, 8));
   const [playerThree, setPlayerThree] = useState(numOfPlayers === '3' ? new Player('3', playerNames[2], 7, 7) : null);
   const [map, setMap] = useState<GameMap>([]);
+  const mapRef = useRef(map);
   const playersRef = useRef([player, playerTwo, playerThree].filter((p): p is Player => p !== null));
   playersRef.current = [player, playerTwo, playerThree].filter((p): p is Player => p !== null);
   const setPlayers = [setPlayer, setPlayerTwo, setPlayerThree];
   const {
     dropBomb: dropPlayerOneBomb
-  } = useBombManager(0, playersRef, setPlayers, map, setMap);
+  } = useBombManager(0, playersRef, setPlayers, mapRef, setMap);
   const {
     dropBomb: dropPlayerTwoBomb
-  } = useBombManager(1, playersRef, setPlayers, map, setMap);
+  } = useBombManager(1, playersRef, setPlayers, mapRef, setMap);
   const {
     dropBomb: dropPlayerThreeBomb
-  } = useBombManager(2, playersRef, setPlayers, map, setMap);
-  console.log(numOfRounds);
+  } = useBombManager(2, playersRef, setPlayers, mapRef, setMap);
   const [keyBindings, setKeyBindings] = useState<KeyBindings>({});
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -140,7 +140,9 @@ export const GameScreen = () => {
   useEffect(() => {
     if (map.length === 0) {
       fetchMap().then(setMap);
+      console.log(numOfRounds);
     }
+    mapRef.current = map;
   }, []);
 
   const playerRef = useRef(player);
@@ -161,6 +163,10 @@ export const GameScreen = () => {
     playerTwoRef.current = playerTwo;
     playerThreeRef.current = playerThree;
   }, [player, playerTwo, playerThree]);
+
+  useEffect(() => {
+    mapRef.current = map;
+  }, [map]);
 
   const handleKeyDown = usePlayerActions([
     {
@@ -184,7 +190,7 @@ export const GameScreen = () => {
       keyBindings: keyBindings['3'],
       enemies: [player, playerTwo]
     } : null
-  ], map, setMap);
+  ], mapRef, setMap);
 
   useEffect(() => {
     const storedBindings = localStorage.getItem('playerKeyBindings');
@@ -296,6 +302,7 @@ export const GameScreen = () => {
       setDialogOpen(true);
       setIsPaused(true);
       resetRound();
+      fetchMap().then(setMap);
     }
   };
 

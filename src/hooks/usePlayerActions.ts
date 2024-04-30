@@ -13,10 +13,13 @@ type PlayerInfo = {
 
 export const usePlayerActions = (
   playersInfo: Array<PlayerInfo | null>,
-  map: GameMap,
+  mapRef: React.MutableRefObject<GameMap>,
   setMap: (m: GameMap) => void
 ) => {
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    const map = mapRef.current;
+    // eslint-disable-next-line no-console
+    console.log(mapRef.current);
     playersInfo.forEach((info) => {
       if (info && info.player.isAlive()) {
         const actions = {
@@ -42,7 +45,7 @@ export const usePlayerActions = (
         }
       }
     });
-  }, [playersInfo, map]);
+  }, [playersInfo, mapRef, setMap]);
 
   return handleKeyDown;
 };

@@ -19,16 +19,18 @@ export type gameItem = BaseContent | Power | Obstacle | Bomb;
 
 export type GameMap = gameItem[][];
 
+const powerUpOptions: Power[] = ['AddBomb', 'BlastRangeUp', 'Detonator', 'RollerSkate', 'Invincibility', 'Ghost', 'Obstacle'];
+
 export function randomPowerUpGenerator(): Power {
-  const powerUpOptions: Power[] = ['AddBomb', 'BlastRangeUp', 'Detonator', 'RollerSkate', 'Invincibility', 'Ghost', 'Obstacle'];
   return powerUpOptions[Math.floor(Math.random() * powerUpOptions.length)];
 }
 
-export const isPower = (cell: gameItem): cell is Power => {
-  const powerUpOptions: Power[] = ['AddBomb', 'BlastRangeUp', 'Detonator', 'RollerSkate', 'Invincibility', 'Ghost', 'Obstacle'];
-  return powerUpOptions.includes(cell as Power);
-};
+export const isPower = (cell: gameItem): cell is Power => powerUpOptions.includes(cell as Power);
 
 export function isBomb(item: gameItem): item is Bomb {
   return typeof item === 'object' && 'range' in item && 'coords' in item;
+}
+
+export function isObstacle(item: gameItem): item is Obstacle {
+  return typeof item === 'object' && 'ownerId' in item && 'coords' in item;
 }

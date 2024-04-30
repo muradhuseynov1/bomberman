@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-plusplus */
 import { useCallback } from 'react';
 import { Player } from '../model/player';
@@ -7,11 +8,12 @@ export const useBombManager = (
   playerID: number,
   playersRef: React.MutableRefObject<Player[]>,
   setPlayers: ((player: Player) => void)[],
-  map: GameMap,
+  mapRef: React.MutableRefObject<GameMap>,
   setMap: (m: GameMap) => void
 ) => {
   const explodeBomb = useCallback((y: number, x: number, bomb: Bomb): void => {
     const blastRange = bomb.range;
+    const map = mapRef.current;
     const newMap: GameMap = [];
     map.map((row) => newMap.push([...row]));
     const positionsToCheck = [];
@@ -21,7 +23,7 @@ export const useBombManager = (
     // Vertical - up and down from the bomb
     for (let dy = -blastRange; dy <= blastRange; dy += 1) {
       const tempY = y + dy;
-      if (tempY >= 0 && tempY <= mapHeight) {
+      if (tempY >= 0 && tempY < mapHeight) {
         positionsToCheck.push({ newY: tempY, newX: x });
       }
     }
@@ -29,12 +31,14 @@ export const useBombManager = (
     // Horizontal - left and right from the bomb
     for (let dx = -blastRange; dx <= blastRange; dx += 1) {
       const tempX = x + dx;
-      if (tempX >= 0 && tempX <= mapWidth) {
+      if (tempX >= 0 && tempX < mapWidth) {
         positionsToCheck.push({ newY: y, newX: x + dx });
       }
     }
     positionsToCheck.forEach(({ newY, newX }) => {
       const affectedItem = map[newY][newX];
+      console.log(`newY: ${newY}, newX: ${newX}`);
+      console.log(affectedItem);
 
       // TODO: Trigger other bombs
       // if (typeof affectedItem !== 'string' && 'range' in affectedItem) {
@@ -54,14 +58,16 @@ export const useBombManager = (
         }
       });
     });
+    newMap[y][x] = 'Empty'; // Remove the bomb from the map
 
     // Update the map with changes
     setMap(newMap);
 
     // Check and update players' positions if they are in the blast range
-  }, [map, setMap, playersRef, setPlayers]);
+  }, [mapRef, setMap, playersRef, setPlayers]);
 
   const dropBomb = useCallback((y: number, x: number): void => {
+    const map = mapRef.current;
     if (map[y][x] !== 'Empty') return; // Ensure the cell is empty before placing a bomb
 
     const player = playersRef.current[playerID];
@@ -84,7 +90,7 @@ export const useBombManager = (
     setTimeout(() => {
       explodeBomb(y, x, bomb);
     }, 3000); // Explodes after 3 seconds
-  }, [map, setMap, playersRef, explodeBomb]);
+  }, [mapRef, setMap, playersRef, explodeBomb]);
 
   return { dropBomb };
 };

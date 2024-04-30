@@ -4,7 +4,7 @@
 // eslint-disable-next-line import/no-cycle
 
 import {
-  GameMap, Power, isPower
+  GameMap, Power, isBomb, isObstacle, isPower
 } from './gameItem';
 
 class Player {
@@ -145,7 +145,8 @@ class Player {
 
   // eslint-disable-next-line no-unused-vars
   isValidMove(y: number, x: number, map: GameMap): boolean {
-    return map[y][x] === 'Empty' || isPower(map[y][x]) || (this.isGhost() && map[y][x] !== 'Obstacle');
+    if (this.isGhost()) return !isObstacle(map[y][x]);
+    return map[y][x] !== 'Wall' && map[y][x] !== 'Box' && !isObstacle(map[y][x]) && !isBomb(map[y][x]) && (map[y][x] === 'Empty' || isPower(map[y][x]));
   }
 
   killPlayer(): void {
