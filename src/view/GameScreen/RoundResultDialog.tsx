@@ -13,7 +13,7 @@ type RoundResultDialogProps = {
 }
 
 export const RoundResultDialog = ({ open, onClose, resultMessage }: RoundResultDialogProps) => {
-  const handleClose = (event: {}, reason: string) => {
+  const handleClose = (event: object, reason: string) => {
     if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
       return;
     }

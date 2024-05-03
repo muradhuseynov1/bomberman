@@ -5,6 +5,7 @@ import { Monster } from './monster';
 import { Player } from './player';
 import monsterImg from '../assets/prosmartmonster.png';
 import { Point } from '../constants/props';
+import { GameMap } from './gameItem';
 
 class ForkMonster extends Monster {
   constructor(id: string, name: string, x: number = 0, y: number = 0) {
@@ -15,7 +16,7 @@ class ForkMonster extends Monster {
     return monsterImg;
   }
 
-  move(map: string[][], players: Player[], bombs: Map<string, number>, otherMonsters: Monster[]): ForkMonster {
+  move(map: GameMap, players: Player[], otherMonsters: Monster[]): ForkMonster {
     let newX = this.x;
     let newY = this.y;
     const possibleDirections: Point[] = [];
@@ -26,7 +27,7 @@ class ForkMonster extends Monster {
     const left: Point = { x: this.x - 1, y: this.y };
 
     [up, right, down, left].forEach((dir) => {
-      if (this.isValidMove(dir.x, dir.y, map, bombs, otherMonsters) && this.isInBounds(dir)) {
+      if (this.isValidMove(dir.x, dir.y, map, otherMonsters) && this.isInBounds(dir)) {
         possibleDirections.push(dir);
       }
     });

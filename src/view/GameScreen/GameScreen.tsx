@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable max-len */
+/* eslint-disable consistent-return */
 import React, {
   useState, useEffect, useCallback, useRef
 } from 'react';
@@ -13,6 +14,12 @@ import { Player } from '../../model/player';
 import SettingsScreen from './SettingsScreen/SettingsScreen';
 import { GridCellComponent } from './GridCellComponent';
 import { KeyBindings } from '../../constants/props';
+import {
+  GameMap,
+  gameItem,
+  randomPowerUpGenerator
+} from '../../model/gameItem';
+
 import { Monster } from '../../model/monster';
 import { GhostMonster } from '../../model/ghostMonster';
 import { SmartMonster } from '../../model/smartMonster';
@@ -24,29 +31,54 @@ import ModifyControlsDialog from './SettingsScreen/ModifyControlsDialog';
 import { GameLayout } from './GameLayout';
 import { useBombManager } from '../../hooks/useBombManager';
 import { usePlayerActions } from '../../hooks/usePlayerActions';
-
 import { defaultMap } from '../../constants/contants';
 
-const playerNames = ['Player 1', 'Player 2', 'Player 3'];
-const numBombs = 1;
-const powers = ['Detonator', 'RollerSkate'];
-const numObstacles = 4;
+const playerNames = ['Player One', 'Player Two', 'Player Three'];
 
-const fetchMap = async () => {
-  const mapData = JSON.parse(localStorage.getItem('selectedMap') || '[]');
-  return mapData.length > 0 ? mapData : defaultMap;
+const fetchMap = async (): Promise<GameMap> => {
+  let mapData = JSON.parse(localStorage.getItem('selectedMap') || '[]');
+  mapData = mapData.length > 0 ? mapData : defaultMap;
+  // Convert the string data to GameMap format
+  const initialMap: GameMap = mapData.map((row: Array<string>) => {
+    const mapRow: gameItem[] = row.map((cell: string) => {
+      switch (cell) {
+        case ' ':
+          return 'Empty';
+        case 'W':
+          return 'Wall';
+        case 'B':
+          return 'Box';
+        case 'P':
+          return randomPowerUpGenerator();
+        default:
+          throw new Error(`Invalid map data: unexpected character '${cell}'`);
+      }
+    });
+    return mapRow;
+  });
+
+  return initialMap;
 };
 
 export const GameScreen = () => {
   const { numOfPlayers, numOfRounds, selectedMap } = useParams();
   const [player, setPlayer] = useState(new Player('1', playerNames[0], 1, 1));
   const [playerTwo, setPlayerTwo] = useState(new Player('2', playerNames[1], 13, 8));
-  const [playerThree, setPlayerThree] = useState(numOfPlayers === '3' ? new Player('3', playerNames[2], 1, 8) : null);
-  const { bombs: playerOneBombs, dropBomb: dropPlayerOneBomb } = useBombManager();
-  const { bombs: playerTwoBombs, dropBomb: dropPlayerTwoBomb } = useBombManager();
-  const { bombs: playerThreeBombs, dropBomb: dropPlayerThreeBomb } = useBombManager();
-  console.log(numOfRounds);
-  const [map, setMap] = useState<string[][]>([]);
+  const [playerThree, setPlayerThree] = useState(numOfPlayers === '3' ? new Player('3', playerNames[2], 7, 7) : null);
+  const [map, setMap] = useState<GameMap>([]);
+  const mapRef = useRef(map);
+  const playersRef = useRef([player, playerTwo, playerThree].filter((p): p is Player => p !== null));
+  playersRef.current = [player, playerTwo, playerThree].filter((p): p is Player => p !== null);
+  const setPlayers = [setPlayer, setPlayerTwo, setPlayerThree];
+  const {
+    dropBomb: dropPlayerOneBomb
+  } = useBombManager(0, playersRef, setPlayers, mapRef, setMap);
+  const {
+    dropBomb: dropPlayerTwoBomb
+  } = useBombManager(1, playersRef, setPlayers, mapRef, setMap);
+  const {
+    dropBomb: dropPlayerThreeBomb
+  } = useBombManager(2, playersRef, setPlayers, mapRef, setMap);
   const [keyBindings, setKeyBindings] = useState<KeyBindings>({});
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -106,15 +138,16 @@ export const GameScreen = () => {
   }, [selectedMap]);
 
   useEffect(() => {
-    fetchMap().then(setMap);
+    if (map.length === 0) {
+      fetchMap().then(setMap);
+      console.log(numOfRounds);
+    }
+    mapRef.current = map;
   }, []);
 
   const playerRef = useRef(player);
   const playerTwoRef = useRef(playerTwo);
   const playerThreeRef = useRef(playerThree);
-  const playerOneBombsRef = useRef(playerOneBombs);
-  const playerTwoBombsRef = useRef(playerTwoBombs);
-  const playerThreeBombsRef = useRef(playerThreeBombs);
   const smartMonstersRef = useRef<Monster[]>([]);
   const ghostMonstersRef = useRef<Monster[]>([]);
   const forkMonstersRef = useRef<Monster[]>([]);
@@ -132,17 +165,14 @@ export const GameScreen = () => {
   }, [player, playerTwo, playerThree]);
 
   useEffect(() => {
-    playerOneBombsRef.current = playerOneBombs;
-    playerTwoBombsRef.current = playerTwoBombs;
-    playerThreeBombsRef.current = playerThreeBombs;
-  }, [playerOneBombs, playerTwoBombs, playerThreeBombs]);
+    mapRef.current = map;
+  }, [map]);
 
   const handleKeyDown = usePlayerActions([
     {
       player,
       setNewPlayer: setPlayer,
       dropBomb: dropPlayerOneBomb,
-      bombs: playerOneBombs,
       keyBindings: keyBindings['1'],
       enemies: [playerTwo, playerThree].filter((p): p is Player => p !== null),
     },
@@ -150,7 +180,6 @@ export const GameScreen = () => {
       player: playerTwo,
       setNewPlayer: setPlayerTwo,
       dropBomb: dropPlayerTwoBomb,
-      bombs: playerTwoBombs,
       keyBindings: keyBindings['2'],
       enemies: [player, playerThree].filter((p): p is Player => p !== null),
     },
@@ -158,11 +187,10 @@ export const GameScreen = () => {
       player: playerThree,
       setNewPlayer: setPlayerThree,
       dropBomb: dropPlayerThreeBomb,
-      bombs: playerThreeBombs,
       keyBindings: keyBindings['3'],
       enemies: [player, playerTwo]
     } : null
-  ], map);
+  ], mapRef, setMap);
 
   useEffect(() => {
     const storedBindings = localStorage.getItem('playerKeyBindings');
@@ -178,14 +206,9 @@ export const GameScreen = () => {
         const players = [
           playerRef.current, playerTwoRef.current, playerThreeRef.current
         ].filter(Boolean) as Player[];
-        const allBombs = new Map([
-          ...playerOneBombsRef.current,
-          ...playerTwoBombsRef.current,
-          ...playerThreeBombsRef.current
-        ]);
         const otherMonsters = self.filter((m, i) => i !== idx);
         if (monster instanceof SmartMonster) {
-          return monster.move(map, players, allBombs, otherMonsters);
+          return monster.move(map, players, otherMonsters);
         }
         return monster;
       }));
@@ -195,16 +218,8 @@ export const GameScreen = () => {
   const moveGhostMonsters = useCallback(() => {
     if (!isPaused) {
       setMonsters((ghostMonsters) => ghostMonsters.map((monster) => {
-        const players = [
-          playerRef.current, playerTwoRef.current, playerThreeRef.current
-        ].filter(Boolean) as Player[];
-        const allBombs = new Map([
-          ...playerOneBombsRef.current,
-          ...playerTwoBombsRef.current,
-          ...playerThreeBombsRef.current
-        ]);
         if (monster instanceof GhostMonster) {
-          return monster.move(map, players, allBombs);
+          return monster.move(map);
         }
         return monster;
       }));
@@ -217,14 +232,9 @@ export const GameScreen = () => {
         const players = [
           playerRef.current, playerTwoRef.current, playerThreeRef.current
         ].filter(Boolean) as Player[];
-        const allBombs = new Map([
-          ...playerOneBombsRef.current,
-          ...playerTwoBombsRef.current,
-          ...playerThreeBombsRef.current
-        ]);
         const otherMonsters = self.filter((m, i) => i !== idx);
         if (monster instanceof ForkMonster || monster instanceof Monster) {
-          return monster.move(map, players, allBombs, otherMonsters);
+          return monster.move(map, players, otherMonsters);
         }
         return monster;
       }));
@@ -280,10 +290,10 @@ export const GameScreen = () => {
   };
 
   const checkEndOfRound = () => {
-    const activePlayers = [player, playerTwo, playerThree].filter((p) => p && p.isActive());
+    const activePlayers = [player, playerTwo, playerThree].filter((p) => p && p.isAlive());
 
     if (activePlayers.length <= 1) {
-      const recheckedActivePlayers = [player, playerTwo, playerThree].filter((p) => p && p.isActive());
+      const recheckedActivePlayers = [player, playerTwo, playerThree].filter((p) => p && p.isAlive());
       if (recheckedActivePlayers.length === 1) {
         setResultMessage(`${recheckedActivePlayers[0]?.getName()} wins the round!`);
       } else if (recheckedActivePlayers.length === 0) {
@@ -292,6 +302,7 @@ export const GameScreen = () => {
       setDialogOpen(true);
       setIsPaused(true);
       resetRound();
+      fetchMap().then(setMap);
     }
   };
 
@@ -306,21 +317,27 @@ export const GameScreen = () => {
     currentPlayerThree: Player | null,
     currentMonsters: Monster[]
   ) => {
-    currentMonsters.forEach((collisionMonster) => {
-      if (collisionMonster.getX() === currentPlayer.getX() && collisionMonster.getY() === currentPlayer.getY()) {
-        setPlayer(
-          (prev) => new Player(prev.getId(), prev.getName(), 0, 0, false)
-        );
+    currentMonsters.forEach((monsterTemp) => {
+      if (monsterTemp.getX() === currentPlayer.getX()
+        && monsterTemp.getY() === currentPlayer.getY()
+        && currentPlayer.isAlive()
+        && !currentPlayer.isInvincible()) {
+        currentPlayer.killPlayer();
+        setPlayer(Player.fromPlayer(currentPlayer));
       }
-      if (currentPlayerTwo && collisionMonster.getX() === currentPlayerTwo.getX() && collisionMonster.getY() === currentPlayerTwo.getY()) {
-        setPlayerTwo(
-          (prev) => new Player(prev.getId(), prev.getName(), 14, 9, false)
-        );
+      if (monsterTemp.getX() === currentPlayerTwo.getX()
+        && monsterTemp.getY() === currentPlayerTwo.getY()
+        && currentPlayerTwo.isAlive()
+        && !currentPlayerTwo.isInvincible()) {
+        currentPlayerTwo.killPlayer();
+        setPlayerTwo(Player.fromPlayer(currentPlayerTwo));
       }
-      if (currentPlayerThree && collisionMonster.getX() === currentPlayerThree.getX() && collisionMonster.getY() === currentPlayerThree.getY()) {
-        setPlayerThree(
-          (prev) => (prev ? new Player(prev.getId(), prev.getName(), 0, 9, false) : null)
-        );
+      if (currentPlayerThree && monsterTemp.getX() === currentPlayerThree.getX()
+        && monsterTemp.getY() === currentPlayerThree.getY()
+        && currentPlayerThree.isAlive()
+        && !currentPlayerThree.isInvincible()) {
+        currentPlayerThree.killPlayer();
+        setPlayerThree(Player.fromPlayer(currentPlayerThree));
       }
     });
     checkEndOfRound();
@@ -384,10 +401,9 @@ export const GameScreen = () => {
       key={`${rowIndex}-${colIndex}`}
       row={rowIndex}
       column={colIndex}
-      players={[player, playerTwo, playerThree].filter((p) => p?.isActive()) as Player[]}
+      players={[player, playerTwo, playerThree].filter((p) => p?.isAlive()) as Player[]}
       monsters={monsters}
       map={map}
-      bombs={new Map([...playerOneBombs, ...playerTwoBombs, ...playerThreeBombs])}
     />
   )));
 
@@ -398,11 +414,9 @@ export const GameScreen = () => {
         <SettingsIcon />
       </StyledSettingsButton>
       <GameLayout
-        playerName={playerNames[0]}
-        numBombs={numBombs}
-        powers={powers}
-        numObstacles={numObstacles}
-        numOfPlayers={String(numOfPlayers)}
+        player={player}
+        playerTwo={playerTwo}
+        playerThree={playerThree}
         renderCellsAndPlayer={renderCellsAndPlayer}
       />
       <SettingsScreen

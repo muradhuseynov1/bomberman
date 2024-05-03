@@ -8,6 +8,7 @@ import { Monster } from './monster';
 import { Player } from './player';
 import monsterImg from '../assets/smartmonster.png';
 import { Point } from '../constants/props';
+import { GameMap } from './gameItem';
 
 class SmartMonster extends Monster {
   constructor(id: string, name: string, x: number = 0, y: number = 0) {
@@ -18,7 +19,7 @@ class SmartMonster extends Monster {
     return monsterImg;
   }
 
-  move(map: string[][], players: Player[], bombs: Map<string, number>, otherMonsters: Monster[]): Monster {
+  move(map: GameMap, players: Player[], otherMonsters: Monster[]): Monster {
     let newX = this.x;
     let newY = this.y;
     const possibleDirections: Point[] = [];
@@ -29,7 +30,7 @@ class SmartMonster extends Monster {
     const left = { x: this.x - 1, y: this.y };
 
     [up, right, down, left].forEach((dir) => {
-      if (this.isValidMove(dir.x, dir.y, map, bombs, otherMonsters) && this.isInBounds(dir)) {
+      if (this.isValidMove(dir.x, dir.y, map, otherMonsters) && this.isInBounds(dir)) {
         possibleDirections.push(dir);
       }
     });
@@ -50,7 +51,7 @@ class SmartMonster extends Monster {
     return new SmartMonster(this.id, this.name, newX, newY);
   }
 
-  private findPathToNearestPlayer(players: Player[], map: string[][]): Point[] {
+  private findPathToNearestPlayer(players: Player[], map: GameMap): Point[] {
     const closestPlayer = players.reduce((closest, player) => {
       const closestDistance = (closest.getX() - this.x) ** 2 + (closest.getY() - this.y) ** 2;
       const playerDistance = (player.getX() - this.x) ** 2 + (player.getY() - this.y) ** 2;
@@ -64,7 +65,7 @@ class SmartMonster extends Monster {
     );
   }
 
-  private aStarSearch(map: string[][], start: Point, goal: Point): Point[] {
+  private aStarSearch(map: GameMap, start: Point, goal: Point): Point[] {
     let openSet: Point[] = [start];
     const cameFrom: Map<string, Point> = new Map();
 
@@ -102,7 +103,7 @@ class SmartMonster extends Monster {
     return [];
   }
 
-  private getNeighbors(point: Point, map: string[][]): Point[] {
+  private getNeighbors(point: Point, map: GameMap): Point[] {
     const neighbors: Point[] = [];
     const directions = [
       [0, 1], // Down
@@ -113,7 +114,7 @@ class SmartMonster extends Monster {
     directions.forEach(([dx, dy]) => {
       const newX = point.x + dx;
       const newY = point.y + dy;
-      if (map[newX][newY] === ' ' && this.isInBounds({ x: newX, y: newY })) {
+      if (map[newX][newY] === 'Empty' && this.isInBounds({ x: newX, y: newY })) {
         neighbors.push({ x: newX, y: newY });
       }
     });

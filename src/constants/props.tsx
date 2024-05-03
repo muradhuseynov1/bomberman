@@ -1,3 +1,5 @@
+import { Player } from '../model/player';
+
 export interface SettingsScreenProps {
   open: boolean;
   onClose: () => void;
@@ -5,13 +7,8 @@ export interface SettingsScreenProps {
   onModifyControls?: () => void;
 }
 
-export type Power = 'Detonator' | 'RollerSkate' | 'Invincibility' | 'Ghost' | 'Obstacle';
-
 export type PlayerStatusProps = {
-  playerName: string;
-  numBombs: number;
-  powers: Power[];
-  numObstacles: number;
+  player: Player;
   index: number;
 }
 

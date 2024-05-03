@@ -5,13 +5,11 @@ import {
   PlayerStatusContainer, PlayerName, PowerUpsList, PowerUpItem, ObstaclesCount
 } from './PlayerStatusScreen.styles';
 import theme from '../../../theme/PlayerStatusTheme';
-import { PlayerStatusProps, Power } from '../../../constants/props';
+import { PlayerStatusProps } from '../../../constants/props';
+import { Power } from '../../../model/gameItem';
 
 export const PlayerStatus = ({
-  playerName,
-  numBombs,
-  powers,
-  numObstacles,
+  player,
   index
 }: PlayerStatusProps) => {
   const getPowerIcon = (power: Power): React.ReactNode => {
@@ -33,20 +31,20 @@ export const PlayerStatus = ({
 
   return (
     <PlayerStatusContainer theme={theme} index={index}>
-      <PlayerName variant="h6">{playerName}</PlayerName>
+      <PlayerName variant="h6">{player.getName()}</PlayerName>
       <Typography variant="body1">
         Bombs:
-        {numBombs}
+        {player.getBombs()}
       </Typography>
       <PowerUpsList>
-        {powers.map((power, index) => (
+        {player.getPowerUps().map((power, index) => (
           // eslint-disable-next-line react/no-array-index-key
           <PowerUpItem key={index}>{getPowerIcon(power)}</PowerUpItem>
         ))}
       </PowerUpsList>
       <ObstaclesCount variant="body1">
         Obstacles:
-        {numObstacles}
+        {player.getObstacles()}
       </ObstaclesCount>
     </PlayerStatusContainer>
   );

@@ -3,6 +3,8 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
 
+import { GameMap } from './gameItem';
+
 import { Player } from './player';
 import monsterImg from '../assets/monster.png';
 import { Point } from '../constants/props';
@@ -43,7 +45,7 @@ class Monster {
     return monsterImg;
   }
 
-  move(map: string[][], players: Player[], bombs: Map<string, number>, otherMonsters: Monster[]): Monster {
+  move(map: GameMap, players: Player[], otherMonsters: Monster[]): Monster {
     let newX = this.x;
     let newY = this.y;
     const possibleDirections: Point[] = [];
@@ -53,7 +55,7 @@ class Monster {
     const left: Point = { x: this.x - 1, y: this.y };
 
     [up, right, down, left].forEach((dir) => {
-      if (this.isValidMove(dir.x, dir.y, map, bombs, otherMonsters) && this.isInBounds(dir)) {
+      if (this.isValidMove(dir.x, dir.y, map, otherMonsters) && this.isInBounds(dir)) {
         possibleDirections.push(dir);
       }
     });
@@ -75,11 +77,10 @@ class Monster {
   protected isValidMove(
     x: number,
     y: number,
-    map: string[][],
-    bombs: Map<string, number>,
+    map: GameMap,
     otherMonsters: Monster[]
   ): boolean {
-    const isCellFree = map[y][x] === ' ' && !bombs.has(`${y}-${x}`);
+    const isCellFree = map[y][x] === 'Empty';
     const isMonsterCollision = otherMonsters.some((monster) => monster.getX() === x && monster.getY() === y);
     return isCellFree && !isMonsterCollision;
   }

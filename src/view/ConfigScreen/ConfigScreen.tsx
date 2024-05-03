@@ -109,13 +109,13 @@ export const ConfigScreen = () => {
     validateInputs();
   }, [numOfPlayers, playerKeyBindings]);
 
-  const fetchMap = async (mapName: any) => {
+  const fetchMap = async (mapName: string) => {
     const response = await fetch(`/maps/${mapName}.txt`);
     const mapText = await response.text();
     return mapText.split(/\r?\n/).map((row) => row.trim().split('').slice(0, 15));
   };
 
-  const handleMapSelect = async (map: any) => {
+  const handleMapSelect = async (map: string) => {
     setSelectedMap(map);
     const mapData = await fetchMap(map);
     localStorage.setItem('selectedMap', JSON.stringify(mapData));
